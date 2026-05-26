@@ -1,0 +1,42 @@
+name: 内容或文档问题
+description: 报告项目文档、公开维护文档或种子内容中的错误、过时或不一致。
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: textarea
+    id: location
+    attributes:
+      label: 位置
+      description: 提供受影响的文件、路由、标题或内容配对。
+    validations:
+      required: true
+  - type: dropdown
+    id: branch
+    attributes:
+      label: 目标分支
+      options:
+        - main
+        - fy-blog
+        - 两者都需要
+        - 不确定
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: 问题
+      description: 说明哪里错误、不清楚、缺失或不一致。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 建议修正
+      description: 如果已有建议措辞或结构，请写在这里。
+  - type: checkboxes
+    id: bilingual
+    attributes:
+      label: 双语影响
+      options:
+        - label: 我已检查匹配的 `/zh/` 或 `/en/` 内容是否也需要更新。

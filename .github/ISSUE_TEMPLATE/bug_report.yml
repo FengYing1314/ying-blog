@@ -1,0 +1,53 @@
+name: Bug 报告
+description: 报告站点、构建或生成输出中的可复现问题。
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: 问题摘要
+      description: 清楚描述问题。
+    validations:
+      required: true
+  - type: dropdown
+    id: branch
+    attributes:
+      label: 影响分支
+      options:
+        - main
+        - fy-blog
+        - 两者都影响
+        - 不确定
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 列出复现问题所需的命令、路由或内容文件。
+      placeholder: |
+        1. 运行 ...
+        2. 打开 ...
+        3. 观察到 ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期行为
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: 验证输出
+      description: 如有相关 npm script 输出，请粘贴在这里。
+      render: shell
