@@ -22,8 +22,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     env:
-      SITE_URL: https://fengying1314.github.io
-      BASE_PATH: /ying-blog/
+      SITE_URL: https://yingblog.fengying.xin
+      BASE_PATH: /
     steps:
       - name: Checkout
         uses: actions/checkout@v6

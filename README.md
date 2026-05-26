@@ -65,7 +65,7 @@ npm run preview
 
 部署相关环境变量见 `.env.example`。`SITE_URL` 和 `BASE_PATH` 会同时影响 Vite 资源路径、canonical URL、RSS、sitemap 和 robots 输出。
 
-`main` 分支通过 GitHub Pages 发布到 `https://fengying1314.github.io/ying-blog/`，对应 `SITE_URL=https://fengying1314.github.io` 和 `BASE_PATH=/ying-blog/`。
+`main` 分支通过 GitHub Pages 发布到 `https://yingblog.fengying.xin/`，对应 `SITE_URL=https://yingblog.fengying.xin` 和 `BASE_PATH=/`。
 
 ## 维护
 
