@@ -1,0 +1,59 @@
+{
+  "name": "fengying-blog",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fengying's bilingual personal blog, technical notes, and project showcase.",
+  "keywords": [
+    "blog",
+    "documentation",
+    "i18n",
+    "markdown",
+    "ssg",
+    "typescript",
+    "vite",
+    "vue"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev --host 127.0.0.1",
+    "content:generate": "vp exec tsx scripts/content/generate.ts",
+    "check": "vp exec tsx scripts/content/generate.ts && vp check .env.example .github AGENTS.md CLAUDE.md CODE_OF_CONDUCT.md CONTRIBUTING.md README.md SECURITY.md SUPPORT.md docs index.html package.json package-lock.json public scripts src tests tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts vitest.config.ts && vp exec vue-tsc --noEmit && vp exec tsc -p tsconfig.node.json --noEmit",
+    "test": "vp exec tsx scripts/content/generate.ts && vp test run",
+    "build": "vp exec vite-ssg build && vp exec tsx scripts/static-assets.ts && vp exec tsx scripts/verify-static-output.ts",
+    "ci": "npm run check && npm run test && npm run build",
+    "preview": "vp preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@lucide/vue": "1.16.0",
+    "@unhead/vue": "2.1.15",
+    "feed": "5.2.1",
+    "mermaid": "^11.15.0",
+    "vite-ssg": "28.3.0",
+    "vue": "3.5.34",
+    "vue-router": "5.0.7",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "14.1.2",
+    "@types/markdown-it-container": "4.0.0",
+    "@types/node": "25.9.1",
+    "@vitejs/plugin-vue": "6.0.7",
+    "fast-glob": "3.3.3",
+    "gray-matter": "4.0.3",
+    "markdown-it": "14.1.1",
+    "markdown-it-anchor": "9.2.0",
+    "markdown-it-container": "4.0.0",
+    "oxfmt": "0.48.0",
+    "shiki": "4.1.0",
+    "tsx": "4.22.3",
+    "typescript": "6.0.3",
+    "vite": "8.0.14",
+    "vite-plus": "0.1.22",
+    "vitest": "4.1.7",
+    "vue-tsc": "3.3.1"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "npm@11.15.0"
+}

@@ -1,0 +1,87 @@
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition:
+    opacity var(--motion-medium) var(--ease-standard),
+    transform var(--motion-medium) var(--ease-standard);
+}
+
+.page-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.drawer-fade-enter-active,
+.drawer-fade-leave-active {
+  transition: opacity var(--motion-fast) var(--ease-standard);
+}
+
+.drawer-fade-enter-from,
+.drawer-fade-leave-to {
+  opacity: 0;
+}
+
+.drawer-fade-enter-active .mobile-drawer-panel,
+.drawer-fade-leave-active .mobile-drawer-panel {
+  transition:
+    opacity var(--motion-medium) var(--ease-standard),
+    transform var(--motion-medium) var(--ease-standard);
+}
+
+.drawer-fade-enter-from .mobile-drawer-panel,
+.drawer-fade-leave-to .mobile-drawer-panel {
+  opacity: 0;
+  transform: translateY(10px) scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .page-fade-enter-from,
+  .page-fade-leave-to,
+  .drawer-fade-enter-from .mobile-drawer-panel,
+  .drawer-fade-leave-to .mobile-drawer-panel,
+  .brand:hover,
+  .desktop-nav a:hover,
+  .mobile-nav a:hover,
+  .primary-link:hover,
+  .secondary-link:hover,
+  .content-card:hover,
+  .project-card:hover,
+  .pager-link:hover,
+  .social-link:hover,
+  .social-link:hover > svg:last-child,
+  .achievement-card:hover,
+  .achievement-card:hover > svg:last-child,
+  .contribution-card:hover,
+  .profile-summary-card:hover,
+  .profile-link:hover,
+  .icon-button:hover {
+    transform: none !important;
+  }
+
+  .contribution-meter span {
+    animation: none !important;
+  }
+
+  .pointer-aura {
+    display: none !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .pointer-aura {
+    display: none;
+  }
+}

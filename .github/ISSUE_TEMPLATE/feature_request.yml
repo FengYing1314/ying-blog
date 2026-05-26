@@ -1,0 +1,52 @@
+name: 功能请求
+description: 提出符合当前项目规则的有边界改进。
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题
+      description: 这个请求解决什么当前用户或维护者问题？
+    validations:
+      required: true
+  - type: dropdown
+    id: branch
+    attributes:
+      label: 目标分支
+      options:
+        - main
+        - fy-blog
+        - 两者都需要
+        - 不确定
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 方案
+      description: 描述最小可用改动。
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 范围检查
+      description: 该请求是否触及受控能力？
+      options:
+        - 不涉及受控能力
+        - 搜索
+        - 评论
+        - 分析
+        - CMS
+        - Draft 工作流
+        - 项目详情页
+        - 生成社交图
+    validations:
+      required: true
+  - type: textarea
+    id: static
+    attributes:
+      label: 静态部署影响
+      description: 说明该方案是否保持纯静态部署。
