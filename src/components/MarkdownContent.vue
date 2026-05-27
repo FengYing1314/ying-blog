@@ -542,7 +542,9 @@ function openMermaidDialog(diagram: HTMLElement) {
   dialog.className = "md-mermaid-dialog";
   dialog.setAttribute("role", "dialog");
   dialog.setAttribute("aria-modal", "true");
-  dialog.setAttribute("aria-label", localeText("放大查看 Mermaid 图表", "Mermaid diagram viewer"));
+  const headingId = `md-mermaid-dialog-title-${mermaidRenderCounter}`;
+  mermaidRenderCounter += 1;
+  dialog.setAttribute("aria-labelledby", headingId);
   dialog.dataset.mermaid = "dialog";
   dialog.dataset.rendered = "true";
 
@@ -553,6 +555,7 @@ function openMermaidDialog(diagram: HTMLElement) {
   header.className = "md-mermaid-dialog-header";
 
   const heading = document.createElement("h2");
+  heading.id = headingId;
   heading.textContent = title;
 
   const scale = document.createElement("span");
@@ -595,6 +598,8 @@ function openMermaidDialog(diagram: HTMLElement) {
     if (event.key === "Escape") {
       event.preventDefault();
       closeMermaidDialog();
+    } else if (event.key === "Tab") {
+      trapMermaidDialogFocus(event, dialog);
     }
   };
   const overlayClickHandler = (event: MouseEvent) => {
@@ -686,6 +691,29 @@ function closeMermaidDialog(restoreFocus = true) {
     activeMermaidDialogFocus.focus();
   }
   activeMermaidDialogFocus = undefined;
+}
+
+function trapMermaidDialogFocus(event: KeyboardEvent, dialog: HTMLElement) {
+  const focusableElements = Array.from(
+    dialog.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((element) => element.offsetParent !== null);
+
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements.at(-1);
+
+  if (!firstElement || !lastElement) {
+    return;
+  }
+
+  if (event.shiftKey && document.activeElement === firstElement) {
+    event.preventDefault();
+    lastElement.focus();
+  } else if (!event.shiftKey && document.activeElement === lastElement) {
+    event.preventDefault();
+    firstElement.focus();
+  }
 }
 
 function localeText(zh: string, en: string) {

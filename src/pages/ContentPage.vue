@@ -14,7 +14,12 @@
         <TaxonomyLinks :entry="entry" />
       </header>
 
-      <TocNav class="toc-nav-inline" :headings="entry.headings" :locale="entry.locale" />
+      <TocNav
+        class="toc-nav-inline"
+        :headings="entry.headings"
+        :locale="entry.locale"
+        collapsible
+      />
 
       <MarkdownContent :html="entry.html" :locale="entry.locale" />
 

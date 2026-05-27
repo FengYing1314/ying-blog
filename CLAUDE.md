@@ -13,6 +13,7 @@ Current project constraints:
 - Personal blog content imports belong on dedicated branches unless the project owner explicitly requests otherwise.
 
 <!-- pensieve:instructions:start -->
+
 ## How To Use Pensieve
 
 Use `.pensieve/` as the first source of architectural intent.

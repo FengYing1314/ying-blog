@@ -70,6 +70,7 @@ For application changes:
 - If the change affects frontend UI, verify it in a browser when practical.
 
 <!-- pensieve:instructions:start -->
+
 ## How To Use Pensieve
 
 Use `.pensieve/` as the first source of architectural intent.

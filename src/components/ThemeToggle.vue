@@ -13,25 +13,19 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { Moon, Sun } from "@lucide/vue";
 import { uiText } from "../config/site";
+import { useTheme } from "../lib/theme";
 import type { Locale } from "../types/content";
 
 defineProps<{
   locale: Locale;
 }>();
 
-const theme = ref<"light" | "dark">("light");
+const { theme, syncTheme, toggleTheme } = useTheme();
 
 onMounted(() => {
-  const current = document.documentElement.dataset.theme;
-  theme.value = current === "dark" ? "dark" : "light";
+  syncTheme();
 });
-
-function toggleTheme() {
-  theme.value = theme.value === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = theme.value;
-  localStorage.setItem("ying-theme", theme.value);
-}
 </script>
