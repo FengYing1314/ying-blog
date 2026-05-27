@@ -1889,6 +1889,11 @@
     flex-direction: column;
   }
 
+  .taxonomy-section-heading {
+    flex-direction: row;
+    align-items: center;
+  }
+
   .social-dock,
   .home-stat-grid,
   .home-update-grid,
