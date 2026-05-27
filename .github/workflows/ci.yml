@@ -5,7 +5,8 @@ on:
   push:
     branches:
       - main
-      - fy-blog
+      - content/fy-blog
+      - codex/sync-main-to-content
 
 jobs:
   verify:
