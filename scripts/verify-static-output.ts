@@ -63,7 +63,12 @@ for (const page of pages) {
 }
 
 const staticNotFoundHtml = await readFile(path.join(distDir, "404.html"), "utf8");
-assertIncludes(staticNotFoundHtml, "<title>页面未找到 | Ying Blog</title>", "/404/", "404 title");
+assertIncludes(
+  staticNotFoundHtml,
+  `<title>页面未找到 | ${escapeHtml(siteConfig.name.zh)}</title>`,
+  "/404/",
+  "404 title",
+);
 assertIncludes(staticNotFoundHtml, 'name="robots" content="noindex"', "/404/", "404 noindex");
 assertIncludes(staticNotFoundHtml, 'rel="canonical"', "/404/", "404 canonical link");
 

@@ -1,7 +1,9 @@
 import type { Locale, LocalizedText } from "../types/content";
 
-const defaultSiteUrl = "https://ying-blog.example.com";
+const defaultSiteUrl = "https://blog.fengying.xin";
 const defaultBasePath = "/";
+export const avatarImageUrl =
+  "https://image.fengying.xin/Image%20hosting/%E6%96%AF%E5%8D%A1%E8%92%82%E5%A4%B4%E5%83%8Fdart.png";
 
 export const locales = ["zh", "en"] as const satisfies readonly Locale[];
 
@@ -9,14 +11,15 @@ export const defaultLocale = "zh" satisfies Locale;
 
 export const siteConfig = {
   name: {
-    zh: "Ying Blog",
-    en: "Ying Blog",
+    zh: "枫莹の小窝",
+    en: "Fengying's Nook",
   },
   description: {
-    zh: "一个双语项目站、文档与项目展示基线。",
-    en: "A bilingual project site, documentation, and project showcase baseline.",
+    zh: "枫莹的双语个人博客、技术笔记与项目展示站点。",
+    en: "Fengying's bilingual personal blog, technical notes, and project showcase.",
   },
-  author: "Ying",
+  author: "枫莹",
+  icon: avatarImageUrl,
   url: normalizeSiteUrl(readPublicEnv("SITE_URL", defaultSiteUrl)),
   basePath: normalizeBasePath(readPublicEnv("BASE_PATH", defaultBasePath)),
   trailingSlash: true,
@@ -63,7 +66,7 @@ export const uiText = {
   nav: {
     home: { zh: "首页", en: "Home" },
     posts: { zh: "文章", en: "Posts" },
-    docs: { zh: "文档", en: "Docs" },
+    docs: { zh: "随笔", en: "Notes" },
     projects: { zh: "项目", en: "Projects" },
     about: { zh: "关于", en: "About" },
   },
@@ -71,7 +74,7 @@ export const uiText = {
     latest: { zh: "最新内容", en: "Latest" },
     featured: { zh: "精选内容", en: "Featured" },
     posts: { zh: "全部文章", en: "All Posts" },
-    docs: { zh: "文档目录", en: "Docs Index" },
+    docs: { zh: "全部随笔", en: "All Notes" },
     projects: { zh: "项目展示", en: "Projects" },
     taxonomy: { zh: "分类与标签", en: "Categories and Tags" },
   },

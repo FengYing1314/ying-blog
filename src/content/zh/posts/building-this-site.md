@@ -1,11 +1,12 @@
 ---
 locale: zh
 slug: building-this-site
-title: 构建这个双语静态站
-description: 记录 Ying Blog 当前已经实现的技术取舍：Vite+、Vue、SSG、Markdown 和内容注册表。
+title: 我为什么想搭这个小窝
+description: 记录一下我为什么想留一个更安静、更能自己控制的小站。
 date: 2026-05-23
 categories:
-  - engineering
+  - personal
+  - writing
 tags:
   - vue
   - typescript
@@ -16,67 +17,56 @@ featured: true
 order: 1
 ---
 
-# 构建这个双语静态站
+# 我为什么想搭这个小窝
 
-Ying Blog 当前已经实现的目标不是追求复杂平台，而是建立一个可以长期维护的静态内容系统。它覆盖博客、文档、项目展示和关于页，并且让中文与英文内容保持结构一致。
+一开始想做这个站点，其实只是想有一个更稳定的地方，放我自己写的东西。
 
-::: callout info
-这不是 VitePress 项目。站点使用 Vite+ 作为工具链方向，应用层由 Vue、TypeScript、SSG 和 Markdown 内容系统组成。
+社交平台上的内容会很快被冲走，GitHub README 又更像项目入口。博客刚好介于中间，可以写技术，也可以写一点自己的想法。
+
+::: callout note
+这个站点不是为了显得很正式。它更像一个整理箱，把我想留下来的内容慢慢放进去。
 :::
 
-## 为什么使用内容注册表
+## 想要安静一点
 
-所有公开页面都应该来自同一份规范化内容数据。这样可以避免路由、导航、SEO、RSS 和 sitemap 各自实现一套规则。
+我更喜欢安静、清楚、能长时间阅读的页面。
 
-```ts
-export interface ContentEntry {
-  locale: "zh" | "en";
-  slug: string;
-  title: string;
-  description: string;
-  path: string;
-}
+首页不用放很多口号，能顺手找到想看的东西就够了。文章页也不需要太花，只要读起来舒服，代码块和目录清楚，后面再回来查也方便。
+
+```text
+写下来的东西，至少不会那么快散掉。
 ```
 
-内容注册表会在构建前检查 slug、locale、标题、描述、日期、分类和标签。缺少对应语言内容时，构建会失败。
+## 想要自己能控制
 
-```mermaid
-flowchart LR
-  Markdown["Markdown 内容"] --> Registry["内容注册表"]
-  Config["项目与站点配置"] --> Registry
-  Registry --> Routes["静态路由"]
-  Registry --> Feed["RSS / Sitemap"]
-  Registry --> Pages["SSG 页面"]
-```
+自己写站点的好处是，内容怎么放、页面怎么排、以后想改成什么样，都可以慢慢调整。
 
-## 读者体验优先
-
-这个站点的视觉方向是安静、清晰和易读，而不是营销式 landing page。文档页应该适合快速扫描，文章页应该适合长时间阅读。
+我不想把它做得太复杂。现在够用就先这样，以后真的需要什么功能，再一点点加。
 
 :::: tabs
-::: tab "浅色模式"
-浅色模式保持明亮背景、清楚边界和温和强调色，优先服务长文阅读。
+::: tab "现在"
+先把已经有的内容整理清楚。
 :::
 
-::: tab "暗色模式"
-暗色模式降低大面积对比度，同时保证代码块、链接和导航状态可辨识。
-:::
-::::
-
-## 当前实现边界
-
-:::: steps
-::: step "内容入口"
-Posts、Docs 和 About 由 Markdown 驱动，Projects 由集中配置驱动卡片展示。
+::: tab "以后"
+需要什么再慢慢加，不急着一次做完。
 :::
 
-::: step "构建输出"
-构建会生成静态 HTML、RSS、sitemap、robots 和 404 页面，并通过验证脚本检查关键产物。
-:::
-
-::: step "受控能力"
-CMS、评论、分析、搜索、草稿、生成社交图和项目详情页不属于当前实现范围。
+::: tab "感觉"
+页面安静一点，自己回来看也舒服一点。
 :::
 ::::
 
-:badge[Vue] :badge[TypeScript] :badge[SSG]
+## 想要慢慢整理
+
+这个站点不会一下子很完整。
+
+很多内容可能会先从一小段记录开始，然后慢慢补充。能把当时遇到的问题、做过的选择和一点想法留下来，就已经对我有帮助。
+
+## 之后
+
+之后我会继续把项目页和文章慢慢补齐。
+
+如果有些内容写得不够完整，也没关系。这个小窝本来就是慢慢长出来的，不需要一开始就很完美。
+
+:badge[个人站] :badge[Vue] :badge[SSG]

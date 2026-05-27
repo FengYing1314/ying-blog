@@ -1,11 +1,12 @@
 ---
 locale: en
 slug: building-this-site
-title: Building This Bilingual Static Site
-description: "Notes on Ying Blog's implemented technical choices: Vite+, Vue, SSG, Markdown, and a shared content registry."
+title: Why I Wanted This Small Site
+description: A personal note on wanting a quieter site that I can control myself.
 date: 2026-05-23
 categories:
-  - engineering
+  - personal
+  - writing
 tags:
   - vue
   - typescript
@@ -16,67 +17,56 @@ featured: true
 order: 1
 ---
 
-# Building This Bilingual Static Site
+# Why I Wanted This Small Site
 
-Ying Blog's implemented baseline is not about building a complex platform. It establishes a maintainable static content system for posts, docs, projects, and about pages while keeping Chinese and English content structurally aligned.
+At first, I only wanted a more stable place for the things I write.
 
-::: callout info
-This is not a VitePress project. The site uses Vite+ as the toolchain direction, with Vue, TypeScript, SSG, and Markdown making up the application layer.
+Posts on social platforms disappear quickly, while a GitHub README feels more like a project entrance. A blog sits somewhere in between. It can keep technical notes, and it can also keep a few personal thoughts.
+
+::: callout note
+This site is not meant to look overly formal. It is more like a small box where I slowly keep things I do not want to lose.
 :::
 
-## Why a Content Registry
+## I Wanted It Quiet
 
-Every public page should come from one normalized content source. That keeps routes, navigation, SEO, RSS, and sitemap output from drifting into separate rule sets.
+I prefer pages that are quiet, clear, and comfortable to read for a while.
 
-```ts
-export interface ContentEntry {
-  locale: "zh" | "en";
-  slug: string;
-  title: string;
-  description: string;
-  path: string;
-}
+The home page does not need many slogans. It only needs to make things easy to find. Article pages also do not need to be flashy. If the text reads well, code blocks are clear, and the table of contents is useful, that is enough.
+
+```text
+Things I write down are less likely to scatter away.
 ```
 
-The registry checks slug, locale, title, description, date, categories, and tags before builds. Missing paired content fails the build.
+## I Wanted Some Control
 
-```mermaid
-flowchart LR
-  Markdown["Markdown content"] --> Registry["Content registry"]
-  Config["Project and site config"] --> Registry
-  Registry --> Routes["Static routes"]
-  Registry --> Feed["RSS / Sitemap"]
-  Registry --> Pages["SSG pages"]
-```
+Building the site myself means I can slowly adjust how content is arranged and how pages feel.
 
-## Reader Experience First
-
-The visual direction is calm, clear, and readable rather than a marketing landing page. Docs should be easy to scan, while articles should support long reading sessions.
+I do not want to make it too complicated. If it is enough for now, it can stay like this. When I really need something later, I can add it then.
 
 :::: tabs
-::: tab "Light Mode"
-Light mode keeps the reading surface bright, borders clear, and accent color restrained for long-form reading.
+::: tab "Now"
+First, tidy up what is already here.
 :::
 
-::: tab "Dark Mode"
-Dark mode lowers broad contrast while keeping code blocks, links, and navigation states legible.
-:::
-::::
-
-## Current Implementation Boundaries
-
-:::: steps
-::: step "Content entry points"
-Posts, Docs, and About are driven by Markdown. Projects are displayed as centrally configured cards.
+::: tab "Later"
+Add what I need slowly instead of doing everything at once.
 :::
 
-::: step "Build output"
-The build emits static HTML, RSS, sitemap, robots, and 404 pages, then verifies key output artifacts.
-:::
-
-::: step "Controlled capabilities"
-CMS, comments, analytics, search, drafts, generated social images, and project detail pages are outside the current implementation scope.
+::: tab "Feeling"
+Keep the pages quiet enough that I still like coming back.
 :::
 ::::
 
-:badge[Vue] :badge[TypeScript] :badge[SSG]
+## I Wanted to Organize Slowly
+
+This site will not become complete all at once.
+
+Many things may start as a small note and grow later. If I can keep the problem I met, the choice I made, and a few thoughts from that moment, it is already useful to me.
+
+## Later
+
+I will keep adding to the project page and the posts slowly.
+
+If some pages are not complete yet, that is fine too. This small site is meant to grow slowly. It does not need to be perfect from the start.
+
+:badge[Personal Site] :badge[Vue] :badge[SSG]
