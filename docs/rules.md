@@ -14,6 +14,7 @@
 - Posts、Docs 和 About 的公开 Markdown 内容必须保持双语配对。
 - 配对内容必须保持相同 slug、内容类型、路由形状、date、updated、featured、order、section、categories 和 tags。
 - 文字可以自然本地化，结构不能漂移。
+- Markdown frontmatter 只能使用生成器支持的字段，`locale` 和 `slug` 必须分别匹配目录与文件路径。
 - 不提交未完成草稿、私人笔记、本地路径链接或不可公开资源。
 - Projects 当前只做配置驱动卡片，不生成详情页。
 - RSS 是单一双语 `rss.xml`，Projects 只贡献本地化项目索引页。
@@ -25,6 +26,7 @@
 - 文件名使用 kebab-case。
 - 链接文字应有描述性。
 - 只使用已批准的 Markdown directive。
+- Mermaid 只通过 fenced code block 使用。
 - 不允许在 Markdown 中使用任意 Vue 组件标签。
 - 不支持的 directive、不安全链接、未知 taxonomy slug 或破坏双语 metadata 的内容必须使生成失败。
 
@@ -36,6 +38,7 @@
 - 样式使用 CSS variables 和普通 CSS。
 - 只有依赖能解决当前具体问题时才添加。
 - 没有明确项目决策前，不引入 CMS、评论、分析、搜索、项目详情页、draft 工作流或生成社交图。
+- `siteConfig` 中保留的 disabled analytics 和 pagefind 配置不是已实现功能，不能据此启用或声明分析、搜索能力。
 
 ## 样式规则
 
@@ -63,6 +66,7 @@ npm run preview
 规则：
 
 - 修改内容或 taxonomy 后运行 `npm run content:generate`。
+- 修改项目卡片、profile 或站点配置后也应运行 `npm run content:generate` 或任一包含内容生成的验证命令。
 - 提交前至少运行 `npm run check`。
 - 发布或合并前运行 `npm run ci`。
 - 生产式本地预览先运行 `npm run build`，再运行 `npm run preview`。

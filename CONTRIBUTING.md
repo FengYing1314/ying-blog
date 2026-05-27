@@ -23,14 +23,15 @@ npm run dev
 npm run ci
 ```
 
-该命令会运行内容生成、格式/lint 检查、类型检查、测试和静态 SSG 构建验证。
+该命令会运行内容生成、Vite+ check、TypeScript 类型检查、测试和静态 SSG 构建验证。
 
 ## 内容规则
 
 - Posts、Docs 和 About 内容需要同时添加 `/zh/` 与 `/en/` Markdown 文件。
-- 配对内容的 slug、date、updated、featured、order、categories、tags 和 docs section 必须保持一致。
+- 配对内容的 slug、内容类型、路由形状、date、updated、featured、order、categories、tags 和 section 必须保持一致。
+- `locale` 和 `slug` 必须匹配文件所在目录与路径；posts 不使用嵌套 slug，about 只使用 `index`。
 - 只能使用集中配置的 taxonomy slug。
-- 只能使用已批准的 Markdown affordance：Callout、Tabs、CardGrid、StepList 和 Badge。
+- 只能使用已批准的 Markdown affordance：Callout、Tabs、CardGrid、StepList、Badge、代码块和 Mermaid fence。
 - 不提交未完成草稿内容。
 
 ## 分支边界
