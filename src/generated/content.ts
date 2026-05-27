@@ -528,7 +528,7 @@ export const contentRegistry = {
       locale: "zh",
       path: "/zh/docs/",
       title: "全部随笔",
-      description: "结构化文档、参考和维护说明。",
+      description: "一些写给自己和读者看的短记录。",
       counterpartPath: "/en/docs/",
     },
     {
@@ -537,7 +537,7 @@ export const contentRegistry = {
       locale: "zh",
       path: "/zh/projects/",
       title: "项目展示",
-      description: "配置驱动的项目卡片合集。",
+      description: "项目、小工具和还想继续保留的记录。",
       counterpartPath: "/en/projects/",
     },
     {
@@ -564,7 +564,7 @@ export const contentRegistry = {
       locale: "en",
       path: "/en/docs/",
       title: "All Notes",
-      description: "Structured docs, references, and maintenance notes.",
+      description: "Short notes for myself and for readers.",
       counterpartPath: "/zh/docs/",
     },
     {
@@ -573,7 +573,7 @@ export const contentRegistry = {
       locale: "en",
       path: "/en/projects/",
       title: "Projects",
-      description: "A configuration-driven project card collection.",
+      description: "Projects, small tools, and records I still want to keep.",
       counterpartPath: "/zh/projects/",
     },
   ],
@@ -1470,7 +1470,7 @@ export const contentRegistry = {
     {
       id: "projects:zh",
       title: "项目展示",
-      description: "配置驱动的项目卡片合集。",
+      description: "项目、小工具和还想继续保留的记录。",
       date: "2026-05-27",
       path: "/zh/projects/",
       locale: "zh",
@@ -1479,7 +1479,7 @@ export const contentRegistry = {
     {
       id: "projects:en",
       title: "Projects",
-      description: "A configuration-driven project card collection.",
+      description: "Projects, small tools, and records I still want to keep.",
       date: "2026-05-27",
       path: "/en/projects/",
       locale: "en",

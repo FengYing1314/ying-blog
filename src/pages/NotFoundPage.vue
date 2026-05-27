@@ -36,7 +36,7 @@ const copy = computed(() =>
         description: "这个地址不存在，或者对应页面还没有生成。",
         actionsLabel: "可返回的页面",
         home: "返回首页",
-        docs: "查看文档",
+        docs: "查看随笔",
         posts: "阅读文章",
       }
     : {
@@ -44,7 +44,7 @@ const copy = computed(() =>
         description: "This address does not exist, or the page has not been generated.",
         actionsLabel: "Available destinations",
         home: "Return home",
-        docs: "View docs",
+        docs: "View notes",
         posts: "Read posts",
       },
 );

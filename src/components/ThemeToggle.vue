@@ -32,6 +32,6 @@ onMounted(() => {
 function toggleTheme() {
   theme.value = theme.value === "dark" ? "light" : "dark";
   document.documentElement.dataset.theme = theme.value;
-  localStorage.setItem("ying-theme", theme.value);
+  localStorage.setItem("fengying-theme", theme.value);
 }
 </script>

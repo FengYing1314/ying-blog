@@ -2,7 +2,7 @@
   <div class="page home-page shell-inner">
     <section class="home-hero">
       <div class="home-intro">
-        <p class="eyebrow">{{ locale === "zh" ? "项目站" : "Project Site" }}</p>
+        <p class="eyebrow">{{ locale === "zh" ? "个人站" : "Personal Site" }}</p>
         <h1>{{ profile.name }}</h1>
         <p>{{ profile.intro[locale] }}</p>
         <div class="home-actions" :aria-label="locale === 'zh' ? '主页入口' : 'Home actions'">
@@ -10,19 +10,19 @@
             <FileText :size="17" aria-hidden="true" />
             <span>{{ locale === "zh" ? "阅读文章" : "Read posts" }}</span>
           </RouterLink>
-          <RouterLink class="secondary-link" :to="localizedPath(locale, 'docs')">
+          <RouterLink class="secondary-link" :to="localizedPath(locale, 'projects')">
             <BookOpen :size="17" aria-hidden="true" />
-            <span>{{ locale === "zh" ? "浏览文档" : "Browse docs" }}</span>
+            <span>{{ locale === "zh" ? "查看项目" : "View projects" }}</span>
           </RouterLink>
         </div>
       </div>
 
       <aside
         class="profile-card home-profile-card"
-        :aria-label="locale === 'zh' ? '项目概览' : 'Project profile'"
+        :aria-label="locale === 'zh' ? '个人资料' : 'Profile'"
       >
         <div class="profile-card-top">
-          <div class="profile-avatar" aria-hidden="true">Y</div>
+          <img class="profile-avatar profile-avatar-image" :src="profile.avatar" alt="" />
           <div>
             <p class="profile-name">{{ profile.name }}</p>
             <p class="profile-role">{{ profile.role[locale] }}</p>
@@ -65,7 +65,7 @@
           <RouterLink class="profile-summary-card" :to="localizedPath(locale, 'docs')">
             <BookOpen :size="18" aria-hidden="true" />
             <strong>{{ docCount }}</strong>
-            <span>{{ locale === "zh" ? "文档" : "Docs" }}</span>
+            <span>{{ locale === "zh" ? "随笔" : "Notes" }}</span>
           </RouterLink>
           <RouterLink class="profile-summary-card" :to="localizedPath(locale, 'projects')">
             <FolderKanban :size="18" aria-hidden="true" />
@@ -75,7 +75,7 @@
           <a class="profile-summary-card" href="#home-achievements">
             <Trophy :size="18" aria-hidden="true" />
             <strong>{{ profile.achievements.length }}</strong>
-            <span>{{ locale === "zh" ? "成就" : "Achievements" }}</span>
+            <span>{{ locale === "zh" ? "重点" : "Highlights" }}</span>
           </a>
         </div>
 
@@ -119,11 +119,13 @@
           <ArrowUpRight v-if="isExternalHref(link.href)" :size="15" aria-hidden="true" />
           <ArrowRight v-else :size="15" aria-hidden="true" />
         </a>
-        <RouterLink class="social-link" :to="localizedPath(locale, 'docs/guide/content-workflow')">
+        <RouterLink class="social-link" :to="localizedPath(locale, 'docs/guide/getting-started')">
           <BookOpen :size="18" aria-hidden="true" />
           <span>
-            <strong>{{ locale === "zh" ? "开发规则" : "Development rules" }}</strong>
-            <small>{{ locale === "zh" ? "查看内容与分支规则" : "Content and branch rules" }}</small>
+            <strong>{{ locale === "zh" ? "最近随笔" : "Recent note" }}</strong>
+            <small>{{
+              locale === "zh" ? "慢慢整理一下这里" : "Slowly tidying this place up"
+            }}</small>
           </span>
           <ArrowRight :size="15" aria-hidden="true" />
         </RouterLink>
@@ -133,12 +135,12 @@
     <section id="home-achievements" class="section-band home-achievements">
       <div class="section-heading">
         <div>
-          <h2>{{ locale === "zh" ? "贡献与成就" : "Contributions and Achievements" }}</h2>
+          <h2>{{ locale === "zh" ? "常去的地方" : "Main Corners" }}</h2>
           <p>
             {{
               locale === "zh"
-                ? "用可验证的内容、项目和维护规则呈现当前实现。"
-                : "A compact view of implemented content, projects, and maintenance rules."
+                ? "想看内容就从这里进，其他的以后再慢慢补。"
+                : "A few quick entrances, and the rest can grow slowly."
             }}
           </p>
         </div>
@@ -168,12 +170,12 @@
     <section class="section-band contribution-section">
       <div class="section-heading">
         <div>
-          <h2>{{ locale === "zh" ? "贡献轨迹" : "Contribution Tracks" }}</h2>
+          <h2>{{ locale === "zh" ? "最近关注" : "Recent Focus" }}</h2>
           <p>
             {{
               locale === "zh"
-                ? "每条轨迹都对应当前站点已经落地的能力。"
-                : "Each track maps to capabilities already implemented in the site."
+                ? "这些不是履历，只是我最近比较常写、常折腾的方向。"
+                : "These are not a resume, just the things I have been writing about and tinkering with."
             }}
           </p>
         </div>
@@ -328,7 +330,7 @@ function contentTypeLabel(type: "posts" | "docs" | "about") {
     return props.locale === "zh" ? "文章" : "Post";
   }
   if (type === "docs") {
-    return props.locale === "zh" ? "文档" : "Doc";
+    return props.locale === "zh" ? "随笔" : "Note";
   }
   return props.locale === "zh" ? "关于" : "About";
 }

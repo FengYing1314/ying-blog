@@ -3,7 +3,7 @@
     <DocSidebar :locale="locale" />
     <section class="docs-index-main">
       <header class="page-header">
-        <p class="eyebrow">{{ locale === "zh" ? "文档" : "Docs" }}</p>
+        <p class="eyebrow">{{ locale === "zh" ? "随笔" : "Notes" }}</p>
         <h1>{{ page?.title }}</h1>
         <p>{{ page?.description }}</p>
       </header>
@@ -30,7 +30,7 @@ const page = computed(() => getListingPage(`/${props.locale}/docs/`));
 const docs = computed(() => getDocs(props.locale));
 
 usePageSeo(() => ({
-  title: page.value?.title ?? "Docs",
+  title: page.value?.title ?? "Notes",
   description: page.value?.description ?? "",
   path: `/${props.locale}/docs/`,
   locale: props.locale,

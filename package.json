@@ -1,8 +1,8 @@
 {
-  "name": "ying-blog",
+  "name": "fengying-blog",
   "version": "0.1.0",
   "private": true,
-  "description": "A bilingual Vite, Vue, TypeScript, SSG, and Markdown project site baseline.",
+  "description": "Fengying's bilingual personal blog, technical notes, and project showcase.",
   "keywords": [
     "blog",
     "documentation",

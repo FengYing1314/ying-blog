@@ -39,7 +39,7 @@ const typeLabel = computed(() => {
     return props.entry.locale === "zh" ? "文章" : "Post";
   }
   if (props.entry.type === "docs") {
-    return props.entry.locale === "zh" ? "文档" : "Doc";
+    return props.entry.locale === "zh" ? "随笔" : "Note";
   }
   return props.entry.locale === "zh" ? "关于" : "About";
 });

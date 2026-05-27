@@ -37,8 +37,8 @@
       <p>
         {{
           page.locale === "zh"
-            ? "这个分类或标签目前只用于项目，暂时没有关联的文章或文档。"
-            : "This category or tag is currently used by projects and has no linked posts or docs."
+            ? "这个分类或标签目前只用于项目，暂时没有关联的文章或随笔。"
+            : "This category or tag is currently used by projects and has no linked posts or notes."
         }}
       </p>
     </section>
@@ -68,7 +68,7 @@
         {{ page.locale === "zh" ? "全部文章" : "All posts" }}
       </RouterLink>
       <RouterLink class="secondary-link" :to="localizedPath(page.locale, 'docs')">
-        {{ page.locale === "zh" ? "文档目录" : "Docs index" }}
+        {{ page.locale === "zh" ? "随笔目录" : "Notes index" }}
       </RouterLink>
     </nav>
   </div>
@@ -108,7 +108,7 @@ const entryGroups = computed(() => {
     },
     {
       type: "docs",
-      label: page.value.locale === "zh" ? "文档" : "Docs",
+      label: page.value.locale === "zh" ? "随笔" : "Notes",
       entries: [],
     },
     {

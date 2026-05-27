@@ -68,8 +68,8 @@ function renderRss() {
     id: absoluteUrl("/en/"),
     link: absoluteUrl("/en/"),
     language: "en",
-    image: absoluteFileUrl("/favicon.svg"),
-    favicon: absoluteFileUrl("/favicon.svg"),
+    image: siteConfig.icon,
+    favicon: siteConfig.icon,
     copyright: `Copyright ${new Date().getFullYear()} ${siteConfig.author}`,
     updated: new Date(contentRegistry.generatedAt),
   });

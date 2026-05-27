@@ -19,7 +19,7 @@ export default defineConfig(async () => {
     plugins: [
       vue(),
       {
-        name: "ying-content-registry",
+        name: "fengying-content-registry",
         configureServer(server: ViteDevServer) {
           const watched = ["src/content/**/*.md", "src/config/**/*.ts"];
           watched.forEach((pattern) => server.watcher.add(pattern));

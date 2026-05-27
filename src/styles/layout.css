@@ -85,10 +85,17 @@
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 800;
+  overflow: hidden;
+  object-fit: cover;
   transition:
     border-color var(--motion-fast) var(--ease-standard),
     background var(--motion-fast) var(--ease-standard),
     transform var(--motion-fast) var(--ease-standard);
+}
+
+.brand-mark-image {
+  padding: 0;
+  background: var(--surface-raised);
 }
 
 .brand:hover .brand-mark {
@@ -767,6 +774,13 @@
   color: var(--accent);
   font-size: 1.45rem;
   font-weight: 820;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.profile-avatar-image {
+  padding: 0;
+  background: var(--surface-raised);
 }
 
 .profile-name {

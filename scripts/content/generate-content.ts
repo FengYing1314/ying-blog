@@ -134,8 +134,8 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
       title: uiText.listing.docs[locale],
       description:
         locale === "zh"
-          ? "结构化文档、参考和维护说明。"
-          : "Structured docs, references, and maintenance notes.",
+          ? "一些写给自己和读者看的短记录。"
+          : "Short notes for myself and for readers.",
       counterpartPath: `/${oppositeLocale(locale)}/docs/`,
     },
     {
@@ -146,8 +146,8 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
       title: uiText.listing.projects[locale],
       description:
         locale === "zh"
-          ? "配置驱动的项目卡片合集。"
-          : "A configuration-driven project card collection.",
+          ? "项目、小工具和还想继续保留的记录。"
+          : "Projects, small tools, and records I still want to keep.",
       counterpartPath: `/${oppositeLocale(locale)}/projects/`,
     },
   ]);
@@ -391,8 +391,8 @@ function createRssItems(
     title: uiText.listing.projects[locale],
     description:
       locale === "zh"
-        ? "配置驱动的项目卡片合集。"
-        : "A configuration-driven project card collection.",
+        ? "项目、小工具和还想继续保留的记录。"
+        : "Projects, small tools, and records I still want to keep.",
     date: latestContentDate,
     path: `/${locale}/projects/`,
     locale,

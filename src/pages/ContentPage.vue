@@ -66,7 +66,7 @@ const label = computed(() => {
     return entry.value.locale === "zh" ? "文章" : "Post";
   }
   if (entry.value.type === "docs") {
-    return entry.value.locale === "zh" ? "文档" : "Doc";
+    return entry.value.locale === "zh" ? "随笔" : "Note";
   }
   return entry.value.locale === "zh" ? "关于" : "About";
 });

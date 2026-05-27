@@ -1,6 +1,6 @@
 <template>
-  <aside class="doc-sidebar" :aria-label="locale === 'zh' ? '目录' : 'Directory'">
-    <p class="sidebar-label">{{ locale === "zh" ? "目录" : "Directory" }}</p>
+  <aside class="doc-sidebar" :aria-label="locale === 'zh' ? '随笔目录' : 'Notes directory'">
+    <p class="sidebar-label">{{ locale === "zh" ? "随笔目录" : "Notes" }}</p>
     <nav>
       <RouterLink
         class="doc-sidebar-index"
@@ -39,8 +39,8 @@ const props = defineProps<{
 
 const sectionLabels: Record<string, Record<Locale, string>> = {
   guide: {
-    zh: "指南",
-    en: "Guide",
+    zh: "随笔",
+    en: "Notes",
   },
 };
 

@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { siteConfig } from "../src/config/site.ts";
+import { defaultLocale, siteConfig } from "../src/config/site.ts";
 import { contentRegistry } from "../src/generated/content.ts";
 import { absoluteFileUrl, absoluteUrl, withBasePath } from "../src/lib/paths.ts";
 import type { Locale } from "../src/types/content.ts";
@@ -63,9 +63,10 @@ for (const page of pages) {
 }
 
 const staticNotFoundHtml = await readFile(path.join(distDir, "404.html"), "utf8");
+const notFoundTitle = defaultLocale === "zh" ? "页面未找到" : "Page not found";
 assertIncludes(
   staticNotFoundHtml,
-  `<title>页面未找到 | ${escapeHtml(siteConfig.name.zh)}</title>`,
+  `<title>${escapeHtml(`${notFoundTitle} | ${siteConfig.name[defaultLocale]}`)}</title>`,
   "/404/",
   "404 title",
 );
@@ -73,7 +74,7 @@ assertIncludes(staticNotFoundHtml, 'name="robots" content="noindex"', "/404/", "
 assertIncludes(staticNotFoundHtml, 'rel="canonical"', "/404/", "404 canonical link");
 
 const rootHtml = await readFile(path.join(distDir, "index.html"), "utf8");
-assertIncludes(rootHtml, `href="${escapeHtml(withBasePath("/favicon.svg"))}"`, "/", "favicon path");
+assertIncludes(rootHtml, `href="${escapeHtml(siteConfig.icon)}"`, "/", "favicon path");
 
 const zhHomeHtml = await readFile(routeHtmlPath("/zh/"), "utf8");
 assertIncludes(zhHomeHtml, `href="${escapeHtml(withBasePath("/rss.xml"))}"`, "/zh/", "RSS link");
