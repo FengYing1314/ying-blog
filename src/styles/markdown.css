@@ -166,6 +166,7 @@
 }
 
 .code-copy {
+  min-height: 34px;
   min-width: 76px;
   padding: 0.25rem 0.45rem;
   border: 1px solid var(--border);
@@ -349,8 +350,8 @@ html:not([data-theme="dark"]) .shiki span {
 
 .md-mermaid-tool {
   display: inline-grid;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   place-items: center;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -407,8 +408,13 @@ html:not([data-theme="dark"]) .shiki span {
   background-size: 24px 24px;
   cursor: grab;
   scrollbar-color: var(--code-scrollbar-thumb) var(--code-scrollbar-track);
-  touch-action: none;
+  touch-action: pan-y;
   user-select: none;
+}
+
+.md-mermaid.is-dragging .md-mermaid-canvas,
+.md-mermaid-dialog .md-mermaid-canvas {
+  touch-action: none;
 }
 
 .md-mermaid-canvas:empty {
@@ -496,6 +502,10 @@ html:not([data-theme="dark"]) .shiki span {
   display: grid;
   place-items: center;
   padding: var(--space-5);
+  padding-top: max(var(--space-5), env(safe-area-inset-top));
+  padding-right: max(var(--space-5), env(safe-area-inset-right));
+  padding-bottom: max(var(--space-5), env(safe-area-inset-bottom));
+  padding-left: max(var(--space-5), env(safe-area-inset-left));
   background: color-mix(in srgb, #020617 72%, transparent);
   backdrop-filter: blur(14px);
 }
@@ -504,6 +514,7 @@ html:not([data-theme="dark"]) .shiki span {
   display: grid;
   width: min(1120px, 100%);
   max-height: min(760px, calc(100vh - var(--space-10)));
+  max-height: min(760px, calc(100dvh - var(--space-10)));
   overflow: hidden;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
@@ -693,6 +704,17 @@ html:not([data-theme="dark"]) .shiki span {
     min-height: 30px;
   }
 
+  .md-mermaid-tool,
+  .code-copy,
+  .md-tab-button {
+    min-height: 44px;
+  }
+
+  .md-mermaid-tool {
+    width: 44px;
+    height: 44px;
+  }
+
   .md-mermaid-canvas {
     min-height: 220px;
     padding: var(--space-3);
@@ -704,14 +726,19 @@ html:not([data-theme="dark"]) .shiki span {
 
   .md-mermaid-dialog {
     padding: var(--space-3);
+    padding-top: max(var(--space-3), env(safe-area-inset-top));
+    padding-right: max(var(--space-3), env(safe-area-inset-right));
+    padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+    padding-left: max(var(--space-3), env(safe-area-inset-left));
   }
 
   .md-mermaid-dialog-panel {
     max-height: calc(100vh - var(--space-6));
+    max-height: calc(100dvh - var(--space-6));
   }
 
   .md-mermaid-dialog-canvas {
-    min-height: min(440px, 62vh);
+    min-height: min(440px, 62dvh);
   }
 
   .md-card-grid {

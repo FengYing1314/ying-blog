@@ -22,6 +22,7 @@ let activeMermaidDialog: HTMLElement | undefined;
 let activeMermaidDialogCleanup: Array<() => void> = [];
 let activeMermaidDialogFocus: HTMLElement | undefined;
 let previousBodyOverflow = "";
+let enhancementCleanup: Array<() => void> = [];
 
 const mermaidMinScale = 0.6;
 const mermaidMaxScale = 2.5;
@@ -48,6 +49,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  cleanupEnhancements();
   codeResizeObserver?.disconnect();
   themeObserver?.disconnect();
   closeMermaidDialog(false);
@@ -63,6 +65,7 @@ watch(
 
 async function enhance() {
   await nextTick();
+  cleanupEnhancements();
   enhanceCodeCopy();
   enhanceMermaidCopy();
   await renderMermaidDiagrams();
@@ -70,6 +73,15 @@ async function enhance() {
   enhanceScrollableCode();
   observeScrollableCode();
   enhanceTabs();
+}
+
+function trackEnhancementCleanup(cleanup: () => void) {
+  enhancementCleanup.push(cleanup);
+}
+
+function cleanupEnhancements() {
+  enhancementCleanup.forEach((cleanup) => cleanup());
+  enhancementCleanup = [];
 }
 
 function enhanceCodeCopy() {
@@ -86,7 +98,7 @@ function enhanceCodeCopy() {
     button.dataset.ready = "true";
     button.textContent = copyLabel;
     button.setAttribute("aria-label", copyLabel);
-    button.addEventListener("click", async () => {
+    const clickHandler = async () => {
       const wrapper = button.closest<HTMLElement>(".code-block");
       const code = wrapper?.dataset.code ?? "";
       const copied = await copyToClipboard(code);
@@ -98,6 +110,11 @@ function enhanceCodeCopy() {
           button.setAttribute("aria-label", copyLabel);
         }, 1400);
       }
+    };
+    button.addEventListener("click", clickHandler);
+    trackEnhancementCleanup(() => {
+      button.removeEventListener("click", clickHandler);
+      button.dataset.ready = "false";
     });
   });
 }
@@ -164,7 +181,7 @@ function enhanceMermaidCopy() {
     button.dataset.ready = "true";
     button.setAttribute("aria-label", copyLabel);
     button.setAttribute("title", copyLabel);
-    button.addEventListener("click", async () => {
+    const clickHandler = async () => {
       const wrapper = button.closest<HTMLElement>("[data-mermaid]");
       const source =
         wrapper?.querySelector<HTMLElement>("[data-mermaid-source]")?.textContent ?? "";
@@ -179,6 +196,11 @@ function enhanceMermaidCopy() {
           button.setAttribute("title", copyLabel);
         }, 1400);
       }
+    };
+    button.addEventListener("click", clickHandler);
+    trackEnhancementCleanup(() => {
+      button.removeEventListener("click", clickHandler);
+      button.dataset.ready = "false";
     });
   });
 }
@@ -251,31 +273,48 @@ function enhanceMermaidInteractions() {
     }
 
     diagram.dataset.interactive = "true";
-    diagram.addEventListener("click", () => {
+    const clickHandler = () => {
       pulseMermaidActive(diagram);
+    };
+    diagram.addEventListener("click", clickHandler);
+    trackEnhancementCleanup(() => {
+      diagram.removeEventListener("click", clickHandler);
+      diagram.dataset.interactive = "false";
     });
 
     const canvas = diagram.querySelector<HTMLElement>("[data-mermaid-canvas]");
-    canvas?.addEventListener("dblclick", () => {
+    const dblclickHandler = () => {
       openMermaidDialog(diagram);
-    });
-    canvas?.addEventListener("pointerdown", (event) => {
+    };
+    const pointerdownHandler = (event: PointerEvent) => {
       handleMermaidPointerDown(event, diagram);
-    });
-    canvas?.addEventListener(
-      "wheel",
-      (event) => {
-        handleMermaidWheel(event, diagram);
-      },
-      { passive: false },
-    );
-    canvas?.addEventListener("keydown", (event) => {
+    };
+    const wheelHandler = (event: WheelEvent) => {
+      handleMermaidWheel(event, diagram);
+    };
+    const keydownHandler = (event: KeyboardEvent) => {
       handleMermaidCanvasKeydown(event, diagram);
-    });
+    };
+    canvas?.addEventListener("dblclick", dblclickHandler);
+    canvas?.addEventListener("pointerdown", pointerdownHandler);
+    canvas?.addEventListener("wheel", wheelHandler, { passive: false });
+    canvas?.addEventListener("keydown", keydownHandler);
+    if (canvas) {
+      trackEnhancementCleanup(() => {
+        canvas.removeEventListener("dblclick", dblclickHandler);
+        canvas.removeEventListener("pointerdown", pointerdownHandler);
+        canvas.removeEventListener("wheel", wheelHandler);
+        canvas.removeEventListener("keydown", keydownHandler);
+      });
+    }
 
     diagram.querySelectorAll<HTMLButtonElement>("[data-mermaid-action]").forEach((button) => {
-      button.addEventListener("click", () => {
+      const buttonClickHandler = () => {
         handleMermaidAction(button.dataset.mermaidAction, diagram);
+      };
+      button.addEventListener("click", buttonClickHandler);
+      trackEnhancementCleanup(() => {
+        button.removeEventListener("click", buttonClickHandler);
       });
     });
 
@@ -542,7 +581,9 @@ function openMermaidDialog(diagram: HTMLElement) {
   dialog.className = "md-mermaid-dialog";
   dialog.setAttribute("role", "dialog");
   dialog.setAttribute("aria-modal", "true");
-  dialog.setAttribute("aria-label", localeText("放大查看 Mermaid 图表", "Mermaid diagram viewer"));
+  const headingId = `md-mermaid-dialog-title-${mermaidRenderCounter}`;
+  mermaidRenderCounter += 1;
+  dialog.setAttribute("aria-labelledby", headingId);
   dialog.dataset.mermaid = "dialog";
   dialog.dataset.rendered = "true";
 
@@ -553,6 +594,7 @@ function openMermaidDialog(diagram: HTMLElement) {
   header.className = "md-mermaid-dialog-header";
 
   const heading = document.createElement("h2");
+  heading.id = headingId;
   heading.textContent = title;
 
   const scale = document.createElement("span");
@@ -595,6 +637,8 @@ function openMermaidDialog(diagram: HTMLElement) {
     if (event.key === "Escape") {
       event.preventDefault();
       closeMermaidDialog();
+    } else if (event.key === "Tab") {
+      trapMermaidDialogFocus(event, dialog);
     }
   };
   const overlayClickHandler = (event: MouseEvent) => {
@@ -686,6 +730,29 @@ function closeMermaidDialog(restoreFocus = true) {
     activeMermaidDialogFocus.focus();
   }
   activeMermaidDialogFocus = undefined;
+}
+
+function trapMermaidDialogFocus(event: KeyboardEvent, dialog: HTMLElement) {
+  const focusableElements = Array.from(
+    dialog.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((element) => element.offsetParent !== null);
+
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements.at(-1);
+
+  if (!firstElement || !lastElement) {
+    return;
+  }
+
+  if (event.shiftKey && document.activeElement === firstElement) {
+    event.preventDefault();
+    lastElement.focus();
+  } else if (!event.shiftKey && document.activeElement === lastElement) {
+    event.preventDefault();
+    firstElement.focus();
+  }
 }
 
 function localeText(zh: string, en: string) {
@@ -790,10 +857,10 @@ function enhanceTabs() {
       panel.setAttribute("role", "tabpanel");
       panel.setAttribute("aria-labelledby", tabId);
       panel.hidden = index !== 0;
-      button.addEventListener("click", () => {
+      const clickHandler = () => {
         activateTab(index);
-      });
-      button.addEventListener("keydown", (event) => {
+      };
+      const keydownHandler = (event: KeyboardEvent) => {
         const lastIndex = panels.length - 1;
         if (event.key === "ArrowRight" || event.key === "ArrowDown") {
           event.preventDefault();
@@ -808,12 +875,28 @@ function enhanceTabs() {
           event.preventDefault();
           activateTab(lastIndex, true);
         }
+      };
+      button.addEventListener("click", clickHandler);
+      button.addEventListener("keydown", keydownHandler);
+      trackEnhancementCleanup(() => {
+        button.removeEventListener("click", clickHandler);
+        button.removeEventListener("keydown", keydownHandler);
       });
       list.append(button);
     });
 
     tabs.prepend(list);
     tabs.dataset.ready = "true";
+    trackEnhancementCleanup(() => {
+      list.remove();
+      panels.forEach((panel) => {
+        panel.hidden = false;
+        panel.removeAttribute("role");
+        panel.removeAttribute("aria-labelledby");
+        panel.removeAttribute("id");
+      });
+      tabs.dataset.ready = "false";
+    });
   });
 }
 </script>

@@ -52,7 +52,6 @@
         aria-modal="true"
         :aria-label="uiText.actions.menu[locale]"
         @click.self="closeDrawer"
-        @keydown.esc.window="closeDrawer"
       >
         <div
           :id="drawerPanelId"
@@ -193,6 +192,15 @@ function closeDrawer() {
   open.value = false;
 }
 
+function handleGlobalKeydown(event: Event) {
+  if (!(event instanceof KeyboardEvent) || event.key !== "Escape" || !open.value) {
+    return;
+  }
+
+  event.preventDefault();
+  closeDrawer();
+}
+
 function trapDrawerFocus(event: KeyboardEvent) {
   if (!open.value || event.key !== "Tab" || !drawerPanel.value) {
     return;
@@ -234,6 +242,7 @@ watch(open, async (isOpen) => {
   }
 
   document.body.classList.toggle("drawer-open", isOpen);
+  window[isOpen ? "addEventListener" : "removeEventListener"]("keydown", handleGlobalKeydown);
 
   await nextTick();
 
@@ -252,6 +261,9 @@ watch(open, async (isOpen) => {
 onBeforeUnmount(() => {
   if (typeof document !== "undefined") {
     document.body.classList.remove("drawer-open");
+  }
+  if (typeof window !== "undefined") {
+    window.removeEventListener("keydown", handleGlobalKeydown);
   }
 });
 </script>

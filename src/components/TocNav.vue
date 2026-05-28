@@ -4,14 +4,26 @@
     class="toc-nav"
     :aria-label="locale === 'zh' ? '本页目录' : 'Table of contents'"
   >
-    <p class="sidebar-label">{{ locale === "zh" ? "本页目录" : "On this page" }}</p>
-    <nav>
+    <button
+      v-if="collapsible"
+      class="toc-toggle"
+      type="button"
+      :aria-expanded="expanded"
+      :aria-controls="tocPanelId"
+      @click="expanded = !expanded"
+    >
+      <span>{{ locale === "zh" ? "本页目录" : "On this page" }}</span>
+      <ChevronDown :size="17" aria-hidden="true" />
+    </button>
+    <p v-else class="sidebar-label">{{ locale === "zh" ? "本页目录" : "On this page" }}</p>
+    <nav :id="tocPanelId" :hidden="collapsible && !expanded">
       <a
         v-for="heading in headings"
         :key="heading.id"
         :href="`#${heading.id}`"
         :class="[`level-${heading.level}`, { active: activeId === heading.id }]"
         :aria-current="activeId === heading.id ? 'location' : undefined"
+        @click="handleLinkClick"
       >
         {{ heading.title }}
       </a>
@@ -20,16 +32,21 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from "vue";
+import { ChevronDown } from "@lucide/vue";
 import type { Heading, Locale } from "../types/content";
 
 const props = defineProps<{
   headings: Heading[];
   locale: Locale;
+  collapsible?: boolean;
 }>();
 
 const activeId = ref(props.headings[0]?.id ?? "");
+const expanded = ref(false);
 let observer: IntersectionObserver | undefined;
+const tocPanelId = useId();
+const collapsible = computed(() => props.collapsible ?? false);
 
 onMounted(() => {
   void observeHeadings();
@@ -75,5 +92,11 @@ async function observeHeadings() {
       observer?.observe(element);
     }
   });
+}
+
+function handleLinkClick() {
+  if (collapsible.value) {
+    expanded.value = false;
+  }
 }
 </script>
