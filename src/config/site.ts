@@ -1,6 +1,6 @@
 import type { Locale, LocalizedText } from "../types/content";
 
-const defaultSiteUrl = "https://ying-blog.example.com";
+const defaultSiteUrl = "https://yingblog.fengying.xin";
 const defaultBasePath = "/";
 
 export const locales = ["zh", "en"] as const satisfies readonly Locale[];
@@ -13,13 +13,34 @@ export const siteConfig = {
     en: "Ying Blog",
   },
   description: {
-    zh: "一个双语项目站、文档与项目展示基线。",
-    en: "A bilingual project site, documentation, and project showcase baseline.",
+    zh: "Ying Blog 是一个基于 Vite+、Vue、TypeScript、SSG 与 Markdown 的双语静态内容站基线，覆盖文章、文档、项目展示与长期维护规则。",
+    en: "Ying Blog is a bilingual static content site baseline built with Vite+, Vue, TypeScript, SSG, and Markdown for posts, docs, projects, and long-term maintenance notes.",
   },
   author: "Ying",
   url: normalizeSiteUrl(readPublicEnv("SITE_URL", defaultSiteUrl)),
   basePath: normalizeBasePath(readPublicEnv("BASE_PATH", defaultBasePath)),
   trailingSlash: true,
+  seo: {
+    title: {
+      zh: "Ying Blog - 双语静态内容站基线",
+      en: "Ying Blog - Bilingual Static Site Baseline",
+    },
+    titleSuffix: "Ying Blog",
+    identityType: "Organization",
+    image: "/og-default.svg",
+    imageAlt: {
+      zh: "Ying Blog 双语静态内容站基线封面图",
+      en: "Ying Blog bilingual static content site baseline cover image",
+    },
+    imageWidth: 1200,
+    imageHeight: 630,
+    sameAs: ["https://github.com/FengYing1314/Ying-blog"],
+  },
+  ai: {
+    policy: "allow",
+    llmsTextPath: "/llms.txt",
+    llmsFullTextPath: "/llms-full.txt",
+  },
   verification: {
     google: readPublicEnv("GOOGLE_SITE_VERIFICATION", ""),
     bing: readPublicEnv("BING_SITE_VERIFICATION", ""),

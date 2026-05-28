@@ -57,6 +57,7 @@ export function assertApprovedMarkdown(source: string, filePath: string) {
 
   assertApprovedDirectives(source, filePath);
   assertSafeDirectiveUrls(source, filePath);
+  assertImageAltText(source, filePath);
   assertHeadingStructure(source, filePath);
 }
 
@@ -336,6 +337,28 @@ function assertSafeDirectiveUrls(source: string, filePath: string) {
       assertSafeHref(match[1], filePath);
     }
   }
+}
+
+function assertImageAltText(source: string, filePath: string) {
+  let inFence = false;
+  const lines = source.split(/\r?\n/);
+
+  lines.forEach((line, index) => {
+    if (line.trim().startsWith("```")) {
+      inFence = !inFence;
+      return;
+    }
+
+    if (inFence) {
+      return;
+    }
+
+    for (const match of line.matchAll(/!\[([^\]]*)\]\(([^)]+)\)/g)) {
+      if (!match[1].trim()) {
+        throw new Error(`${filePath} has image without alt text at line ${index + 1}`);
+      }
+    }
+  });
 }
 
 function assertHeadingStructure(source: string, filePath: string) {

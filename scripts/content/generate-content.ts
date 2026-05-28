@@ -39,9 +39,12 @@ const frontmatterSchema = z
     locale: z.enum(["zh", "en"]),
     slug: z.string().regex(routeSlugPattern),
     title: z.string().trim().min(1),
+    seoTitle: z.string().trim().min(1).optional(),
     description: z.string().trim().min(1),
     date: dateString,
     updated: dateString.optional(),
+    image: z.string().trim().min(1).optional(),
+    imageAlt: z.string().trim().min(1).optional(),
     categories: z.array(z.string().trim().min(1)).min(1),
     tags: z.array(z.string().trim().min(1)).min(1),
     featured: z.boolean().optional().default(false),
@@ -87,9 +90,12 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
       locale: parsed.locale,
       slug: parsed.slug,
       title: parsed.data.title,
+      seoTitle: parsed.data.seoTitle,
       description: parsed.data.description,
       date: parsed.data.date,
       updated: parsed.data.updated,
+      image: parsed.data.image,
+      imageAlt: parsed.data.imageAlt,
       categories: parsed.data.categories,
       tags: parsed.data.tags,
       featured: parsed.data.featured,
@@ -123,7 +129,9 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
       path: `/${locale}/posts/`,
       title: uiText.listing.posts[locale],
       description:
-        locale === "zh" ? "文章、笔记和长文归档。" : "Articles, notes, and long-form archive.",
+        locale === "zh"
+          ? "Ying Blog 的文章归档，集中记录静态站点实现、内容系统设计、双语维护和项目工程实践。"
+          : "Ying Blog posts collect static-site implementation notes, content-system design, bilingual maintenance, and project engineering practice.",
       counterpartPath: `/${oppositeLocale(locale)}/posts/`,
     },
     {
@@ -134,8 +142,8 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
       title: uiText.listing.docs[locale],
       description:
         locale === "zh"
-          ? "结构化文档、参考和维护说明。"
-          : "Structured docs, references, and maintenance notes.",
+          ? "Ying Blog 的文档目录，整理内容工作流、分支边界、静态部署约束和长期维护规则。"
+          : "Ying Blog docs organize content workflows, branch boundaries, static deployment constraints, and long-term maintenance rules.",
       counterpartPath: `/${oppositeLocale(locale)}/docs/`,
     },
     {
@@ -146,8 +154,8 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
       title: uiText.listing.projects[locale],
       description:
         locale === "zh"
-          ? "配置驱动的项目卡片合集。"
-          : "A configuration-driven project card collection.",
+          ? "Ying Blog 的项目展示页，以配置驱动卡片汇总当前基线、示例能力和公开项目方向。"
+          : "Ying Blog projects use configuration-driven cards to summarize the current baseline, example capabilities, and public project directions.",
       counterpartPath: `/${oppositeLocale(locale)}/projects/`,
     },
   ]);
@@ -292,6 +300,9 @@ function assertBilingualPairs(entries: ContentEntry[]) {
     if (first.updated !== second.updated) {
       throw new Error(`${key} has mismatched updated date between locales`);
     }
+    if (first.image !== second.image) {
+      throw new Error(`${key} has mismatched image between locales`);
+    }
     if (first.featured !== second.featured) {
       throw new Error(`${key} has mismatched featured state between locales`);
     }
@@ -340,7 +351,7 @@ function createTaxonomyPages(entries: ContentEntry[]): TaxonomyPage[] {
         slug: term.slug,
         path: `/${locale}/categories/${term.slug}/`,
         title: term.label[locale],
-        description: term.description[locale],
+        description: taxonomyPageDescription(term.description[locale], locale, "categories"),
         counterpartPath: `/${oppositeLocale(locale)}/categories/${term.slug}/`,
         entryIds: localizedEntries.map((entry) => entry.id),
         projectSlugs: localizedProjects.map((project) => project.slug),
@@ -360,7 +371,7 @@ function createTaxonomyPages(entries: ContentEntry[]): TaxonomyPage[] {
         slug: term.slug,
         path: `/${locale}/tags/${term.slug}/`,
         title: term.label[locale],
-        description: term.description[locale],
+        description: taxonomyPageDescription(term.description[locale], locale, "tags"),
         counterpartPath: `/${oppositeLocale(locale)}/tags/${term.slug}/`,
         entryIds: localizedEntries.map((entry) => entry.id),
         projectSlugs: localizedProjects.map((project) => project.slug),
@@ -391,8 +402,8 @@ function createRssItems(
     title: uiText.listing.projects[locale],
     description:
       locale === "zh"
-        ? "配置驱动的项目卡片合集。"
-        : "A configuration-driven project card collection.",
+        ? "Ying Blog 的项目展示页，以配置驱动卡片汇总当前基线、示例能力和公开项目方向。"
+        : "Ying Blog projects use configuration-driven cards to summarize the current baseline, example capabilities, and public project directions.",
     date: latestContentDate,
     path: `/${locale}/projects/`,
     locale,
@@ -400,6 +411,23 @@ function createRssItems(
   }));
 
   return [...contentItems, ...projectItems].sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function taxonomyPageDescription(
+  description: string,
+  locale: Locale,
+  taxonomyType: "categories" | "tags",
+) {
+  const suffix =
+    locale === "zh"
+      ? taxonomyType === "categories"
+        ? "这里汇总 Ying Blog 中对应分类下的文章、文档和项目卡片，方便按主题浏览相关内容。"
+        : "这里汇总 Ying Blog 中带有对应标签的文章、文档和项目卡片，方便按关键词继续阅读。"
+      : taxonomyType === "categories"
+        ? "This page groups related Ying Blog posts, docs, and project cards by category for topic-based browsing."
+        : "This page groups related Ying Blog posts, docs, and project cards by tag for keyword-based browsing.";
+
+  return `${description} ${suffix}`;
 }
 
 function contentPath(locale: Locale, type: ContentType, slug: string) {

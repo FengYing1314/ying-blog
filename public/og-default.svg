@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Ying Blog</title>
+  <desc id="desc">A bilingual static content site baseline built with Vite+, Vue, TypeScript, SSG, and Markdown.</desc>
+  <rect width="1200" height="630" fill="#f7faf9" />
+  <path d="M0 498C154 445 263 482 387 510C540 544 664 511 787 462C919 410 1040 410 1200 456V630H0Z" fill="#d8eee8" />
+  <path d="M0 418C134 382 248 410 368 439C526 477 682 451 822 390C944 337 1062 341 1200 384V630H0Z" fill="#e7f5f1" />
+  <rect x="84" y="78" width="1032" height="474" rx="34" fill="#ffffff" stroke="#bfd8d0" stroke-width="2" />
+  <circle cx="166" cy="160" r="46" fill="#12685f" />
+  <text x="166" y="177" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="44" font-weight="800" fill="#ffffff">Y</text>
+  <text x="238" y="154" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="58" font-weight="800" fill="#12312c">Ying Blog</text>
+  <text x="240" y="205" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" fill="#45645f">Vite+ / Vue / TypeScript / SSG / Markdown</text>
+  <text x="128" y="318" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="38" font-weight="700" fill="#173a35">Bilingual static content baseline</text>
+  <text x="128" y="372" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" fill="#4e625e">Posts, docs, projects, and maintenance notes for a pure static site.</text>
+  <g transform="translate(128 444)">
+    <rect width="154" height="48" rx="24" fill="#eef7f4" stroke="#b8d8cf" />
+    <text x="77" y="32" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#12685f">Posts</text>
+    <rect x="178" width="142" height="48" rx="24" fill="#eef7f4" stroke="#b8d8cf" />
+    <text x="249" y="32" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#12685f">Docs</text>
+    <rect x="344" width="166" height="48" rx="24" fill="#eef7f4" stroke="#b8d8cf" />
+    <text x="427" y="32" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#12685f">Projects</text>
+  </g>
+</svg>

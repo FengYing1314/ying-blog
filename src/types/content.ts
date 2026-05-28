@@ -23,9 +23,12 @@ export interface ContentEntry {
   locale: Locale;
   slug: string;
   title: string;
+  seoTitle?: string;
   description: string;
   date: string;
   updated?: string;
+  image?: string;
+  imageAlt?: string;
   categories: string[];
   tags: string[];
   featured: boolean;

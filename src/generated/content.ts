@@ -332,7 +332,8 @@ export const contentRegistry = {
       locale: "zh",
       path: "/zh/",
       title: "Ying Blog",
-      description: "一个双语项目站、文档与项目展示基线。",
+      description:
+        "Ying Blog 是一个基于 Vite+、Vue、TypeScript、SSG 与 Markdown 的双语静态内容站基线，覆盖文章、文档、项目展示与长期维护规则。",
       counterpartPath: "/en/",
     },
     {
@@ -341,7 +342,8 @@ export const contentRegistry = {
       locale: "zh",
       path: "/zh/posts/",
       title: "全部文章",
-      description: "文章、笔记和长文归档。",
+      description:
+        "Ying Blog 的文章归档，集中记录静态站点实现、内容系统设计、双语维护和项目工程实践。",
       counterpartPath: "/en/posts/",
     },
     {
@@ -350,7 +352,7 @@ export const contentRegistry = {
       locale: "zh",
       path: "/zh/docs/",
       title: "文档目录",
-      description: "结构化文档、参考和维护说明。",
+      description: "Ying Blog 的文档目录，整理内容工作流、分支边界、静态部署约束和长期维护规则。",
       counterpartPath: "/en/docs/",
     },
     {
@@ -359,7 +361,7 @@ export const contentRegistry = {
       locale: "zh",
       path: "/zh/projects/",
       title: "项目展示",
-      description: "配置驱动的项目卡片合集。",
+      description: "Ying Blog 的项目展示页，以配置驱动卡片汇总当前基线、示例能力和公开项目方向。",
       counterpartPath: "/en/projects/",
     },
     {
@@ -368,7 +370,8 @@ export const contentRegistry = {
       locale: "en",
       path: "/en/",
       title: "Ying Blog",
-      description: "A bilingual project site, documentation, and project showcase baseline.",
+      description:
+        "Ying Blog is a bilingual static content site baseline built with Vite+, Vue, TypeScript, SSG, and Markdown for posts, docs, projects, and long-term maintenance notes.",
       counterpartPath: "/zh/",
     },
     {
@@ -377,7 +380,8 @@ export const contentRegistry = {
       locale: "en",
       path: "/en/posts/",
       title: "All Posts",
-      description: "Articles, notes, and long-form archive.",
+      description:
+        "Ying Blog posts collect static-site implementation notes, content-system design, bilingual maintenance, and project engineering practice.",
       counterpartPath: "/zh/posts/",
     },
     {
@@ -386,7 +390,8 @@ export const contentRegistry = {
       locale: "en",
       path: "/en/docs/",
       title: "Docs Index",
-      description: "Structured docs, references, and maintenance notes.",
+      description:
+        "Ying Blog docs organize content workflows, branch boundaries, static deployment constraints, and long-term maintenance rules.",
       counterpartPath: "/zh/docs/",
     },
     {
@@ -395,7 +400,8 @@ export const contentRegistry = {
       locale: "en",
       path: "/en/projects/",
       title: "Projects",
-      description: "A configuration-driven project card collection.",
+      description:
+        "Ying Blog projects use configuration-driven cards to summarize the current baseline, example capabilities, and public project directions.",
       counterpartPath: "/zh/projects/",
     },
   ],
@@ -408,7 +414,8 @@ export const contentRegistry = {
       slug: "engineering",
       path: "/zh/categories/engineering/",
       title: "工程实践",
-      description: "关于构建、维护和交付软件系统的内容。",
+      description:
+        "关于构建、维护和交付软件系统的内容。 这里汇总 Ying Blog 中对应分类下的文章、文档和项目卡片，方便按主题浏览相关内容。",
       counterpartPath: "/en/categories/engineering/",
       entryIds: [
         "docs:guide/content-workflow:zh",
@@ -425,7 +432,8 @@ export const contentRegistry = {
       slug: "writing",
       path: "/zh/categories/writing/",
       title: "写作与知识",
-      description: "关于长期写作、知识组织和内容系统的内容。",
+      description:
+        "关于长期写作、知识组织和内容系统的内容。 这里汇总 Ying Blog 中对应分类下的文章、文档和项目卡片，方便按主题浏览相关内容。",
       counterpartPath: "/en/categories/writing/",
       entryIds: ["about:index:zh"],
       projectSlugs: ["content-registry"],
@@ -438,7 +446,8 @@ export const contentRegistry = {
       slug: "showcase",
       path: "/zh/categories/showcase/",
       title: "项目展示",
-      description: "项目、作品和公开实验。",
+      description:
+        "项目、作品和公开实验。 这里汇总 Ying Blog 中对应分类下的文章、文档和项目卡片，方便按主题浏览相关内容。",
       counterpartPath: "/en/categories/showcase/",
       entryIds: [],
       projectSlugs: ["ying-blog"],
@@ -451,7 +460,8 @@ export const contentRegistry = {
       slug: "vue",
       path: "/zh/tags/vue/",
       title: "Vue",
-      description: "Vue 相关实现与经验。",
+      description:
+        "Vue 相关实现与经验。 这里汇总 Ying Blog 中带有对应标签的文章、文档和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/vue/",
       entryIds: ["docs:guide/getting-started:zh", "posts:building-this-site:zh"],
       projectSlugs: ["ying-blog"],
@@ -464,7 +474,8 @@ export const contentRegistry = {
       slug: "ssg",
       path: "/zh/tags/ssg/",
       title: "静态生成",
-      description: "静态站点生成与纯静态部署。",
+      description:
+        "静态站点生成与纯静态部署。 这里汇总 Ying Blog 中带有对应标签的文章、文档和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/ssg/",
       entryIds: [
         "docs:guide/content-workflow:zh",
@@ -481,7 +492,8 @@ export const contentRegistry = {
       slug: "i18n",
       path: "/zh/tags/i18n/",
       title: "双语内容",
-      description: "多语言内容结构与维护。",
+      description:
+        "多语言内容结构与维护。 这里汇总 Ying Blog 中带有对应标签的文章、文档和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/i18n/",
       entryIds: ["about:index:zh", "docs:guide/content-workflow:zh", "posts:building-this-site:zh"],
       projectSlugs: ["ying-blog", "content-registry"],
@@ -494,7 +506,8 @@ export const contentRegistry = {
       slug: "content-system",
       path: "/zh/tags/content-system/",
       title: "内容系统",
-      description: "内容建模、注册表和 Markdown 工作流。",
+      description:
+        "内容建模、注册表和 Markdown 工作流。 这里汇总 Ying Blog 中带有对应标签的文章、文档和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/content-system/",
       entryIds: [
         "about:index:zh",
@@ -512,7 +525,8 @@ export const contentRegistry = {
       slug: "typescript",
       path: "/zh/tags/typescript/",
       title: "TypeScript",
-      description: "TypeScript 工程实践。",
+      description:
+        "TypeScript 工程实践。 这里汇总 Ying Blog 中带有对应标签的文章、文档和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/typescript/",
       entryIds: [
         "docs:guide/content-workflow:zh",
@@ -529,7 +543,8 @@ export const contentRegistry = {
       slug: "engineering",
       path: "/en/categories/engineering/",
       title: "Engineering",
-      description: "Notes on building, maintaining, and shipping software systems.",
+      description:
+        "Notes on building, maintaining, and shipping software systems. This page groups related Ying Blog posts, docs, and project cards by category for topic-based browsing.",
       counterpartPath: "/zh/categories/engineering/",
       entryIds: [
         "docs:guide/content-workflow:en",
@@ -546,7 +561,8 @@ export const contentRegistry = {
       slug: "writing",
       path: "/en/categories/writing/",
       title: "Writing",
-      description: "Long-form writing, knowledge organization, and content systems.",
+      description:
+        "Long-form writing, knowledge organization, and content systems. This page groups related Ying Blog posts, docs, and project cards by category for topic-based browsing.",
       counterpartPath: "/zh/categories/writing/",
       entryIds: ["about:index:en"],
       projectSlugs: ["content-registry"],
@@ -559,7 +575,8 @@ export const contentRegistry = {
       slug: "showcase",
       path: "/en/categories/showcase/",
       title: "Showcase",
-      description: "Projects, work samples, and public experiments.",
+      description:
+        "Projects, work samples, and public experiments. This page groups related Ying Blog posts, docs, and project cards by category for topic-based browsing.",
       counterpartPath: "/zh/categories/showcase/",
       entryIds: [],
       projectSlugs: ["ying-blog"],
@@ -572,7 +589,8 @@ export const contentRegistry = {
       slug: "vue",
       path: "/en/tags/vue/",
       title: "Vue",
-      description: "Vue implementation notes and experience.",
+      description:
+        "Vue implementation notes and experience. This page groups related Ying Blog posts, docs, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/vue/",
       entryIds: ["docs:guide/getting-started:en", "posts:building-this-site:en"],
       projectSlugs: ["ying-blog"],
@@ -585,7 +603,8 @@ export const contentRegistry = {
       slug: "ssg",
       path: "/en/tags/ssg/",
       title: "SSG",
-      description: "Static-site generation and static deployment.",
+      description:
+        "Static-site generation and static deployment. This page groups related Ying Blog posts, docs, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/ssg/",
       entryIds: [
         "docs:guide/content-workflow:en",
@@ -602,7 +621,8 @@ export const contentRegistry = {
       slug: "i18n",
       path: "/en/tags/i18n/",
       title: "Bilingual Content",
-      description: "Multilingual content structure and maintenance.",
+      description:
+        "Multilingual content structure and maintenance. This page groups related Ying Blog posts, docs, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/i18n/",
       entryIds: ["about:index:en", "docs:guide/content-workflow:en", "posts:building-this-site:en"],
       projectSlugs: ["ying-blog", "content-registry"],
@@ -615,7 +635,8 @@ export const contentRegistry = {
       slug: "content-system",
       path: "/en/tags/content-system/",
       title: "Content System",
-      description: "Content modeling, registries, and Markdown workflows.",
+      description:
+        "Content modeling, registries, and Markdown workflows. This page groups related Ying Blog posts, docs, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/content-system/",
       entryIds: [
         "about:index:en",
@@ -633,7 +654,8 @@ export const contentRegistry = {
       slug: "typescript",
       path: "/en/tags/typescript/",
       title: "TypeScript",
-      description: "TypeScript engineering practices.",
+      description:
+        "TypeScript engineering practices. This page groups related Ying Blog posts, docs, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/typescript/",
       entryIds: [
         "docs:guide/content-workflow:en",
@@ -782,7 +804,7 @@ export const contentRegistry = {
     {
       id: "projects:zh",
       title: "项目展示",
-      description: "配置驱动的项目卡片合集。",
+      description: "Ying Blog 的项目展示页，以配置驱动卡片汇总当前基线、示例能力和公开项目方向。",
       date: "2026-05-23",
       path: "/zh/projects/",
       locale: "zh",
@@ -791,7 +813,8 @@ export const contentRegistry = {
     {
       id: "projects:en",
       title: "Projects",
-      description: "A configuration-driven project card collection.",
+      description:
+        "Ying Blog projects use configuration-driven cards to summarize the current baseline, example capabilities, and public project directions.",
       date: "2026-05-23",
       path: "/en/projects/",
       locale: "en",
