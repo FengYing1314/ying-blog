@@ -27,7 +27,7 @@ export const siteConfig = {
     },
     titleSuffix: "Ying Blog",
     identityType: "Organization",
-    image: "/og-default.svg",
+    image: "/og-default.png",
     imageAlt: {
       zh: "Ying Blog 双语静态内容站基线封面图",
       en: "Ying Blog bilingual static content site baseline cover image",

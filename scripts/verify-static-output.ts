@@ -13,8 +13,23 @@ import type {
 
 const distDir = path.join(process.cwd(), "dist");
 const defaultImage = absoluteFileUrl(siteConfig.seo.image);
-const rootPage = {
+
+interface PageCheck {
+  path: string;
+  canonicalPath?: string;
+  locale: Locale;
+  title: string;
+  description: string;
+  type: PageType;
+  counterpartPath?: string;
+  date?: string;
+  updated?: string;
+  image?: string;
+}
+
+const rootPage: PageCheck = {
   path: "/",
+  canonicalPath: "/zh/",
   locale: "zh" as const,
   title: siteConfig.name.zh,
   description: siteConfig.description.zh,
@@ -24,7 +39,7 @@ const rootPage = {
 const listingPages = contentRegistry.listingPages as readonly ListingPage[];
 const entries = contentRegistry.entries as readonly ContentEntry[];
 const taxonomyPages = contentRegistry.taxonomyPages as readonly TaxonomyPage[];
-const pages = [
+const pages: PageCheck[] = [
   rootPage,
   ...listingPages.map((page) => ({
     path: page.path,
@@ -58,7 +73,8 @@ const pages = [
 for (const page of pages) {
   const html = await readFile(routeHtmlPath(page.path), "utf8");
   const expectedTitle = pageTitle(page.title, page.locale);
-  const canonical = absoluteUrl(page.path);
+  const canonicalPath = page.canonicalPath ?? page.path;
+  const canonical = absoluteUrl(canonicalPath);
   const image = "image" in page && page.image ? absoluteFileUrl(page.image) : defaultImage;
 
   assertIncludes(html, `<html lang="${htmlLang(page.locale)}"`, page.path, "localized html lang");
@@ -126,7 +142,8 @@ for (const page of pages) {
     "Twitter image",
   );
   assertIncludes(html, 'type="application/ld+json"', page.path, "JSON-LD script");
-  assertJsonLd(html, page);
+  assertJsonLdScriptCount(html, page.path);
+  assertJsonLd(html, page, canonical);
   assertImagesHaveAlt(html, page.path);
 }
 
@@ -141,6 +158,18 @@ const rootHtml = await readFile(path.join(distDir, "index.html"), "utf8");
 assertIncludes(rootHtml, `href="${escapeHtml(withBasePath("/favicon.svg"))}"`, "/", "favicon path");
 assertIncludes(rootHtml, `href="${escapeHtml(withBasePath("/zh/"))}"`, "/", "root zh link");
 assertIncludes(rootHtml, `href="${escapeHtml(withBasePath("/en/"))}"`, "/", "root en link");
+assertIncludes(
+  rootHtml,
+  `rel="canonical" href="${escapeHtml(absoluteUrl("/zh/"))}"`,
+  "/",
+  "root canonical alias",
+);
+assertNotIncludes(
+  rootHtml,
+  `rel="canonical" href="${escapeHtml(absoluteUrl("/"))}"`,
+  "/",
+  "root canonical URL",
+);
 
 const zhHomeHtml = await readFile(routeHtmlPath("/zh/"), "utf8");
 assertIncludes(zhHomeHtml, `href="${escapeHtml(withBasePath("/rss.xml"))}"`, "/zh/", "RSS link");
@@ -167,12 +196,7 @@ assertIncludes(
 
 const sitemapXml = await readFile(path.join(distDir, "sitemap.xml"), "utf8");
 assertNoExampleDomain(sitemapXml, "/sitemap.xml");
-const publicPages = [
-  { path: "/", counterpartPath: "/en/", locale: "zh" as const },
-  ...listingPages,
-  ...entries,
-  ...taxonomyPages,
-];
+const publicPages = [...listingPages, ...entries, ...taxonomyPages];
 for (const page of publicPages) {
   assertIncludes(
     sitemapXml,
@@ -189,6 +213,12 @@ for (const page of publicPages) {
   assertIncludes(sitemapXml, 'hreflang="x-default"', page.path, "sitemap x-default link");
 }
 assertNotIncludes(sitemapXml, "<loc>https://ying-blog.example.com", "/sitemap.xml", "example URL");
+assertNotIncludes(
+  sitemapXml,
+  `<loc>${escapeXml(absoluteUrl("/"))}</loc>`,
+  "/sitemap.xml",
+  "root loc",
+);
 assertNotIncludes(sitemapXml, "/404/", "/sitemap.xml", "404 route");
 assertNotIncludes(sitemapXml, "/projects/ying-blog/", "/sitemap.xml", "project detail route");
 
@@ -243,6 +273,7 @@ for (const [label, value] of [
   assertNotIncludes(value, "G:/", label, "local path");
   assertNotIncludes(value, "C:/", label, "local path");
 }
+await assertDefaultShareImage();
 
 function routeHtmlPath(routePath: string) {
   if (routePath === "/") {
@@ -269,6 +300,7 @@ function pageTitle(title: string, locale: Locale) {
 function assertJsonLd(
   html: string,
   page: { path: string; title: string; description: string; type: PageType; locale: Locale },
+  canonical: string,
 ) {
   const match = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html);
   if (!match) {
@@ -291,11 +323,44 @@ function assertJsonLd(
   if (pageNode.description !== page.description) {
     throw new Error(`${page.path} JSON-LD has unexpected description`);
   }
-  if (pageNode.url !== absoluteUrl(page.path)) {
+  if (pageNode.url !== canonical) {
     throw new Error(`${page.path} JSON-LD has unexpected URL`);
   }
   if (!pageNode.image) {
     throw new Error(`${page.path} JSON-LD is missing image`);
+  }
+}
+
+function assertJsonLdScriptCount(html: string, pagePath: string) {
+  const count = html.match(/<script type="application\/ld\+json">/g)?.length ?? 0;
+  if (count !== 1) {
+    throw new Error(`${pagePath} must have exactly one JSON-LD script, found ${count}`);
+  }
+}
+
+async function assertDefaultShareImage() {
+  if (!siteConfig.seo.image.endsWith(".png")) {
+    throw new Error(`Default share image must be a PNG file: ${siteConfig.seo.image}`);
+  }
+
+  const imagePath = path.join(distDir, siteConfig.seo.image.replace(/^\/+/, ""));
+  const image = await readFile(imagePath);
+  if (
+    image.length < 24 ||
+    image[0] !== 0x89 ||
+    image[1] !== 0x50 ||
+    image[2] !== 0x4e ||
+    image[3] !== 0x47
+  ) {
+    throw new Error(`Default share image is not a valid PNG: ${siteConfig.seo.image}`);
+  }
+
+  const width = image.readUInt32BE(16);
+  const height = image.readUInt32BE(20);
+  if (width !== siteConfig.seo.imageWidth || height !== siteConfig.seo.imageHeight) {
+    throw new Error(
+      `Default share image must be ${siteConfig.seo.imageWidth}x${siteConfig.seo.imageHeight}, got ${width}x${height}`,
+    );
   }
 }
 

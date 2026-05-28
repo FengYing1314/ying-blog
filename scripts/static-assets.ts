@@ -20,12 +20,6 @@ await copyFile(path.join(distDir, "404", "index.html"), path.join(distDir, "404.
 
 function renderSitemap() {
   const pages = [
-    {
-      path: "/",
-      alternatePath: "/en/",
-      locale: "zh" as const,
-      lastmod: buildDate,
-    },
     ...contentRegistry.listingPages.map((page) => ({
       path: page.path,
       alternatePath: page.counterpartPath,
@@ -180,10 +174,6 @@ function hreflang(locale: Locale) {
 }
 
 function defaultAlternateUrl(page: { path: string; alternatePath: string; locale: Locale }) {
-  if (page.path === "/") {
-    return absoluteUrl("/");
-  }
-
   return page.locale === "zh" ? absoluteUrl(page.path) : absoluteUrl(page.alternatePath);
 }
 
