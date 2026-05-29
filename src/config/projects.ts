@@ -17,6 +17,26 @@ export const projects = [
       zh: "基础版本",
       en: "Foundation release",
     },
+    period: {
+      zh: "2026 至今",
+      en: "2026 to present",
+    },
+    role: {
+      zh: "站点架构与内容系统",
+      en: "Site architecture and content system",
+    },
+    stack: ["Vite+", "Vue", "TypeScript", "vite-ssg", "Markdown"],
+    highlights: [
+      {
+        zh: "以内容注册表统一路由、SEO、RSS 和 sitemap。",
+        en: "Unifies routes, SEO, RSS, and sitemap through the content registry.",
+      },
+      {
+        zh: "保持 /zh/ 与 /en/ 双语根并列生成。",
+        en: "Keeps /zh/ and /en/ as peer generated locale roots.",
+      },
+    ],
+    order: 1,
     repository: "",
     url: "",
     featured: true,
@@ -37,6 +57,26 @@ export const projects = [
       zh: "进行中",
       en: "In progress",
     },
+    period: {
+      zh: "2026",
+      en: "2026",
+    },
+    role: {
+      zh: "构建期数据建模",
+      en: "Build-time data modeling",
+    },
+    stack: ["TypeScript", "Markdown", "RSS", "Sitemap"],
+    highlights: [
+      {
+        zh: "把 Markdown、taxonomy 和项目配置汇总为单一静态数据源。",
+        en: "Combines Markdown, taxonomy, and project config into one static data source.",
+      },
+      {
+        zh: "构建前校验双语配对、taxonomy slug 和安全链接。",
+        en: "Validates bilingual pairs, taxonomy slugs, and safe links before builds.",
+      },
+    ],
+    order: 2,
     repository: "",
     url: "",
     featured: true,

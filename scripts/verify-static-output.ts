@@ -215,6 +215,12 @@ assertIncludes(
   "/zh/projects/",
   "base-aware project category link",
 );
+assertIncludes(zhProjectsHtml, "技术栈", "/zh/projects/", "project stack label");
+assertIncludes(zhProjectsHtml, "站点架构与内容系统", "/zh/projects/", "project role");
+
+const zhPostsHtml = await readFile(routeHtmlPath("/zh/posts/"), "utf8");
+assertIncludes(zhPostsHtml, "归档入口", "/zh/posts/", "post archive panel");
+assertIncludes(zhPostsHtml, `href="#posts-2026"`, "/zh/posts/", "post year archive anchor");
 
 const zhCategoriesHtml = await readFile(routeHtmlPath("/zh/categories/"), "utf8");
 assertIncludes(
@@ -236,6 +242,17 @@ assertIncludes(
   "/en/tags/",
   "tag index term link",
 );
+
+const zhPostHtml = await readFile(routeHtmlPath("/zh/posts/building-this-site/"), "utf8");
+assertIncludes(zhPostHtml, 'class="breadcrumb"', "/zh/posts/building-this-site/", "breadcrumb");
+assertIncludes(zhPostHtml, "返回文章列表", "/zh/posts/building-this-site/", "content return link");
+assertIncludes(
+  zhPostHtml,
+  'class="reading-progress"',
+  "/zh/posts/building-this-site/",
+  "reading progress",
+);
+assertIncludes(zhPostHtml, "相关内容", "/zh/posts/building-this-site/", "related content");
 
 const sitemapXml = await readFile(path.join(distDir, "sitemap.xml"), "utf8");
 assertNoExampleDomain(sitemapXml, "/sitemap.xml");

@@ -91,6 +91,11 @@ export interface ProjectCard {
   categories: string[];
   tags: string[];
   status: LocalizedText;
+  period: LocalizedText;
+  role: LocalizedText;
+  stack: string[];
+  highlights: LocalizedText[];
+  order: number;
   url?: string;
   repository?: string;
   featured: boolean;

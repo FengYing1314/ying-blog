@@ -334,6 +334,12 @@ function assertProjectConfig(projectCards: readonly ProjectCard[]) {
     if (project.repository) {
       assertSafeHref(project.repository, `project:${project.slug} repository`);
     }
+    if (project.stack.length === 0) {
+      throw new Error(`project:${project.slug} must list at least one stack item`);
+    }
+    if (project.highlights.length === 0) {
+      throw new Error(`project:${project.slug} must list at least one highlight`);
+    }
   }
 }
 
