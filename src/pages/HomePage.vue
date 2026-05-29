@@ -222,6 +222,9 @@
         <h2>{{ uiText.listing.taxonomy[locale] }}</h2>
         <div class="taxonomy-group">
           <h3>{{ locale === "zh" ? "分类" : "Categories" }}</h3>
+          <RouterLink :to="localizedPath(locale, 'categories')">
+            {{ locale === "zh" ? "全部分类" : "All categories" }}
+          </RouterLink>
           <RouterLink
             v-for="term in categories"
             :key="term.slug"
@@ -232,6 +235,9 @@
         </div>
         <div class="taxonomy-group">
           <h3>{{ locale === "zh" ? "标签" : "Tags" }}</h3>
+          <RouterLink :to="localizedPath(locale, 'tags')">
+            {{ locale === "zh" ? "全部标签" : "All tags" }}
+          </RouterLink>
           <RouterLink
             v-for="term in tags"
             :key="term.slug"

@@ -8,6 +8,24 @@
       <span>{{ project.status[locale] }}</span>
     </div>
     <p>{{ project.description[locale] }}</p>
+    <dl class="project-facts">
+      <div>
+        <dt>{{ locale === "zh" ? "时间" : "Period" }}</dt>
+        <dd>{{ project.period[locale] }}</dd>
+      </div>
+      <div>
+        <dt>{{ locale === "zh" ? "角色" : "Role" }}</dt>
+        <dd>{{ project.role[locale] }}</dd>
+      </div>
+    </dl>
+    <div class="project-stack" :aria-label="locale === 'zh' ? '技术栈' : 'Tech stack'">
+      <span v-for="item in project.stack" :key="item">{{ item }}</span>
+    </div>
+    <ul class="project-highlights">
+      <li v-for="highlight in project.highlights" :key="highlight.en">
+        {{ highlight[locale] }}
+      </li>
+    </ul>
     <p v-if="!hasExternalLinks" class="project-link-state">
       {{ locale === "zh" ? "当前以站内分类归档展示" : "Currently archived through site taxonomy" }}
     </p>
