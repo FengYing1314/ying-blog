@@ -1,6 +1,6 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { defaultLocale, siteConfig } from "../src/config/site.ts";
+import { siteConfig } from "../src/config/site.ts";
 import { contentRegistry } from "../src/generated/content.ts";
 import { absoluteFileUrl, absoluteUrl, withBasePath } from "../src/lib/paths.ts";
 import type {
@@ -8,11 +8,19 @@ import type {
   ListingPage,
   Locale,
   PageType,
+  TaxonomyIndexPage,
   TaxonomyPage,
 } from "../src/types/content.ts";
 
 const distDir = path.join(process.cwd(), "dist");
+const assetsDir = path.join(distDir, "assets");
 const defaultImage = absoluteFileUrl(siteConfig.seo.image);
+const assetBudgets = {
+  initialJs: 200 * 1024,
+  maxJs: 700 * 1024,
+  mermaidJsTotal: 3_300 * 1024,
+  css: 80 * 1024,
+} as const;
 
 interface PageCheck {
   path: string;
@@ -38,6 +46,7 @@ const rootPage: PageCheck = {
 };
 const listingPages = contentRegistry.listingPages as readonly ListingPage[];
 const entries = contentRegistry.entries as readonly ContentEntry[];
+const taxonomyIndexPages = contentRegistry.taxonomyIndexPages as readonly TaxonomyIndexPage[];
 const taxonomyPages = contentRegistry.taxonomyPages as readonly TaxonomyPage[];
 const pages: PageCheck[] = [
   rootPage,
@@ -59,6 +68,14 @@ const pages: PageCheck[] = [
     date: entry.date,
     updated: entry.updated,
     image: entry.image,
+  })),
+  ...taxonomyIndexPages.map((page) => ({
+    path: page.path,
+    locale: page.locale,
+    title: page.title,
+    description: page.description,
+    type: page.type,
+    counterpartPath: page.counterpartPath,
   })),
   ...taxonomyPages.map((page) => ({
     path: page.path,
@@ -148,10 +165,9 @@ for (const page of pages) {
 }
 
 const staticNotFoundHtml = await readFile(path.join(distDir, "404.html"), "utf8");
-const notFoundTitle = defaultLocale === "zh" ? "页面未找到" : "Page not found";
 assertIncludes(
   staticNotFoundHtml,
-  `<title>${escapeHtml(`${notFoundTitle} | ${siteConfig.name[defaultLocale]}`)}</title>`,
+  `<title>页面未找到 | ${siteConfig.name.zh}</title>`,
   "/404/",
   "404 title",
 );
@@ -187,6 +203,18 @@ const zhHomeHtml = await readFile(routeHtmlPath("/zh/"), "utf8");
 assertIncludes(zhHomeHtml, `href="${escapeHtml(withBasePath("/rss.xml"))}"`, "/zh/", "RSS link");
 assertIncludes(
   zhHomeHtml,
+  `href="${escapeHtml(withBasePath("/zh/categories/"))}"`,
+  "/zh/",
+  "base-aware category index link",
+);
+assertIncludes(
+  zhHomeHtml,
+  `href="${escapeHtml(withBasePath("/zh/tags/"))}"`,
+  "/zh/",
+  "base-aware tag index link",
+);
+assertIncludes(
+  zhHomeHtml,
   `href="${escapeHtml(withBasePath("/zh/categories/engineering/"))}"`,
   "/zh/",
   "base-aware taxonomy link",
@@ -205,11 +233,49 @@ assertIncludes(
   "/zh/projects/",
   "base-aware project category link",
 );
+assertIncludes(zhProjectsHtml, "技术栈", "/zh/projects/", "project stack label");
+assertIncludes(zhProjectsHtml, "个人站维护与内容整理", "/zh/projects/", "project role");
+
+const zhPostsHtml = await readFile(routeHtmlPath("/zh/posts/"), "utf8");
+assertIncludes(zhPostsHtml, "归档入口", "/zh/posts/", "post archive panel");
+assertIncludes(zhPostsHtml, `href="#posts-2026"`, "/zh/posts/", "post year archive anchor");
+
+const zhCategoriesHtml = await readFile(routeHtmlPath("/zh/categories/"), "utf8");
+assertIncludes(
+  zhCategoriesHtml,
+  `href="${escapeHtml(withBasePath("/zh/categories/engineering/"))}"`,
+  "/zh/categories/",
+  "category index term link",
+);
+assertIncludes(
+  zhCategoriesHtml,
+  `href="${escapeHtml(withBasePath("/zh/projects/"))}"`,
+  "/zh/categories/",
+  "category index project return link",
+);
+const enTagsHtml = await readFile(routeHtmlPath("/en/tags/"), "utf8");
+assertIncludes(
+  enTagsHtml,
+  `href="${escapeHtml(withBasePath("/en/tags/vue/"))}"`,
+  "/en/tags/",
+  "tag index term link",
+);
+
+const zhPostHtml = await readFile(routeHtmlPath("/zh/posts/building-this-site/"), "utf8");
+assertIncludes(zhPostHtml, 'class="breadcrumb"', "/zh/posts/building-this-site/", "breadcrumb");
+assertIncludes(zhPostHtml, "返回文章列表", "/zh/posts/building-this-site/", "content return link");
+assertIncludes(
+  zhPostHtml,
+  'class="reading-progress"',
+  "/zh/posts/building-this-site/",
+  "reading progress",
+);
+assertIncludes(zhPostHtml, "相关内容", "/zh/posts/building-this-site/", "related content");
 
 const sitemapXml = await readFile(path.join(distDir, "sitemap.xml"), "utf8");
 assertNoExampleDomain(sitemapXml, "/sitemap.xml");
 assertPersonalDomain(sitemapXml, "/sitemap.xml");
-const publicPages = [...listingPages, ...entries, ...taxonomyPages];
+const publicPages = [...listingPages, ...entries, ...taxonomyIndexPages, ...taxonomyPages];
 for (const page of publicPages) {
   assertIncludes(
     sitemapXml,
@@ -285,6 +351,8 @@ for (const [label, value] of [
   assertIncludes(value, absoluteFileUrl("/rss.xml"), label, "LLM RSS link");
   assertIncludes(value, absoluteUrl("/zh/"), label, "LLM zh home link");
   assertIncludes(value, absoluteUrl("/en/"), label, "LLM en home link");
+  assertIncludes(value, absoluteUrl("/zh/categories/"), label, "LLM zh categories link");
+  assertIncludes(value, absoluteUrl("/en/tags/"), label, "LLM en tags link");
   assertNoExampleDomain(value, label);
   assertPersonalDomain(value, label);
   assertNotIncludes(value, "G:/", label, "local path");
@@ -292,6 +360,7 @@ for (const [label, value] of [
 }
 await assertDefaultShareImage();
 await assertFaviconImage();
+await assertAssetBudgets();
 
 function routeHtmlPath(routePath: string) {
   if (routePath === "/") {
@@ -401,6 +470,67 @@ async function assertFaviconImage() {
   }
 }
 
+async function assertAssetBudgets() {
+  const assets = await readdir(assetsDir, { withFileTypes: true });
+  const files = await Promise.all(
+    assets
+      .filter((asset) => asset.isFile())
+      .map(async (asset) => {
+        const filePath = path.join(assetsDir, asset.name);
+        const contents = await readFile(filePath);
+        return {
+          name: asset.name,
+          size: contents.length,
+        };
+      }),
+  );
+
+  const jsFiles = files.filter((file) => file.name.endsWith(".js"));
+  const cssFiles = files.filter((file) => file.name.endsWith(".css"));
+  const appJs = jsFiles.filter((file) => /^app-[\w-]+\.js$/.test(file.name));
+  const manifest = JSON.parse(
+    await readFile(path.join(distDir, ".vite", "ssr-manifest.json"), "utf8"),
+  ) as Record<string, string[]>;
+  const mermaidAssets = new Set(
+    Object.entries(manifest)
+      .filter(([moduleId]) => moduleId.includes("node_modules/mermaid/"))
+      .flatMap(([, assets]) => assets.map((asset) => path.basename(asset))),
+  );
+  const mermaidJs = jsFiles.filter((file) => mermaidAssets.has(file.name));
+
+  assertBudget(
+    appJs.reduce((sum, file) => sum + file.size, 0),
+    assetBudgets.initialJs,
+    "initial app JS",
+  );
+  assertBudget(
+    Math.max(...jsFiles.map((file) => file.size)),
+    assetBudgets.maxJs,
+    "largest JS asset",
+  );
+  assertBudget(
+    mermaidJs.reduce((sum, file) => sum + file.size, 0),
+    assetBudgets.mermaidJsTotal,
+    "lazy Mermaid JS total",
+  );
+
+  for (const file of cssFiles) {
+    assertBudget(file.size, assetBudgets.css, `CSS asset ${file.name}`);
+  }
+}
+
+function assertBudget(actual: number, budget: number, label: string) {
+  if (actual > budget) {
+    throw new Error(
+      `${label} exceeds static asset budget: ${formatBytes(actual)} > ${formatBytes(budget)}`,
+    );
+  }
+}
+
+function formatBytes(value: number) {
+  return `${(value / 1024).toFixed(1)} KiB`;
+}
+
 function expectedSchemaType(type: PageType) {
   if (type === "posts") {
     return "BlogPosting";
@@ -408,7 +538,13 @@ function expectedSchemaType(type: PageType) {
   if (type === "docs" || type === "about") {
     return "Article";
   }
-  if (type === "home" || type === "listing" || type === "projects" || type === "taxonomy") {
+  if (
+    type === "home" ||
+    type === "listing" ||
+    type === "projects" ||
+    type === "taxonomy" ||
+    type === "taxonomy-index"
+  ) {
     return "CollectionPage";
   }
   return "WebPage";

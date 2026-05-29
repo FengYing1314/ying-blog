@@ -2,7 +2,14 @@ export type Locale = "zh" | "en";
 
 export type ContentType = "posts" | "docs" | "about";
 
-export type PageType = ContentType | "home" | "projects" | "taxonomy" | "listing" | "not-found";
+export type PageType =
+  | ContentType
+  | "home"
+  | "projects"
+  | "taxonomy"
+  | "taxonomy-index"
+  | "listing"
+  | "not-found";
 
 export type TaxonomyType = "categories" | "tags";
 
@@ -65,6 +72,18 @@ export interface TaxonomyPage {
   projectSlugs: string[];
 }
 
+export interface TaxonomyIndexPage {
+  id: string;
+  type: "taxonomy-index";
+  taxonomyType: TaxonomyType;
+  locale: Locale;
+  path: string;
+  title: string;
+  description: string;
+  counterpartPath: string;
+  termSlugs: string[];
+}
+
 export interface ProjectCard {
   slug: string;
   title: LocalizedText;
@@ -72,6 +91,11 @@ export interface ProjectCard {
   categories: string[];
   tags: string[];
   status: LocalizedText;
+  period: LocalizedText;
+  role: LocalizedText;
+  stack: string[];
+  highlights: LocalizedText[];
+  order: number;
   url?: string;
   repository?: string;
   featured: boolean;
@@ -82,6 +106,7 @@ export interface ContentRegistry {
   entries: ContentEntry[];
   listingPages: ListingPage[];
   taxonomyPages: TaxonomyPage[];
+  taxonomyIndexPages: TaxonomyIndexPage[];
   projects: ProjectCard[];
   routes: string[];
   rssItems: Array<{

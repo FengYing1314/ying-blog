@@ -6,6 +6,7 @@ import type {
   ContentType,
   Locale,
   ProjectCard,
+  TaxonomyIndexPage,
   TaxonomyPage,
 } from "../types/content";
 
@@ -52,6 +53,19 @@ export function getListingPage(path: string) {
   return registry.listingPages.find((page) => page.path === path);
 }
 
+export function getTaxonomyIndexPage(path: string) {
+  return registry.taxonomyIndexPages.find((page) => page.path === path);
+}
+
+export function getTaxonomyIndexTerms(page: TaxonomyIndexPage) {
+  const pages = registry.taxonomyPages.filter(
+    (candidate) => candidate.locale === page.locale && candidate.taxonomyType === page.taxonomyType,
+  );
+  return page.termSlugs
+    .map((slug) => pages.find((candidate) => candidate.slug === slug))
+    .filter((termPage): termPage is TaxonomyPage => Boolean(termPage));
+}
+
 export function getTaxonomyEntries(page: TaxonomyPage) {
   return page.entryIds
     .map((id) => getEntryById(id))
@@ -64,7 +78,13 @@ export function getTaxonomyProjects(page: TaxonomyPage) {
 }
 
 export function getProjectCards(): readonly ProjectCard[] {
-  return projects;
+  return [...projects].sort((a, b) => {
+    if (a.featured !== b.featured) {
+      return a.featured ? -1 : 1;
+    }
+
+    return a.order - b.order || a.slug.localeCompare(b.slug);
+  });
 }
 
 export function getPager(entry: ContentEntry) {
@@ -80,4 +100,28 @@ export function getPager(entry: ContentEntry) {
     previous: index > 0 ? peers[index - 1] : undefined,
     next: index >= 0 && index < peers.length - 1 ? peers[index + 1] : undefined,
   };
+}
+
+export function getRelatedEntries(entry: ContentEntry, limit = 3) {
+  const categories = new Set(entry.categories);
+  const tags = new Set(entry.tags);
+
+  return registry.entries
+    .filter(
+      (candidate) =>
+        candidate.id !== entry.id &&
+        candidate.locale === entry.locale &&
+        candidate.type !== "about" &&
+        (candidate.categories.some((category) => categories.has(category)) ||
+          candidate.tags.some((tag) => tags.has(tag))),
+    )
+    .sort((a, b) => relatedScore(b, categories, tags) - relatedScore(a, categories, tags))
+    .slice(0, limit);
+}
+
+function relatedScore(entry: ContentEntry, categories: Set<string>, tags: Set<string>) {
+  return (
+    entry.categories.filter((category) => categories.has(category)).length * 2 +
+    entry.tags.filter((tag) => tags.has(tag)).length
+  );
 }

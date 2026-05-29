@@ -311,7 +311,12 @@ function createPageJsonLd(input: SeoInput, basePage: Record<string, unknown>) {
     };
   }
 
-  if (input.type === "listing" || input.type === "projects" || input.type === "taxonomy") {
+  if (
+    input.type === "listing" ||
+    input.type === "projects" ||
+    input.type === "taxonomy" ||
+    input.type === "taxonomy-index"
+  ) {
     return {
       "@type": "CollectionPage",
       ...basePage,

@@ -15,6 +15,7 @@ const props = defineProps<{
 const root = ref<HTMLElement>();
 let tabGroupCounter = 0;
 let codeResizeObserver: ResizeObserver | undefined;
+let mermaidObserver: IntersectionObserver | undefined;
 let mermaidRenderCounter = 0;
 let themeObserver: MutationObserver | undefined;
 let mermaidRenderer: typeof import("mermaid").default | undefined;
@@ -51,6 +52,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   cleanupEnhancements();
   codeResizeObserver?.disconnect();
+  mermaidObserver?.disconnect();
   themeObserver?.disconnect();
   closeMermaidDialog(false);
 });
@@ -68,7 +70,7 @@ async function enhance() {
   cleanupEnhancements();
   enhanceCodeCopy();
   enhanceMermaidCopy();
-  await renderMermaidDiagrams();
+  setupLazyMermaidDiagrams();
   enhanceMermaidInteractions();
   enhanceScrollableCode();
   observeScrollableCode();
@@ -155,10 +157,8 @@ function observeThemeChanges() {
         canvas.innerHTML = "";
       }
     });
-    void (async () => {
-      await renderMermaidDiagrams();
-      enhanceMermaidInteractions();
-    })();
+    setupLazyMermaidDiagrams();
+    enhanceMermaidInteractions();
   });
 
   themeObserver.observe(document.documentElement, {
@@ -205,16 +205,99 @@ function enhanceMermaidCopy() {
   });
 }
 
-async function renderMermaidDiagrams() {
-  const diagrams = Array.from(
+function setupLazyMermaidDiagrams() {
+  mermaidObserver?.disconnect();
+
+  const diagrams = getPendingMermaidDiagrams();
+  if (diagrams.length === 0) {
+    return;
+  }
+
+  if (!("IntersectionObserver" in window)) {
+    void renderMermaidDiagrams(diagrams);
+    return;
+  }
+
+  mermaidObserver = new IntersectionObserver(
+    (entries) => {
+      const visibleDiagrams = entries
+        .filter((entry) => entry.isIntersecting)
+        .map((entry) => entry.target as HTMLElement);
+
+      visibleDiagrams.forEach((diagram) => {
+        mermaidObserver?.unobserve(diagram);
+      });
+
+      if (visibleDiagrams.length > 0) {
+        void renderMermaidDiagrams(visibleDiagrams);
+      }
+    },
+    {
+      rootMargin: "360px 0px",
+    },
+  );
+
+  diagrams.forEach((diagram) => {
+    mermaidObserver?.observe(diagram);
+  });
+
+  const renderVisibleDiagrams = () => {
+    const visibleDiagrams = getPendingMermaidDiagrams().filter(isMermaidNearViewport);
+    visibleDiagrams.forEach((diagram) => {
+      mermaidObserver?.unobserve(diagram);
+    });
+
+    if (visibleDiagrams.length > 0) {
+      void renderMermaidDiagrams(visibleDiagrams);
+    }
+  };
+  const frame = window.requestAnimationFrame(renderVisibleDiagrams);
+  window.addEventListener("scroll", renderVisibleDiagrams, { passive: true });
+  window.addEventListener("resize", renderVisibleDiagrams);
+  trackEnhancementCleanup(() => {
+    window.cancelAnimationFrame(frame);
+    window.removeEventListener("scroll", renderVisibleDiagrams);
+    window.removeEventListener("resize", renderVisibleDiagrams);
+  });
+}
+
+function getPendingMermaidDiagrams() {
+  return Array.from(
     root.value?.querySelectorAll<HTMLElement>('[data-mermaid][data-rendered="false"]') ?? [],
+  ).filter((diagram) => diagram.dataset.rendering !== "true");
+}
+
+function isMermaidNearViewport(diagram: HTMLElement) {
+  const margin = 360;
+  const rect = diagram.getBoundingClientRect();
+  return rect.bottom >= -margin && rect.top <= window.innerHeight + margin;
+}
+
+async function renderMermaidDiagrams(targets?: HTMLElement[]) {
+  const diagrams = (targets ?? getPendingMermaidDiagrams()).filter(
+    (diagram) => diagram.dataset.rendered === "false" && diagram.dataset.rendering !== "true",
   );
 
   if (diagrams.length === 0) {
     return;
   }
 
-  const mermaid = await loadMermaid();
+  diagrams.forEach((diagram) => {
+    diagram.dataset.rendering = "true";
+  });
+
+  let mermaid: Awaited<ReturnType<typeof loadMermaid>>;
+  try {
+    mermaid = await loadMermaid();
+  } catch {
+    diagrams.forEach((diagram) => {
+      diagram.dataset.rendered = "error";
+      diagram.classList.add("is-error");
+      delete diagram.dataset.rendering;
+    });
+    return;
+  }
+
   mermaid.initialize({
     startOnLoad: false,
     securityLevel: "strict",
@@ -227,6 +310,8 @@ async function renderMermaidDiagrams() {
     const source = diagram.querySelector<HTMLElement>("[data-mermaid-source]")?.textContent ?? "";
     if (!canvas || !source.trim()) {
       diagram.dataset.rendered = "error";
+      diagram.classList.add("is-error");
+      delete diagram.dataset.rendering;
       continue;
     }
 
@@ -247,6 +332,9 @@ async function renderMermaidDiagrams() {
     } catch {
       diagram.dataset.rendered = "error";
       diagram.classList.add("is-error");
+    } finally {
+      delete diagram.dataset.rendering;
+      updateMermaidControls(diagram);
     }
   }
 }
@@ -274,6 +362,10 @@ function enhanceMermaidInteractions() {
 
     diagram.dataset.interactive = "true";
     const clickHandler = () => {
+      if (diagram.dataset.rendered === "false") {
+        mermaidObserver?.unobserve(diagram);
+        void renderMermaidDiagrams([diagram]);
+      }
       pulseMermaidActive(diagram);
     };
     diagram.addEventListener("click", clickHandler);

@@ -16,6 +16,14 @@
         <FileText :size="17" aria-hidden="true" />
         <span>{{ copy.posts }}</span>
       </RouterLink>
+      <RouterLink class="secondary-link" :to="localizedPath(locale, 'projects')">
+        <FolderKanban :size="17" aria-hidden="true" />
+        <span>{{ copy.projects }}</span>
+      </RouterLink>
+      <RouterLink class="secondary-link" :to="localizedPath(locale === 'zh' ? 'en' : 'zh')">
+        <Languages :size="17" aria-hidden="true" />
+        <span>{{ copy.language }}</span>
+      </RouterLink>
     </div>
   </section>
 </template>
@@ -23,7 +31,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { BookOpen, FileText, Home } from "@lucide/vue";
+import { BookOpen, FileText, FolderKanban, Home, Languages } from "@lucide/vue";
 import { localeFromPath, localizedPath } from "../lib/paths";
 import { usePageSeo } from "../lib/seo";
 
@@ -38,6 +46,8 @@ const copy = computed(() =>
         home: "返回首页",
         docs: "查看随笔",
         posts: "阅读文章",
+        projects: "查看项目",
+        language: "English",
       }
     : {
         title: "Page not found",
@@ -46,6 +56,8 @@ const copy = computed(() =>
         home: "Return home",
         docs: "View notes",
         posts: "Read posts",
+        projects: "View projects",
+        language: "中文",
       },
 );
 

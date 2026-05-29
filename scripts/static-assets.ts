@@ -32,6 +32,12 @@ function renderSitemap() {
       locale: entry.locale,
       lastmod: entry.updated ?? entry.date,
     })),
+    ...contentRegistry.taxonomyIndexPages.map((page) => ({
+      path: page.path,
+      alternatePath: page.counterpartPath,
+      locale: page.locale,
+      lastmod: buildDate,
+    })),
     ...contentRegistry.taxonomyPages.map((page) => ({
       path: page.path,
       alternatePath: page.counterpartPath,
@@ -143,6 +149,13 @@ function renderLlmsText(full: boolean) {
     ...contentRegistry.entries.map(
       (entry) =>
         `- ${entry.title} (${entry.locale}, ${entry.type}, ${entry.date}): ${absoluteUrl(entry.path)} - ${entry.description}`,
+    ),
+    "",
+    "## Taxonomy Indexes",
+    "",
+    ...contentRegistry.taxonomyIndexPages.map(
+      (page) =>
+        `- ${page.title} (${page.locale}, ${page.taxonomyType}): ${absoluteUrl(page.path)} - ${page.description}`,
     ),
   ];
 

@@ -14,6 +14,7 @@ import type {
   ContentType,
   Locale,
   ProjectCard,
+  TaxonomyIndexPage,
   TaxonomyPage,
 } from "../../src/types/content.ts";
 import { assertApprovedMarkdown, createMarkdownRenderer } from "./markdown.ts";
@@ -161,11 +162,13 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
   ]);
 
   const taxonomyPages = createTaxonomyPages(entries);
+  const taxonomyIndexPages = createTaxonomyIndexPages();
   const latestContentDate = getLatestContentDate(entries);
   const routes = uniqueSorted([
     "/",
     ...listingPages.map((page) => page.path),
     ...entries.map((entry) => entry.path),
+    ...taxonomyIndexPages.map((page) => page.path),
     ...taxonomyPages.map((page) => page.path),
   ]);
 
@@ -174,6 +177,7 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
     entries: sortEntries(entries),
     listingPages,
     taxonomyPages,
+    taxonomyIndexPages,
     projects: projects as unknown as ProjectCard[],
     routes,
     rssItems: createRssItems(entries, latestContentDate),
@@ -330,6 +334,12 @@ function assertProjectConfig(projectCards: readonly ProjectCard[]) {
     if (project.repository) {
       assertSafeHref(project.repository, `project:${project.slug} repository`);
     }
+    if (project.stack.length === 0) {
+      throw new Error(`project:${project.slug} must list at least one stack item`);
+    }
+    if (project.highlights.length === 0) {
+      throw new Error(`project:${project.slug} must list at least one highlight`);
+    }
   }
 }
 
@@ -379,6 +389,39 @@ function createTaxonomyPages(entries: ContentEntry[]): TaxonomyPage[] {
     }
   }
   return pages;
+}
+
+function createTaxonomyIndexPages(): TaxonomyIndexPage[] {
+  return locales.flatMap((locale) => [
+    {
+      id: `categories:${locale}`,
+      type: "taxonomy-index" as const,
+      taxonomyType: "categories" as const,
+      locale,
+      path: `/${locale}/categories/`,
+      title: locale === "zh" ? "分类" : "Categories",
+      description:
+        locale === "zh"
+          ? "按分类浏览枫莹の小窝的文章、随笔和项目卡片，快速进入工程实践、个人记录与项目展示主题。"
+          : "Browse Fengying's Nook posts, notes, and project cards by category across engineering, personal notes, and showcase topics.",
+      counterpartPath: `/${oppositeLocale(locale)}/categories/`,
+      termSlugs: taxonomy.categories.map((term) => term.slug),
+    },
+    {
+      id: `tags:${locale}`,
+      type: "taxonomy-index" as const,
+      taxonomyType: "tags" as const,
+      locale,
+      path: `/${locale}/tags/`,
+      title: locale === "zh" ? "标签" : "Tags",
+      description:
+        locale === "zh"
+          ? "按标签浏览枫莹の小窝的文章、随笔和项目卡片，围绕 Vue、TypeScript、AI、OpenWrt 和个人工具继续阅读。"
+          : "Browse Fengying's Nook posts, notes, and project cards by tag across Vue, TypeScript, AI, OpenWrt, and personal tooling topics.",
+      counterpartPath: `/${oppositeLocale(locale)}/tags/`,
+      termSlugs: taxonomy.tags.map((term) => term.slug),
+    },
+  ]);
 }
 
 function createRssItems(
