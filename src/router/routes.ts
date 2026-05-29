@@ -4,7 +4,6 @@ import { locales } from "../config/site";
 import ContentPage from "../pages/ContentPage.vue";
 import DocsPage from "../pages/DocsPage.vue";
 import HomePage from "../pages/HomePage.vue";
-import LocaleRedirect from "../pages/LocaleRedirect.vue";
 import NotFoundPage from "../pages/NotFoundPage.vue";
 import PostsPage from "../pages/PostsPage.vue";
 import ProjectsPage from "../pages/ProjectsPage.vue";
@@ -14,7 +13,12 @@ export const routes: RouteRecordRaw[] = [
   {
     path: "/",
     name: "root",
-    component: LocaleRedirect,
+    component: HomePage,
+    props: { locale: "zh" },
+    meta: {
+      locale: "zh",
+      counterpartPath: "/en/",
+    },
   },
   ...locales.flatMap((locale) => [
     {

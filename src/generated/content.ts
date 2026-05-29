@@ -519,7 +519,7 @@ export const contentRegistry = {
       locale: "zh",
       path: "/zh/posts/",
       title: "全部文章",
-      description: "文章、笔记和长文归档。",
+      description: "枫莹の小窝的文章归档，记录技术实践、个人折腾和长期留下来的内容。",
       counterpartPath: "/en/posts/",
     },
     {
@@ -555,7 +555,8 @@ export const contentRegistry = {
       locale: "en",
       path: "/en/posts/",
       title: "All Posts",
-      description: "Articles, notes, and long-form archive.",
+      description:
+        "Fengying's Nook posts collect technical practice, personal tinkering, and long-lived notes.",
       counterpartPath: "/zh/posts/",
     },
     {
@@ -586,7 +587,8 @@ export const contentRegistry = {
       slug: "engineering",
       path: "/zh/categories/engineering/",
       title: "工程实践",
-      description: "记录软件、工具和网站开发里的想法与实践。",
+      description:
+        "记录软件、工具和网站开发里的想法与实践。 这里汇总枫莹の小窝中对应分类下的文章、随笔和项目卡片，方便按主题浏览相关内容。",
       counterpartPath: "/en/categories/engineering/",
       entryIds: ["posts:backend-frontend-architecture:zh", "posts:cmcc-rax3000m:zh"],
       projectSlugs: [
@@ -608,7 +610,8 @@ export const contentRegistry = {
       slug: "writing",
       path: "/zh/categories/writing/",
       title: "写作与知识",
-      description: "关于长期写作、知识组织和内容系统的内容。",
+      description:
+        "关于长期写作、知识组织和内容系统的内容。 这里汇总枫莹の小窝中对应分类下的文章、随笔和项目卡片，方便按主题浏览相关内容。",
       counterpartPath: "/en/categories/writing/",
       entryIds: ["about:index:zh", "docs:guide/getting-started:zh", "posts:building-this-site:zh"],
       projectSlugs: [],
@@ -621,7 +624,8 @@ export const contentRegistry = {
       slug: "showcase",
       path: "/zh/categories/showcase/",
       title: "项目展示",
-      description: "项目、作品和公开实验。",
+      description:
+        "项目、作品和公开实验。 这里汇总枫莹の小窝中对应分类下的文章、随笔和项目卡片，方便按主题浏览相关内容。",
       counterpartPath: "/en/categories/showcase/",
       entryIds: [],
       projectSlugs: [
@@ -643,7 +647,8 @@ export const contentRegistry = {
       slug: "personal",
       path: "/zh/categories/personal/",
       title: "个人记录",
-      description: "关于个人主页、生活片段和长期记录的内容。",
+      description:
+        "关于个人主页、生活片段和长期记录的内容。 这里汇总枫莹の小窝中对应分类下的文章、随笔和项目卡片，方便按主题浏览相关内容。",
       counterpartPath: "/en/categories/personal/",
       entryIds: ["about:index:zh", "docs:guide/getting-started:zh", "posts:building-this-site:zh"],
       projectSlugs: [],
@@ -656,7 +661,8 @@ export const contentRegistry = {
       slug: "vue",
       path: "/zh/tags/vue/",
       title: "Vue",
-      description: "Vue 相关实现与经验。",
+      description:
+        "Vue 相关实现与经验。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/vue/",
       entryIds: ["posts:backend-frontend-architecture:zh", "posts:building-this-site:zh"],
       projectSlugs: ["fengying-blog"],
@@ -669,7 +675,8 @@ export const contentRegistry = {
       slug: "ssg",
       path: "/zh/tags/ssg/",
       title: "静态生成",
-      description: "静态站点生成与纯静态部署。",
+      description:
+        "静态站点生成与纯静态部署。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/ssg/",
       entryIds: ["posts:building-this-site:zh"],
       projectSlugs: ["fengying-blog"],
@@ -682,7 +689,8 @@ export const contentRegistry = {
       slug: "i18n",
       path: "/zh/tags/i18n/",
       title: "双语内容",
-      description: "多语言内容与写作结构。",
+      description:
+        "多语言内容与写作结构。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/i18n/",
       entryIds: ["posts:building-this-site:zh"],
       projectSlugs: ["fengying-blog"],
@@ -695,7 +703,8 @@ export const contentRegistry = {
       slug: "content-system",
       path: "/zh/tags/content-system/",
       title: "内容系统",
-      description: "内容组织、Markdown 和站点写作体验。",
+      description:
+        "内容组织、Markdown 和站点写作体验。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/content-system/",
       entryIds: ["docs:guide/getting-started:zh", "posts:building-this-site:zh"],
       projectSlugs: ["fengying-blog"],
@@ -708,7 +717,8 @@ export const contentRegistry = {
       slug: "typescript",
       path: "/zh/tags/typescript/",
       title: "TypeScript",
-      description: "TypeScript 工程实践。",
+      description:
+        "TypeScript 工程实践。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/typescript/",
       entryIds: ["posts:backend-frontend-architecture:zh", "posts:building-this-site:zh"],
       projectSlugs: ["fengying-blog", "openclaw-plugin-dg-lab"],
@@ -721,7 +731,8 @@ export const contentRegistry = {
       slug: "javascript",
       path: "/zh/tags/javascript/",
       title: "JavaScript",
-      description: "JavaScript 项目和工具。",
+      description:
+        "JavaScript 项目和工具。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/javascript/",
       entryIds: [],
       projectSlugs: ["grok-api-proxy"],
@@ -734,7 +745,8 @@ export const contentRegistry = {
       slug: "python",
       path: "/zh/tags/python/",
       title: "Python",
-      description: "Python 插件和工具。",
+      description:
+        "Python 插件和工具。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/python/",
       entryIds: ["posts:backend-frontend-architecture:zh"],
       projectSlugs: [
@@ -752,7 +764,8 @@ export const contentRegistry = {
       slug: "csharp",
       path: "/zh/tags/csharp/",
       title: "C#",
-      description: "C# 与 .NET 项目。",
+      description:
+        "C# 与 .NET 项目。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/csharp/",
       entryIds: [],
       projectSlugs: ["nekohub"],
@@ -765,7 +778,8 @@ export const contentRegistry = {
       slug: "dotnet",
       path: "/zh/tags/dotnet/",
       title: ".NET",
-      description: ".NET 应用和库。",
+      description:
+        ".NET 应用和库。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/dotnet/",
       entryIds: [],
       projectSlugs: ["nekohub"],
@@ -778,7 +792,8 @@ export const contentRegistry = {
       slug: "ai",
       path: "/zh/tags/ai/",
       title: "AI",
-      description: "人工智能相关工具和实验。",
+      description:
+        "人工智能相关工具和实验。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/ai/",
       entryIds: ["about:index:zh"],
       projectSlugs: ["grok-api-proxy"],
@@ -791,7 +806,8 @@ export const contentRegistry = {
       slug: "api",
       path: "/zh/tags/api/",
       title: "API",
-      description: "API 服务、代理和集成。",
+      description:
+        "API 服务、代理和集成。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/api/",
       entryIds: ["posts:backend-frontend-architecture:zh"],
       projectSlugs: ["grok-api-proxy"],
@@ -804,7 +820,8 @@ export const contentRegistry = {
       slug: "bot",
       path: "/zh/tags/bot/",
       title: "Bot",
-      description: "Bot、插件和自动化互动。",
+      description:
+        "Bot、插件和自动化互动。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/bot/",
       entryIds: [],
       projectSlugs: [
@@ -822,7 +839,8 @@ export const contentRegistry = {
       slug: "plugin",
       path: "/zh/tags/plugin/",
       title: "插件",
-      description: "插件开发和扩展能力。",
+      description:
+        "插件开发和扩展能力。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/plugin/",
       entryIds: [],
       projectSlugs: [
@@ -841,7 +859,8 @@ export const contentRegistry = {
       slug: "websocket",
       path: "/zh/tags/websocket/",
       title: "WebSocket",
-      description: "WebSocket 连接与实时联动。",
+      description:
+        "WebSocket 连接与实时联动。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/websocket/",
       entryIds: [],
       projectSlugs: ["openclaw-plugin-dg-lab"],
@@ -854,7 +873,8 @@ export const contentRegistry = {
       slug: "tooling",
       path: "/zh/tags/tooling/",
       title: "工具",
-      description: "个人工具、辅助脚本和工程效率。",
+      description:
+        "个人工具、辅助脚本和工程效率。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/tooling/",
       entryIds: [],
       projectSlugs: ["nekohub"],
@@ -867,7 +887,8 @@ export const contentRegistry = {
       slug: "personal",
       path: "/zh/tags/personal/",
       title: "个人介绍",
-      description: "个人介绍与主页信息。",
+      description:
+        "个人介绍与主页信息。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/personal/",
       entryIds: ["about:index:zh", "docs:guide/getting-started:zh"],
       projectSlugs: [],
@@ -880,7 +901,8 @@ export const contentRegistry = {
       slug: "openwrt",
       path: "/zh/tags/openwrt/",
       title: "OpenWrt",
-      description: "OpenWrt、ImmortalWrt 与路由器折腾记录。",
+      description:
+        "OpenWrt、ImmortalWrt 与路由器折腾记录。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/openwrt/",
       entryIds: ["posts:cmcc-rax3000m:zh"],
       projectSlugs: [],
@@ -893,7 +915,8 @@ export const contentRegistry = {
       slug: "networking",
       path: "/zh/tags/networking/",
       title: "网络",
-      description: "家庭网络、DNS 和网络设备配置。",
+      description:
+        "家庭网络、DNS 和网络设备配置。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/networking/",
       entryIds: ["posts:cmcc-rax3000m:zh"],
       projectSlugs: [],
@@ -906,7 +929,8 @@ export const contentRegistry = {
       slug: "engineering",
       path: "/en/categories/engineering/",
       title: "Engineering",
-      description: "Notes from building software, tools, and websites.",
+      description:
+        "Notes from building software, tools, and websites. This page groups related Fengying's Nook posts, notes, and project cards by category for topic-based browsing.",
       counterpartPath: "/zh/categories/engineering/",
       entryIds: ["posts:backend-frontend-architecture:en", "posts:cmcc-rax3000m:en"],
       projectSlugs: [
@@ -928,7 +952,8 @@ export const contentRegistry = {
       slug: "writing",
       path: "/en/categories/writing/",
       title: "Writing",
-      description: "Long-form writing, knowledge organization, and content systems.",
+      description:
+        "Long-form writing, knowledge organization, and content systems. This page groups related Fengying's Nook posts, notes, and project cards by category for topic-based browsing.",
       counterpartPath: "/zh/categories/writing/",
       entryIds: ["about:index:en", "docs:guide/getting-started:en", "posts:building-this-site:en"],
       projectSlugs: [],
@@ -941,7 +966,8 @@ export const contentRegistry = {
       slug: "showcase",
       path: "/en/categories/showcase/",
       title: "Showcase",
-      description: "Projects, work samples, and public experiments.",
+      description:
+        "Projects, work samples, and public experiments. This page groups related Fengying's Nook posts, notes, and project cards by category for topic-based browsing.",
       counterpartPath: "/zh/categories/showcase/",
       entryIds: [],
       projectSlugs: [
@@ -963,7 +989,8 @@ export const contentRegistry = {
       slug: "personal",
       path: "/en/categories/personal/",
       title: "Personal Notes",
-      description: "Personal homepage notes, life fragments, and long-term records.",
+      description:
+        "Personal homepage notes, life fragments, and long-term records. This page groups related Fengying's Nook posts, notes, and project cards by category for topic-based browsing.",
       counterpartPath: "/zh/categories/personal/",
       entryIds: ["about:index:en", "docs:guide/getting-started:en", "posts:building-this-site:en"],
       projectSlugs: [],
@@ -976,7 +1003,8 @@ export const contentRegistry = {
       slug: "vue",
       path: "/en/tags/vue/",
       title: "Vue",
-      description: "Vue implementation notes and experience.",
+      description:
+        "Vue implementation notes and experience. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/vue/",
       entryIds: ["posts:backend-frontend-architecture:en", "posts:building-this-site:en"],
       projectSlugs: ["fengying-blog"],
@@ -989,7 +1017,8 @@ export const contentRegistry = {
       slug: "ssg",
       path: "/en/tags/ssg/",
       title: "SSG",
-      description: "Static-site generation and static deployment.",
+      description:
+        "Static-site generation and static deployment. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/ssg/",
       entryIds: ["posts:building-this-site:en"],
       projectSlugs: ["fengying-blog"],
@@ -1002,7 +1031,8 @@ export const contentRegistry = {
       slug: "i18n",
       path: "/en/tags/i18n/",
       title: "Bilingual Content",
-      description: "Multilingual content and writing structure.",
+      description:
+        "Multilingual content and writing structure. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/i18n/",
       entryIds: ["posts:building-this-site:en"],
       projectSlugs: ["fengying-blog"],
@@ -1015,7 +1045,8 @@ export const contentRegistry = {
       slug: "content-system",
       path: "/en/tags/content-system/",
       title: "Content System",
-      description: "Content organization, Markdown, and site writing experience.",
+      description:
+        "Content organization, Markdown, and site writing experience. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/content-system/",
       entryIds: ["docs:guide/getting-started:en", "posts:building-this-site:en"],
       projectSlugs: ["fengying-blog"],
@@ -1028,7 +1059,8 @@ export const contentRegistry = {
       slug: "typescript",
       path: "/en/tags/typescript/",
       title: "TypeScript",
-      description: "TypeScript engineering practices.",
+      description:
+        "TypeScript engineering practices. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/typescript/",
       entryIds: ["posts:backend-frontend-architecture:en", "posts:building-this-site:en"],
       projectSlugs: ["fengying-blog", "openclaw-plugin-dg-lab"],
@@ -1041,7 +1073,8 @@ export const contentRegistry = {
       slug: "javascript",
       path: "/en/tags/javascript/",
       title: "JavaScript",
-      description: "JavaScript projects and tools.",
+      description:
+        "JavaScript projects and tools. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/javascript/",
       entryIds: [],
       projectSlugs: ["grok-api-proxy"],
@@ -1054,7 +1087,8 @@ export const contentRegistry = {
       slug: "python",
       path: "/en/tags/python/",
       title: "Python",
-      description: "Python plugins and tools.",
+      description:
+        "Python plugins and tools. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/python/",
       entryIds: ["posts:backend-frontend-architecture:en"],
       projectSlugs: [
@@ -1072,7 +1106,8 @@ export const contentRegistry = {
       slug: "csharp",
       path: "/en/tags/csharp/",
       title: "C#",
-      description: "C# and .NET projects.",
+      description:
+        "C# and .NET projects. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/csharp/",
       entryIds: [],
       projectSlugs: ["nekohub"],
@@ -1085,7 +1120,8 @@ export const contentRegistry = {
       slug: "dotnet",
       path: "/en/tags/dotnet/",
       title: ".NET",
-      description: ".NET applications and libraries.",
+      description:
+        ".NET applications and libraries. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/dotnet/",
       entryIds: [],
       projectSlugs: ["nekohub"],
@@ -1098,7 +1134,8 @@ export const contentRegistry = {
       slug: "ai",
       path: "/en/tags/ai/",
       title: "AI",
-      description: "AI-related tools and experiments.",
+      description:
+        "AI-related tools and experiments. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/ai/",
       entryIds: ["about:index:en"],
       projectSlugs: ["grok-api-proxy"],
@@ -1111,7 +1148,8 @@ export const contentRegistry = {
       slug: "api",
       path: "/en/tags/api/",
       title: "API",
-      description: "API services, proxies, and integrations.",
+      description:
+        "API services, proxies, and integrations. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/api/",
       entryIds: ["posts:backend-frontend-architecture:en"],
       projectSlugs: ["grok-api-proxy"],
@@ -1124,7 +1162,8 @@ export const contentRegistry = {
       slug: "bot",
       path: "/en/tags/bot/",
       title: "Bot",
-      description: "Bots, plugins, and automation interactions.",
+      description:
+        "Bots, plugins, and automation interactions. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/bot/",
       entryIds: [],
       projectSlugs: [
@@ -1142,7 +1181,8 @@ export const contentRegistry = {
       slug: "plugin",
       path: "/en/tags/plugin/",
       title: "Plugin",
-      description: "Plugin development and extension points.",
+      description:
+        "Plugin development and extension points. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/plugin/",
       entryIds: [],
       projectSlugs: [
@@ -1161,7 +1201,8 @@ export const contentRegistry = {
       slug: "websocket",
       path: "/en/tags/websocket/",
       title: "WebSocket",
-      description: "WebSocket connections and real-time integrations.",
+      description:
+        "WebSocket connections and real-time integrations. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/websocket/",
       entryIds: [],
       projectSlugs: ["openclaw-plugin-dg-lab"],
@@ -1174,7 +1215,8 @@ export const contentRegistry = {
       slug: "tooling",
       path: "/en/tags/tooling/",
       title: "Tooling",
-      description: "Personal tools, helper scripts, and engineering workflow.",
+      description:
+        "Personal tools, helper scripts, and engineering workflow. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/tooling/",
       entryIds: [],
       projectSlugs: ["nekohub"],
@@ -1187,7 +1229,8 @@ export const contentRegistry = {
       slug: "personal",
       path: "/en/tags/personal/",
       title: "Personal",
-      description: "Personal introductions and homepage notes.",
+      description:
+        "Personal introductions and homepage notes. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/personal/",
       entryIds: ["about:index:en", "docs:guide/getting-started:en"],
       projectSlugs: [],
@@ -1200,7 +1243,8 @@ export const contentRegistry = {
       slug: "openwrt",
       path: "/en/tags/openwrt/",
       title: "OpenWrt",
-      description: "OpenWrt, ImmortalWrt, and router notes.",
+      description:
+        "OpenWrt, ImmortalWrt, and router notes. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/openwrt/",
       entryIds: ["posts:cmcc-rax3000m:en"],
       projectSlugs: [],
@@ -1213,7 +1257,8 @@ export const contentRegistry = {
       slug: "networking",
       path: "/en/tags/networking/",
       title: "Networking",
-      description: "Home networking, DNS, and network device setup.",
+      description:
+        "Home networking, DNS, and network device setup. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/networking/",
       entryIds: ["posts:cmcc-rax3000m:en"],
       projectSlugs: [],

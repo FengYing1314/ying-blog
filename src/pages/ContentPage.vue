@@ -82,13 +82,16 @@ usePageSeo(() => {
   }
 
   return {
-    title: entry.value.title,
+    title: entry.value.seoTitle ?? entry.value.title,
     description: entry.value.description,
     path: entry.value.path,
     locale: entry.value.locale,
     type: entry.value.type,
     alternatePath: entry.value.counterpartPath,
     date: entry.value.date,
+    updated: entry.value.updated,
+    image: entry.value.image,
+    imageAlt: entry.value.imageAlt,
   };
 });
 </script>
