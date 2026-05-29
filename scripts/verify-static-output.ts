@@ -161,7 +161,13 @@ assertIncludes(staticNotFoundHtml, 'property="og:image"', "/404/", "404 Open Gra
 assertImagesHaveAlt(staticNotFoundHtml, "/404/");
 
 const rootHtml = await readFile(path.join(distDir, "index.html"), "utf8");
-assertIncludes(rootHtml, `href="${escapeHtml(withBasePath("/favicon.svg"))}"`, "/", "favicon path");
+assertIncludes(
+  rootHtml,
+  `href="${escapeHtml(`${withBasePath("/favicon.png")}?v=avatar-20260530`)}"`,
+  "/",
+  "favicon path",
+);
+assertNotIncludes(rootHtml, "favicon.svg", "/", "main favicon path");
 assertIncludes(rootHtml, `href="${escapeHtml(withBasePath("/zh/"))}"`, "/", "root zh link");
 assertIncludes(rootHtml, `href="${escapeHtml(withBasePath("/en/"))}"`, "/", "root en link");
 assertIncludes(
@@ -285,6 +291,7 @@ for (const [label, value] of [
   assertNotIncludes(value, "C:/", label, "local path");
 }
 await assertDefaultShareImage();
+await assertFaviconImage();
 
 function routeHtmlPath(routePath: string) {
   if (routePath === "/") {
@@ -372,6 +379,25 @@ async function assertDefaultShareImage() {
     throw new Error(
       `Default share image must be ${siteConfig.seo.imageWidth}x${siteConfig.seo.imageHeight}, got ${width}x${height}`,
     );
+  }
+}
+
+async function assertFaviconImage() {
+  const image = await readFile(path.join(distDir, "favicon.png"));
+  if (
+    image.length < 24 ||
+    image[0] !== 0x89 ||
+    image[1] !== 0x50 ||
+    image[2] !== 0x4e ||
+    image[3] !== 0x47
+  ) {
+    throw new Error("Favicon must be a PNG file: /favicon.png");
+  }
+
+  const width = image.readUInt32BE(16);
+  const height = image.readUInt32BE(20);
+  if (width !== height || width < 64) {
+    throw new Error(`Favicon must be a square avatar PNG, got ${width}x${height}`);
   }
 }
 
