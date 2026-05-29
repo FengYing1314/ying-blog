@@ -141,6 +141,12 @@ describe("content registry", () => {
     ).toThrow(/unsafe URL/);
   });
 
+  it("rejects Markdown images without alt text", () => {
+    expect(() =>
+      assertApprovedMarkdown(["# Example", "", "![](./missing-alt.png)"].join("\n"), "example.md"),
+    ).toThrow(/image without alt text/);
+  });
+
   it("keeps base path helpers stable for route and file URLs", () => {
     expect(withBasePath("/rss.xml")).toMatch(/\/rss\.xml$/);
     expect(withBasePath("/zh/categories/engineering/")).toMatch(/\/zh\/categories\/engineering\/$/);

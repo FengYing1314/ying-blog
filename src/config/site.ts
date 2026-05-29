@@ -23,6 +23,27 @@ export const siteConfig = {
   url: normalizeSiteUrl(readPublicEnv("SITE_URL", defaultSiteUrl)),
   basePath: normalizeBasePath(readPublicEnv("BASE_PATH", defaultBasePath)),
   trailingSlash: true,
+  seo: {
+    title: {
+      zh: "枫莹の小窝 - 双语个人博客",
+      en: "Fengying's Nook - Bilingual Personal Blog",
+    },
+    titleSuffix: "枫莹の小窝",
+    identityType: "Person",
+    image: "/og-default.png",
+    imageAlt: {
+      zh: "枫莹の小窝双语个人博客分享图",
+      en: "Fengying's Nook bilingual personal blog share image",
+    },
+    imageWidth: 1200,
+    imageHeight: 630,
+    sameAs: ["https://github.com/FengYing1314/", "https://www.fengying.xin/"],
+  },
+  ai: {
+    policy: "allow",
+    llmsTextPath: "/llms.txt",
+    llmsFullTextPath: "/llms-full.txt",
+  },
   verification: {
     google: readPublicEnv("GOOGLE_SITE_VERIFICATION", ""),
     bing: readPublicEnv("BING_SITE_VERIFICATION", ""),
