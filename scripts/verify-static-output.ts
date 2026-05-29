@@ -8,6 +8,7 @@ import type {
   ListingPage,
   Locale,
   PageType,
+  TaxonomyIndexPage,
   TaxonomyPage,
 } from "../src/types/content.ts";
 
@@ -38,6 +39,7 @@ const rootPage: PageCheck = {
 };
 const listingPages = contentRegistry.listingPages as readonly ListingPage[];
 const entries = contentRegistry.entries as readonly ContentEntry[];
+const taxonomyIndexPages = contentRegistry.taxonomyIndexPages as readonly TaxonomyIndexPage[];
 const taxonomyPages = contentRegistry.taxonomyPages as readonly TaxonomyPage[];
 const pages: PageCheck[] = [
   rootPage,
@@ -59,6 +61,14 @@ const pages: PageCheck[] = [
     date: entry.date,
     updated: entry.updated,
     image: entry.image,
+  })),
+  ...taxonomyIndexPages.map((page) => ({
+    path: page.path,
+    locale: page.locale,
+    title: page.title,
+    description: page.description,
+    type: page.type,
+    counterpartPath: page.counterpartPath,
   })),
   ...taxonomyPages.map((page) => ({
     path: page.path,
@@ -175,6 +185,18 @@ const zhHomeHtml = await readFile(routeHtmlPath("/zh/"), "utf8");
 assertIncludes(zhHomeHtml, `href="${escapeHtml(withBasePath("/rss.xml"))}"`, "/zh/", "RSS link");
 assertIncludes(
   zhHomeHtml,
+  `href="${escapeHtml(withBasePath("/zh/categories/"))}"`,
+  "/zh/",
+  "base-aware category index link",
+);
+assertIncludes(
+  zhHomeHtml,
+  `href="${escapeHtml(withBasePath("/zh/tags/"))}"`,
+  "/zh/",
+  "base-aware tag index link",
+);
+assertIncludes(
+  zhHomeHtml,
   `href="${escapeHtml(withBasePath("/zh/categories/engineering/"))}"`,
   "/zh/",
   "base-aware taxonomy link",
@@ -194,9 +216,30 @@ assertIncludes(
   "base-aware project category link",
 );
 
+const zhCategoriesHtml = await readFile(routeHtmlPath("/zh/categories/"), "utf8");
+assertIncludes(
+  zhCategoriesHtml,
+  `href="${escapeHtml(withBasePath("/zh/categories/engineering/"))}"`,
+  "/zh/categories/",
+  "category index term link",
+);
+assertIncludes(
+  zhCategoriesHtml,
+  `href="${escapeHtml(withBasePath("/zh/projects/"))}"`,
+  "/zh/categories/",
+  "category index project return link",
+);
+const enTagsHtml = await readFile(routeHtmlPath("/en/tags/"), "utf8");
+assertIncludes(
+  enTagsHtml,
+  `href="${escapeHtml(withBasePath("/en/tags/vue/"))}"`,
+  "/en/tags/",
+  "tag index term link",
+);
+
 const sitemapXml = await readFile(path.join(distDir, "sitemap.xml"), "utf8");
 assertNoExampleDomain(sitemapXml, "/sitemap.xml");
-const publicPages = [...listingPages, ...entries, ...taxonomyPages];
+const publicPages = [...listingPages, ...entries, ...taxonomyIndexPages, ...taxonomyPages];
 for (const page of publicPages) {
   assertIncludes(
     sitemapXml,
@@ -269,6 +312,8 @@ for (const [label, value] of [
   assertIncludes(value, absoluteFileUrl("/rss.xml"), label, "LLM RSS link");
   assertIncludes(value, absoluteUrl("/zh/"), label, "LLM zh home link");
   assertIncludes(value, absoluteUrl("/en/"), label, "LLM en home link");
+  assertIncludes(value, absoluteUrl("/zh/categories/"), label, "LLM zh categories link");
+  assertIncludes(value, absoluteUrl("/en/tags/"), label, "LLM en tags link");
   assertNoExampleDomain(value, label);
   assertNotIncludes(value, "G:/", label, "local path");
   assertNotIncludes(value, "C:/", label, "local path");
@@ -371,7 +416,13 @@ function expectedSchemaType(type: PageType) {
   if (type === "docs" || type === "about") {
     return "Article";
   }
-  if (type === "home" || type === "listing" || type === "projects" || type === "taxonomy") {
+  if (
+    type === "home" ||
+    type === "listing" ||
+    type === "projects" ||
+    type === "taxonomy" ||
+    type === "taxonomy-index"
+  ) {
     return "CollectionPage";
   }
   return "WebPage";

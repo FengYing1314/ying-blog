@@ -6,6 +6,7 @@ import type {
   ContentType,
   Locale,
   ProjectCard,
+  TaxonomyIndexPage,
   TaxonomyPage,
 } from "../types/content";
 
@@ -50,6 +51,19 @@ export function getLatestEntries(locale: Locale, limit = 5) {
 
 export function getListingPage(path: string) {
   return registry.listingPages.find((page) => page.path === path);
+}
+
+export function getTaxonomyIndexPage(path: string) {
+  return registry.taxonomyIndexPages.find((page) => page.path === path);
+}
+
+export function getTaxonomyIndexTerms(page: TaxonomyIndexPage) {
+  const pages = registry.taxonomyPages.filter(
+    (candidate) => candidate.locale === page.locale && candidate.taxonomyType === page.taxonomyType,
+  );
+  return page.termSlugs
+    .map((slug) => pages.find((candidate) => candidate.slug === slug))
+    .filter((termPage): termPage is TaxonomyPage => Boolean(termPage));
 }
 
 export function getTaxonomyEntries(page: TaxonomyPage) {

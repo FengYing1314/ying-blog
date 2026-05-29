@@ -6,12 +6,7 @@
     <main id="main" class="site-main">
       <slot />
     </main>
-    <footer class="site-footer">
-      <div class="shell-inner footer-inner">
-        <span>Ying Blog</span>
-        <span>Static, bilingual, and content-first.</span>
-      </div>
-    </footer>
+    <SiteFooter :locale="locale" />
   </div>
 </template>
 
@@ -20,6 +15,7 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import PointerAura from "../components/PointerAura.vue";
 import SiteHeader from "../components/SiteHeader.vue";
+import SiteFooter from "../components/SiteFooter.vue";
 import { uiText } from "../config/site";
 import { localeFromPath } from "../lib/paths";
 

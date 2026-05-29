@@ -7,6 +7,7 @@ import HomePage from "../pages/HomePage.vue";
 import NotFoundPage from "../pages/NotFoundPage.vue";
 import PostsPage from "../pages/PostsPage.vue";
 import ProjectsPage from "../pages/ProjectsPage.vue";
+import TaxonomyIndexPage from "../pages/TaxonomyIndexPage.vue";
 import TaxonomyPage from "../pages/TaxonomyPage.vue";
 
 export const routes: RouteRecordRaw[] = [
@@ -72,6 +73,18 @@ export const routes: RouteRecordRaw[] = [
     meta: {
       locale: entry.locale,
       counterpartPath: entry.counterpartPath,
+    },
+  })),
+  ...registry.taxonomyIndexPages.map((page) => ({
+    path: page.path,
+    name: page.id,
+    component: TaxonomyIndexPage,
+    props: {
+      pageId: page.id,
+    },
+    meta: {
+      locale: page.locale,
+      counterpartPath: page.counterpartPath,
     },
   })),
   ...registry.taxonomyPages.map((page) => ({
