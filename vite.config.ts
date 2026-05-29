@@ -4,6 +4,18 @@ import type { ViteDevServer } from "vite";
 import { siteConfig } from "./src/config/site.ts";
 import { generateContent } from "./scripts/content/generate-content.ts";
 
+function chunkGroup(id: string) {
+  const normalizedId = id.replace(/\\/g, "/");
+  if (
+    normalizedId.includes("/node_modules/vue/") ||
+    normalizedId.includes("/node_modules/vue-router/") ||
+    normalizedId.includes("/node_modules/@vue/") ||
+    normalizedId.includes("/node_modules/@unhead/")
+  ) {
+    return "vendor-vue";
+  }
+}
+
 export default defineConfig(async () => {
   process.env.VITE_SITE_URL ??= process.env.SITE_URL ?? siteConfig.url;
   process.env.VITE_BASE_PATH ??= process.env.BASE_PATH ?? siteConfig.basePath;
@@ -16,6 +28,11 @@ export default defineConfig(async () => {
 
   return {
     base: siteConfig.basePath,
+    resolve: {
+      alias: {
+        mermaid: "mermaid/dist/mermaid.esm.min.mjs",
+      },
+    },
     plugins: [
       vue(),
       {
@@ -38,6 +55,14 @@ export default defineConfig(async () => {
     ],
     ssgOptions: {
       script: "async",
+    },
+    build: {
+      chunkSizeWarningLimit: 700,
+      rollupOptions: {
+        output: {
+          manualChunks: chunkGroup,
+        },
+      },
     },
   };
 });

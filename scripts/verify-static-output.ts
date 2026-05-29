@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { siteConfig } from "../src/config/site.ts";
 import { contentRegistry } from "../src/generated/content.ts";
@@ -13,7 +13,14 @@ import type {
 } from "../src/types/content.ts";
 
 const distDir = path.join(process.cwd(), "dist");
+const assetsDir = path.join(distDir, "assets");
 const defaultImage = absoluteFileUrl(siteConfig.seo.image);
+const assetBudgets = {
+  initialJs: 180 * 1024,
+  maxJs: 700 * 1024,
+  mermaidJsTotal: 3_300 * 1024,
+  css: 80 * 1024,
+} as const;
 
 interface PageCheck {
   path: string;
@@ -336,6 +343,7 @@ for (const [label, value] of [
   assertNotIncludes(value, "C:/", label, "local path");
 }
 await assertDefaultShareImage();
+await assertAssetBudgets();
 
 function routeHtmlPath(routePath: string) {
   if (routePath === "/") {
@@ -424,6 +432,67 @@ async function assertDefaultShareImage() {
       `Default share image must be ${siteConfig.seo.imageWidth}x${siteConfig.seo.imageHeight}, got ${width}x${height}`,
     );
   }
+}
+
+async function assertAssetBudgets() {
+  const assets = await readdir(assetsDir, { withFileTypes: true });
+  const files = await Promise.all(
+    assets
+      .filter((asset) => asset.isFile())
+      .map(async (asset) => {
+        const filePath = path.join(assetsDir, asset.name);
+        const contents = await readFile(filePath);
+        return {
+          name: asset.name,
+          size: contents.length,
+        };
+      }),
+  );
+
+  const jsFiles = files.filter((file) => file.name.endsWith(".js"));
+  const cssFiles = files.filter((file) => file.name.endsWith(".css"));
+  const appJs = jsFiles.filter((file) => /^app-[\w-]+\.js$/.test(file.name));
+  const manifest = JSON.parse(
+    await readFile(path.join(distDir, ".vite", "ssr-manifest.json"), "utf8"),
+  ) as Record<string, string[]>;
+  const mermaidAssets = new Set(
+    Object.entries(manifest)
+      .filter(([moduleId]) => moduleId.includes("node_modules/mermaid/"))
+      .flatMap(([, assets]) => assets.map((asset) => path.basename(asset))),
+  );
+  const mermaidJs = jsFiles.filter((file) => mermaidAssets.has(file.name));
+
+  assertBudget(
+    appJs.reduce((sum, file) => sum + file.size, 0),
+    assetBudgets.initialJs,
+    "initial app JS",
+  );
+  assertBudget(
+    Math.max(...jsFiles.map((file) => file.size)),
+    assetBudgets.maxJs,
+    "largest JS asset",
+  );
+  assertBudget(
+    mermaidJs.reduce((sum, file) => sum + file.size, 0),
+    assetBudgets.mermaidJsTotal,
+    "lazy Mermaid JS total",
+  );
+
+  for (const file of cssFiles) {
+    assertBudget(file.size, assetBudgets.css, `CSS asset ${file.name}`);
+  }
+}
+
+function assertBudget(actual: number, budget: number, label: string) {
+  if (actual > budget) {
+    throw new Error(
+      `${label} exceeds static asset budget: ${formatBytes(actual)} > ${formatBytes(budget)}`,
+    );
+  }
+}
+
+function formatBytes(value: number) {
+  return `${(value / 1024).toFixed(1)} KiB`;
 }
 
 function expectedSchemaType(type: PageType) {
