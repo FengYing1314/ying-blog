@@ -30,10 +30,12 @@ order: 2
 后端这一侧，主要是 Python 方向：
 
 - FastAPI 负责 HTTP 入口和路由组织。
+- Uvicorn 负责 ASGI 运行时。
 - Pydantic 负责请求、响应和数据结构约束。
 - SQLAlchemy 负责数据库模型和查询。
 - Alembic 负责数据库迁移。
 - PostgreSQL 负责持久化数据。
+- httpx 负责调用外部 HTTP 能力。
 - Kafka 负责把耗时任务从同步请求里拆出去。
 - 对象存储负责放文件、图片、视频等大对象。
 - worker 负责消费任务、调用外部能力、更新状态。
@@ -43,6 +45,8 @@ order: 2
 ## 后端分层
 
 我现在更倾向于把后端按入口、结构、编排、存储和外部能力来分。
+
+落到目录上，可以大致让 `core` 放配置、数据库、鉴权、异常、日志、请求上下文和运行时预检；让 `routers`、`schemas`、`services`、`models`、`providers` 分别对应接口入口、契约结构、业务编排、持久化模型和外部能力适配。复杂一点的领域能力，再继续在 `services` 下按业务拆子目录，不要把所有逻辑都堆到一个大 service 里。
 
 `router` 是 HTTP 入口，只处理路由、鉴权后的上下文、请求参数和响应出口。它不应该塞太多具体逻辑，否则接口多起来后会很难维护。
 
@@ -55,6 +59,8 @@ order: 2
 `provider` 或 `client` 更像外部能力的适配层。无论是调用模型服务、文件服务，还是别的 HTTP 服务，都应该把外部差异收在这里，不要让 service 到处感知不同平台的细节。
 
 `worker` 负责异步执行。它不直接面向用户请求，而是从消息队列或任务表里拿工作，执行后再把状态写回去。
+
+另外还有一些容易被忽略但很重要的横切能力，比如统一错误结构、请求 id、访问日志、健康检查、就绪检查、敏感信息脱敏和生产环境配置校验。它们不属于某个业务接口，但会决定系统出了问题时能不能定位。
 
 ## 前后端同步调用流程
 
@@ -92,7 +98,10 @@ sequenceDiagram
   participant API as API client
   participant Service as service
   participant Database as database
+  participant Outbox as outbox
+  participant Publisher as publisher
   participant Kafka as Kafka
+  participant Inbox as inbox
   participant Worker as worker
   participant Provider as provider / client
   participant Storage as object storage
@@ -100,10 +109,14 @@ sequenceDiagram
   Page->>API: 提交任务
   API->>Service: 创建 Task
   Service->>Database: 写入 pending 状态
-  Service->>Kafka: 投递 Message
+  Service->>Outbox: 写入待投递 Message
   Service-->>API: 返回 Task id
   API-->>Page: 更新为等待状态
-  Kafka-->>Worker: 分发 Message
+  Publisher->>Outbox: 拉取待投递消息
+  Publisher->>Kafka: 投递 Message
+  Kafka-->>Inbox: 分发 Message
+  Inbox->>Inbox: 按 message id 去重
+  Inbox-->>Worker: 交给消费逻辑处理
   Worker->>Provider: 调用外部能力
   Worker->>Storage: 保存 File
   Worker->>Database: 更新 Task 状态和 Result
@@ -114,6 +127,10 @@ sequenceDiagram
 
 HTTP 请求只负责确认任务已经创建。真正耗时的工作交给 worker。前端拿到任务 id 后，只需要根据状态展示“等待中、处理中、成功、失败”。
 
+这里最好把消息链路再分清楚一点。`outbox` 更像发件箱：业务数据和待发送消息在同一个事务里写入，避免“任务创建了但消息没发出去”。独立的 publisher 负责扫描待发送消息、投递 Kafka、记录重试次数，失败太多就进入死信状态。
+
+`inbox` 更像收信箱：consumer 收到消息后，先用 `message id + consumer name` 判断这条消息有没有处理过，再执行业务逻辑并把收信记录和业务更新一起提交。这样即使 Kafka 重投、consumer 重启，后端也能尽量避免重复执行同一条任务。
+
 这样做的好处是：
 
 - 页面不会被一个长请求卡住。
@@ -121,6 +138,8 @@ HTTP 请求只负责确认任务已经创建。真正耗时的工作交给 worke
 - worker 可以独立扩展。
 - 文件和大结果可以放到对象存储，不必塞进普通响应里。
 - 后续排查问题时，可以沿着 Task 状态看链路走到哪一步。
+
+如果异步链路再复杂一点，我会把长期运行的进程继续拆成不同角色：有的只负责 outbox 投递，有的只负责 Kafka 消费和 inbox 去重，有的负责调度不同区域或不同能力的任务，有的专门处理文件转存和回调。这样做不是为了目录好看，而是为了让每个进程都有清楚的职责、配置和健康检查。
 
 ## 状态和幂等
 
@@ -140,7 +159,7 @@ flowchart LR
 
 同时，创建任务和消费消息都要考虑幂等。网络重试、消息重复、worker 重启都可能发生。如果同一条消息被消费两次，系统也应该尽量不要生成两份结果，或者把状态写乱。
 
-这里可以通过任务 id、状态检查、唯一约束、处理锁等方式降低问题概率。具体怎么做要看场景，但这个意识本身很重要。
+这里可以通过任务 id、message id、状态检查、唯一约束、处理锁、outbox 重试和 inbox 去重等方式降低问题概率。具体怎么做要看场景，但这个意识本身很重要。
 
 ## 前后端边界
 

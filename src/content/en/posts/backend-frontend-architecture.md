@@ -30,10 +30,12 @@ Pages organize user interactions, components handle reuse and display, state man
 On the backend side, the main stack is Python:
 
 - FastAPI handles HTTP entry points and route organization.
+- Uvicorn provides the ASGI runtime.
 - Pydantic describes request, response, and data structures.
 - SQLAlchemy handles database models and queries.
 - Alembic handles database migrations.
 - PostgreSQL stores persistent data.
+- httpx calls external HTTP capabilities.
 - Kafka moves long-running work out of synchronous requests.
 - Object storage keeps large files such as images, videos, and generated results.
 - Workers consume jobs, call external capabilities, and update task states.
@@ -43,6 +45,8 @@ Each tool can be understood on its own, but in a real system the important part 
 ## Backend Layers
 
 I now prefer splitting backend responsibilities into entry points, structures, orchestration, storage, and external capabilities.
+
+At the directory level, `core` can hold configuration, database setup, authentication, exceptions, logging, request context, and runtime preflight checks. `routers`, `schemas`, `services`, `models`, and `providers` then map to API entry points, contracts, orchestration, persistence models, and external adapters. When one domain grows larger, I prefer splitting it into subdirectories under `services` instead of letting one large service module absorb everything.
 
 `router` is the HTTP entry point. It handles routes, request parameters, request context after authentication, and response exits. It should not contain too much concrete logic, or the system becomes hard to maintain once there are more APIs.
 
@@ -55,6 +59,8 @@ I now prefer splitting backend responsibilities into entry points, structures, o
 `provider` or `client` acts as an adapter for external capabilities. Whether it is a model service, file service, or another HTTP service, the platform differences should stay here instead of leaking everywhere into services.
 
 `worker` handles asynchronous execution. It does not directly face user requests. Instead, it pulls work from a queue or task table, executes it, and writes the final state back.
+
+Some cross-cutting pieces are easy to overlook but matter a lot: unified error responses, request ids, access logs, health checks, readiness checks, sensitive-data redaction, and production configuration validation. They do not belong to one business API, but they decide whether problems can be found quickly when the system is running.
 
 ## Frontend and Backend Request Flow
 
@@ -92,7 +98,10 @@ sequenceDiagram
   participant API as API client
   participant Service as service
   participant Database as database
+  participant Outbox as outbox
+  participant Publisher as publisher
   participant Kafka as Kafka
+  participant Inbox as inbox
   participant Worker as worker
   participant Provider as provider / client
   participant Storage as object storage
@@ -100,10 +109,14 @@ sequenceDiagram
   Page->>API: submit task
   API->>Service: create Task
   Service->>Database: write pending status
-  Service->>Kafka: publish Message
+  Service->>Outbox: write pending Message
   Service-->>API: return Task id
   API-->>Page: show waiting state
-  Kafka-->>Worker: deliver Message
+  Publisher->>Outbox: load due messages
+  Publisher->>Kafka: publish Message
+  Kafka-->>Inbox: deliver Message
+  Inbox->>Inbox: deduplicate by message id
+  Inbox-->>Worker: hand off to consumer logic
   Worker->>Provider: call external capability
   Worker->>Storage: store File
   Worker->>Database: update Task state and Result
@@ -114,6 +127,10 @@ The point of this flow is not simply that Kafka is used. The value is moving slo
 
 The HTTP request only confirms that the task has been created. The worker handles the real long-running work. After the frontend receives a task id, it only needs to display states such as waiting, processing, succeeded, or failed.
 
+The message path needs its own context too. `outbox` acts like a sending mailbox: the business row and the pending message are written in the same transaction, so the system does not end up with a created task and no message to publish. A separate publisher scans due messages, publishes them to Kafka, records retry attempts, and marks messages as dead after too many failures.
+
+`inbox` acts like a receiving mailbox: after the consumer receives a message, it first checks `message id + consumer name` to see whether this message has already been handled, then runs the business logic and commits the inbox record together with the business updates. If Kafka redelivers a message or the consumer restarts, the backend can avoid doing the same work twice as much as possible.
+
 This has several benefits:
 
 - The page is not blocked by a long request.
@@ -121,6 +138,8 @@ This has several benefits:
 - Workers can scale independently.
 - Large files and generated results can go into object storage instead of normal API responses.
 - When debugging, the task state shows how far the flow has gone.
+
+When the async path grows more complex, I would split long-running processes into clearer roles: one can publish outbox messages, another can consume Kafka and deduplicate through the inbox, another can schedule work for different regions or capabilities, and another can focus on file transfer and callbacks. This is not about making the directory tree look neat. It gives every process a clear responsibility, configuration surface, and health check.
 
 ## State and Idempotency
 
@@ -140,7 +159,7 @@ Each state should answer a question: where is the task now, what should the user
 
 Task creation and message consumption also need idempotency. Network retries, duplicated messages, and worker restarts can all happen. If the same message is consumed twice, the system should avoid producing two results or writing confusing states.
 
-This can be reduced through task ids, state checks, unique constraints, and processing locks. The exact approach depends on the scenario, but the awareness itself matters.
+This can be reduced through task ids, message ids, state checks, unique constraints, processing locks, outbox retries, and inbox deduplication. The exact approach depends on the scenario, but the awareness itself matters.
 
 ## Frontend and Backend Boundaries
 
