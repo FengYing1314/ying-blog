@@ -9,7 +9,7 @@ npm ci
 npm run dev
 ```
 
-使用 `.node-version` 中声明的 Node 版本。
+使用 `.node-version` / `.nvmrc` 中声明的 Node 版本；`.npmrc` 会在安装时校验 Node 与 npm 的 engines 要求。
 
 ## 贡献前置规则
 

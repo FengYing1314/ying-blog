@@ -49,7 +49,7 @@
 
 ## 命令规则
 
-使用 `.node-version` 中的 Node 版本。
+使用 `.node-version` / `.nvmrc` 中的 Node 版本；`.npmrc` 会在安装时校验 Node 与 npm 的 engines 要求。
 
 常用命令：
 

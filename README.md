@@ -35,7 +35,7 @@ Agent 和项目协作规则保留在：
 
 ## 本地运行
 
-使用 `.node-version` 中声明的 Node 版本。当前 package metadata 要求 Node `>=24` 和 npm `11.15.0`。
+使用 `.node-version` / `.nvmrc` 中声明的 Node 版本。当前 package metadata 要求 Node `>=24.15.0` 和 npm `>=11.4.2`，并通过 `.npmrc` 启用 engine 校验。
 
 ```bash
 npm ci
