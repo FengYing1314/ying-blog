@@ -2,6 +2,7 @@ import type { Locale, LocalizedText } from "../types/content";
 
 const defaultSiteUrl = "https://yingblog.fengying.xin";
 const defaultBasePath = "/";
+const basePath = normalizeBasePath(readPublicEnv("BASE_PATH", defaultBasePath));
 
 export const locales = ["zh", "en"] as const satisfies readonly Locale[];
 
@@ -17,8 +18,9 @@ export const siteConfig = {
     en: "Ying Blog is a bilingual static content site baseline built with Vite+, Vue, TypeScript, SSG, and Markdown for posts, docs, projects, and long-term maintenance notes.",
   },
   author: "Ying",
+  icon: `${basePath}favicon.svg`,
   url: normalizeSiteUrl(readPublicEnv("SITE_URL", defaultSiteUrl)),
-  basePath: normalizeBasePath(readPublicEnv("BASE_PATH", defaultBasePath)),
+  basePath,
   trailingSlash: true,
   seo: {
     title: {

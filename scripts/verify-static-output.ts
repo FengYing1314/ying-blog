@@ -228,6 +228,7 @@ assertIncludes(zhProjectsHtml, "站点架构与内容系统", "/zh/projects/", "
 const zhPostsHtml = await readFile(routeHtmlPath("/zh/posts/"), "utf8");
 assertIncludes(zhPostsHtml, "归档入口", "/zh/posts/", "post archive panel");
 assertIncludes(zhPostsHtml, `href="#posts-2026"`, "/zh/posts/", "post year archive anchor");
+assertFooterBrandIcon(zhPostsHtml, "/zh/posts/");
 
 const zhCategoriesHtml = await readFile(routeHtmlPath("/zh/categories/"), "utf8");
 assertIncludes(
@@ -520,6 +521,16 @@ function assertImagesHaveAlt(html: string, pagePath: string) {
       throw new Error(`${pagePath} has image without alt attribute: ${match[0]}`);
     }
   }
+}
+
+function assertFooterBrandIcon(html: string, pagePath: string) {
+  const footer = /<footer\b[\s\S]*?<\/footer>/.exec(html)?.[0];
+  if (!footer) {
+    throw new Error(`${pagePath} is missing site footer`);
+  }
+
+  assertIncludes(footer, 'class="brand-mark brand-mark-image"', pagePath, "footer brand image");
+  assertIncludes(footer, `src="${escapeHtml(siteConfig.icon)}"`, pagePath, "footer brand icon");
 }
 
 function assertTitleQuality(title: string, pagePath: string) {

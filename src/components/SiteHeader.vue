@@ -2,8 +2,8 @@
   <header class="site-header">
     <div class="shell-inner header-inner">
       <RouterLink class="brand" :to="localizedPath(locale)">
-        <span class="brand-mark">Y</span>
-        <span class="brand-name">Ying Blog</span>
+        <img class="brand-mark brand-mark-image" :src="siteConfig.icon" alt="" />
+        <span class="brand-name">{{ siteConfig.name[locale] }}</span>
       </RouterLink>
 
       <nav class="desktop-nav" :aria-label="locale === 'zh' ? '主导航' : 'Primary'">
@@ -61,8 +61,8 @@
         >
           <div class="mobile-drawer-header">
             <RouterLink class="brand" :to="localizedPath(locale)" @click="closeDrawer">
-              <span class="brand-mark">Y</span>
-              <span class="brand-name">Ying Blog</span>
+              <img class="brand-mark brand-mark-image" :src="siteConfig.icon" alt="" />
+              <span class="brand-name">{{ siteConfig.name[locale] }}</span>
             </RouterLink>
             <button
               ref="closeButton"
@@ -109,7 +109,7 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { Languages, Menu, X } from "@lucide/vue";
-import { uiText } from "../config/site";
+import { siteConfig, uiText } from "../config/site";
 import { localeFromPath, localizedPath } from "../lib/paths";
 import ThemeToggle from "./ThemeToggle.vue";
 

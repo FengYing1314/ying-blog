@@ -3,8 +3,8 @@
     <div class="shell-inner footer-inner">
       <div class="footer-brand">
         <RouterLink class="brand" :to="localizedPath(locale)">
-          <span class="brand-mark">Y</span>
-          <span class="brand-name">Ying Blog</span>
+          <img class="brand-mark brand-mark-image" :src="siteConfig.icon" alt="" />
+          <span class="brand-name">{{ siteConfig.name[locale] }}</span>
         </RouterLink>
         <p>{{ siteConfig.description[locale] }}</p>
       </div>
