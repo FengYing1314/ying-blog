@@ -1,4 +1,5 @@
 import vue from "@vitejs/plugin-vue";
+import path from "node:path";
 import { defineConfig } from "vite";
 import type { ViteDevServer } from "vite";
 import { siteConfig } from "./src/config/site.ts";
@@ -38,18 +39,33 @@ export default defineConfig(async () => {
       {
         name: "fengying-content-registry",
         configureServer(server: ViteDevServer) {
-          const watched = ["src/content/**/*.md", "src/config/**/*.ts"];
-          watched.forEach((pattern) => server.watcher.add(pattern));
-          server.watcher.on("change", async (changedPath: string) => {
+          const watched = ["src/content", "src/config"];
+          server.watcher.add(
+            watched.map((directory) => path.resolve(server.config.root, directory)),
+          );
+          let pendingGeneration = Promise.resolve();
+          const updateContent = (changedPath: string) => {
             if (
               changedPath.includes("/src/content/") ||
               changedPath.includes("\\src\\content\\") ||
               changedPath.includes("/src/config/") ||
               changedPath.includes("\\src\\config\\")
             ) {
-              await generateContent();
+              // 串行生成，避免连续文件事件让旧结果覆盖新结果。
+              pendingGeneration = pendingGeneration
+                .then(async () => {
+                  await generateContent(server.config.root);
+                })
+                .catch((error: unknown) => {
+                  server.config.logger.error(
+                    `[content-registry] ${error instanceof Error ? error.message : String(error)}`,
+                  );
+                });
             }
-          });
+          };
+          for (const event of ["add", "change", "unlink"] as const) {
+            server.watcher.on(event, updateContent);
+          }
         },
       },
     ],
