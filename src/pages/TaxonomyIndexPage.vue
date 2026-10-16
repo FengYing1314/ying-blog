@@ -59,8 +59,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { FileText, FolderKanban, Tags } from "@lucide/vue";
+import { computed } from "vue";
 import { categories, tags } from "../config/taxonomy";
 import { getTaxonomyIndexTerms, registry } from "../lib/content";
 import { localizedPath } from "../lib/paths";

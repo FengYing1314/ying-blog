@@ -29,9 +29,9 @@
 </template>
 
 <script setup lang="ts">
+import { BookOpen, FileText, FolderKanban, Home, Languages } from "@lucide/vue";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { BookOpen, FileText, FolderKanban, Home, Languages } from "@lucide/vue";
 import { localeFromPath, localizedPath } from "../lib/paths";
 import { usePageSeo } from "../lib/seo";
 

@@ -1,5 +1,5 @@
-import type { LocalizedText } from "../types/content";
 import { withBasePath } from "../lib/paths";
+import type { LocalizedText } from "../types/content";
 
 export interface ProfileLink {
   label: LocalizedText;

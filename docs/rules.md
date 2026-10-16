@@ -42,6 +42,18 @@
 
 ## 样式规则
 
+### 代码风格
+
+- `.editorconfig` 统一 UTF-8、LF 和两空格缩进；`vite.config.ts` 的 `fmt` 与 `lint` 统一格式和静态检查规则。
+- TypeScript 使用双引号、分号和多行尾逗号，格式器按 100 列换行。
+- import 交给格式器按内置模块、第三方模块和项目模块排序，不重排 CSS 等副作用导入。
+- 仅用于类型的依赖使用独立 `import type`。前端导入可省略 `.ts`，Node 构建脚本保留现有显式 `.ts` 路径。
+- Vue 单文件组件保持 `<template>` 在前、`<script setup lang="ts">` 在后；组件文件使用 PascalCase，变量和函数使用 camelCase，CSS 类与自定义属性使用 kebab-case。
+- `src/generated/content.ts` 由内容生成器维护，不手动修改；新增目录或根配置时，同步维护 `package.json` 中格式化和检查的路径范围。
+- Vite 配置导出静态对象，供格式和 lint 工具读取；内容插件在 `config` 钩子中完成环境变量初始化和首次内容生成。
+
+### 页面样式
+
 - 视觉方向是安静、清晰、适合阅读，不复制 Mintlify。
 - 暗色模式是一等设计路径。
 - 组件应小、显式、低状态、可复用、易删除。
@@ -56,6 +68,8 @@
 ```bash
 npm run dev
 npm run content:generate
+npm run format
+npm run format:check
 npm run check
 npm run test
 npm run build
@@ -68,6 +82,8 @@ npm run preview
 - 修改内容或 taxonomy 后运行 `npm run content:generate`。
 - 修改项目卡片、profile 或站点配置后也应运行 `npm run content:generate` 或任一包含内容生成的验证命令。
 - 提交前至少运行 `npm run check`。
+- `npm run format` 格式化人工维护文件；`npm run format:check` 的检查范围包含生成产物，`npm run check` 还会运行 lint 和类型检查。
+- 两条格式命令加载 Vite 配置时仍会执行现有的内容生成流程；生成文件的格式由生成器提供。
 - 发布或合并前运行 `npm run ci`。
 - 生产式本地预览先运行 `npm run build`，再运行 `npm run preview`。
 - 不要用原始 `vp build` 或 `vite build` 替代 `npm run build`。

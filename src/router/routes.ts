@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from "vue-router";
-import { registry } from "../lib/content";
 import { locales } from "../config/site";
+import { registry } from "../lib/content";
 import ContentPage from "../pages/ContentPage.vue";
 import DocsPage from "../pages/DocsPage.vue";
 import HomePage from "../pages/HomePage.vue";

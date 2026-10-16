@@ -250,7 +250,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -265,8 +264,10 @@ import {
   Sparkles,
   Trophy,
 } from "@lucide/vue";
+import { computed } from "vue";
 import ContentCard from "../components/ContentCard.vue";
-import { profile, type SocialLinkKind } from "../config/profile";
+import { profile } from "../config/profile";
+import type { SocialLinkKind } from "../config/profile";
 import { siteConfig, uiText } from "../config/site";
 import { categories, tags } from "../config/taxonomy";
 import {

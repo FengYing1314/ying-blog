@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { assertApprovedMarkdown, createMarkdownRenderer } from "../scripts/content/markdown";
 import { taxonomy } from "../src/config/taxonomy";
 import { contentRegistry } from "../src/generated/content";
 import { absoluteFileUrl, absoluteUrl, withBasePath } from "../src/lib/paths";
-import { assertApprovedMarkdown, createMarkdownRenderer } from "../scripts/content/markdown";
 import type { ContentEntry } from "../src/types/content";
 
 const entries = contentRegistry.entries as readonly ContentEntry[];

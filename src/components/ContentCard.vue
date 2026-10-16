@@ -25,10 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { ArrowRight } from "@lucide/vue";
-import TaxonomyLinks from "./TaxonomyLinks.vue";
+import { computed } from "vue";
 import type { ContentEntry } from "../types/content";
+import TaxonomyLinks from "./TaxonomyLinks.vue";
 
 const props = defineProps<{
   entry: ContentEntry;
