@@ -99,7 +99,7 @@
                     : 'View avatar (opens in a new window)'
                 "
               >
-                {{ avatarUrl }}
+                {{ avatarDisplayUrl }}
               </a>
             </dd>
           </div>
@@ -143,6 +143,8 @@ const props = defineProps<{ locale: Locale }>();
 const page = computed(() => getListingPage(localizedPath(props.locale, "links")));
 const siteUrl = absoluteUrl("/");
 const avatarUrl = new URL(siteConfig.icon, `${siteConfig.url}/`).href;
+// 保留空格转义，方便将中文地址作为完整链接复制使用。
+const avatarDisplayUrl = decodeURI(avatarUrl).replaceAll(" ", "%20");
 const contactHref = computed(() => {
   const href = sanitizeHref(profile.socialLinks.find((link) => link.kind === "mail")?.href);
   return href?.startsWith("mailto:") ? href : undefined;
@@ -151,7 +153,7 @@ const siteInfo = computed(() =>
   [
     `${props.locale === "zh" ? "站名" : "Name"}: ${siteConfig.name[props.locale]}`,
     `${props.locale === "zh" ? "地址" : "URL"}: ${siteUrl}`,
-    `${props.locale === "zh" ? "头像" : "Avatar"}: ${avatarUrl}`,
+    `${props.locale === "zh" ? "头像" : "Avatar"}: ${avatarDisplayUrl}`,
     `${props.locale === "zh" ? "简介" : "About"}: ${siteConfig.description[props.locale]}`,
   ].join("\n"),
 );
