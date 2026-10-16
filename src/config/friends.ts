@@ -85,4 +85,14 @@ export const friendLinks: readonly FriendLink[] = [
     url: "https://mtf.lgbt/",
     avatar: "https://avatars.githubusercontent.com/u/177436503?v=4",
   },
+  {
+    id: "linso",
+    name: { zh: "Linsoの基地", en: "Linso's Base" },
+    description: {
+      zh: "Linso 的个人小站与随笔记录。",
+      en: "Linso's personal site and essays.",
+    },
+    url: "https://linso.pro/",
+    avatar: "https://linso.pro/upload/linso.webp",
+  },
 ];
