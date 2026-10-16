@@ -43,6 +43,15 @@ npm run dev
 npm run ci
 ```
 
+### IntelliJ IDEA / WebStorm
+
+仓库在 `.run/` 中提供了可共享的运行配置。打开项目后，先确认项目 Node.js 运行时使用 `.node-version` 要求的 Node 24，然后可直接从运行配置列表选择：
+
+- `开发服务器`：运行 `npm run dev`，站点地址为 `http://127.0.0.1:5173/`。
+- `浏览器调试`：启动同一个开发服务器，并自动打开 Chrome、连接 JavaScript 调试器；可直接在 Vue 和 TypeScript 源码中设置断点。
+
+两个配置都固定使用 5173 端口。切换配置前应先停止已运行的开发服务器；如果端口已被其他进程占用，IDE 会直接显示错误，而不会静默切换到其他端口。
+
 常用脚本：
 
 ```bash
