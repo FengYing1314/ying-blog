@@ -32,8 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from "vue";
 import { ChevronDown } from "@lucide/vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from "vue";
 import type { Heading, Locale } from "../types/content";
 
 const props = defineProps<{

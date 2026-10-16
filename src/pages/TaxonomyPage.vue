@@ -76,8 +76,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { FileText, FolderKanban } from "@lucide/vue";
+import { computed } from "vue";
 import ContentCard from "../components/ContentCard.vue";
 import ProjectCard from "../components/ProjectCard.vue";
 import { registry, getTaxonomyEntries, getTaxonomyProjects } from "../lib/content";

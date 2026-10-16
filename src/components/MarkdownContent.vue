@@ -4,8 +4,8 @@
 
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import type { Locale } from "../types/content";
 import { uiText } from "../config/site";
+import type { Locale } from "../types/content";
 
 const props = defineProps<{
   html: string;

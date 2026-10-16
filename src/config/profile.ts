@@ -1,6 +1,6 @@
+import { withBasePath } from "../lib/paths";
 import type { LocalizedText } from "../types/content";
 import { avatarImageUrl } from "./site";
-import { withBasePath } from "../lib/paths";
 
 export interface ProfileLink {
   label: LocalizedText;

@@ -81,8 +81,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { ArrowLeft } from "@lucide/vue";
+import { computed } from "vue";
 import ContentCard from "../components/ContentCard.vue";
 import DocSidebar from "../components/DocSidebar.vue";
 import MarkdownContent from "../components/MarkdownContent.vue";

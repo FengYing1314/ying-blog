@@ -17,6 +17,8 @@
   "scripts": {
     "dev": "vp dev --host 127.0.0.1",
     "content:generate": "vp exec tsx scripts/content/generate.ts",
+    "format": "vp fmt .env.example .github AGENTS.md CLAUDE.md CODE_OF_CONDUCT.md CONTRIBUTING.md README.md SECURITY.md SUPPORT.md docs index.html package.json package-lock.json public scripts src tests tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts vitest.config.ts '!src/generated/**'",
+    "format:check": "vp fmt --check .env.example .github AGENTS.md CLAUDE.md CODE_OF_CONDUCT.md CONTRIBUTING.md README.md SECURITY.md SUPPORT.md docs index.html package.json package-lock.json public scripts src tests tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts vitest.config.ts",
     "check": "vp exec tsx scripts/content/generate.ts && vp check .env.example .github AGENTS.md CLAUDE.md CODE_OF_CONDUCT.md CONTRIBUTING.md README.md SECURITY.md SUPPORT.md docs index.html package.json package-lock.json public scripts src tests tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts vitest.config.ts && vp exec vue-tsc --noEmit && vp exec tsc -p tsconfig.node.json --noEmit",
     "test": "vp exec tsx scripts/content/generate.ts && vp test run",
     "build": "vp exec vite-ssg build && vp exec tsx scripts/static-assets.ts && vp exec tsx scripts/verify-static-output.ts",

@@ -13,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { Moon, Sun } from "@lucide/vue";
+import { onMounted } from "vue";
 import { uiText } from "../config/site";
 import { useTheme } from "../lib/theme";
 import type { Locale } from "../types/content";

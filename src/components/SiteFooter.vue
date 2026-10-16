@@ -48,9 +48,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { GitBranch, Link as LinkIcon, Mail, Rss } from "@lucide/vue";
-import { profile, type SocialLinkKind } from "../config/profile";
+import { computed } from "vue";
+import { profile } from "../config/profile";
+import type { SocialLinkKind } from "../config/profile";
 import { siteConfig, uiText } from "../config/site";
 import { localizedPath, withBasePath } from "../lib/paths";
 import { sanitizeHref } from "../lib/urls";

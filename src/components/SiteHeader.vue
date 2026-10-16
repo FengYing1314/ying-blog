@@ -106,9 +106,9 @@
 </template>
 
 <script setup lang="ts">
+import { Languages, Menu, X } from "@lucide/vue";
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Languages, Menu, X } from "@lucide/vue";
 import { siteConfig, uiText } from "../config/site";
 import { localeFromPath, localizedPath } from "../lib/paths";
 import ThemeToggle from "./ThemeToggle.vue";

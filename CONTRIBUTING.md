@@ -15,6 +15,17 @@ npm run dev
 
 仓库根目录存在 `LICENSE` 文件前，不应接受外部贡献。没有明确许可证时，复用条款和贡献条款都不够清晰。
 
+## 代码风格
+
+使用现有 Vite+ 工具链维护代码风格，不另加格式器：
+
+```bash
+npm run format
+npm run format:check
+```
+
+两条命令分别用于写入格式和检查格式；加载 Vite 配置时会按现有流程生成内容注册表。`format` 排除生成文件的直接格式化，生成产物仍纳入格式检查。import 排序由格式器处理，纯类型依赖统一为独立 `import type`。组件、命名与 CSS 约定见 `docs/rules.md` 的代码风格规则。
+
 ## 验证
 
 提交 pull request 前运行完整本地门禁：
