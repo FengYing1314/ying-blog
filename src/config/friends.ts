@@ -63,12 +63,12 @@ export const friendLinks: readonly FriendLink[] = [
     avatar: "https://yuban11451.github.io/img/avatar_hu_7e8a1d1a7fd826b.png",
   },
   {
-    id: "everleaf",
-    name: { zh: "everleaf.cn", en: "everleaf.cn" },
+    id: "skyhome",
+    name: { zh: "skyhome.studio", en: "skyhome.studio" },
     description: {
-      zh: "一个正在建设中的网站。",
-      en: "A website currently under construction.",
+      zh: "一个朋友的网站。",
+      en: "A friend's website.",
     },
-    url: "https://www.everleaf.cn/",
+    url: "https://www.skyhome.studio/",
   },
 ];
