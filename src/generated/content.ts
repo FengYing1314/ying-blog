@@ -365,6 +365,16 @@ export const contentRegistry = {
       counterpartPath: "/en/projects/",
     },
     {
+      id: "links:zh",
+      type: "listing",
+      locale: "zh",
+      path: "/zh/links/",
+      title: "友链",
+      description:
+        "Ying Blog 的友链页面，收集值得慢慢阅读的个人网站与博客，在文字和分享中发现新的朋友与灵感。",
+      counterpartPath: "/en/links/",
+    },
+    {
       id: "home:en",
       type: "home",
       locale: "en",
@@ -403,6 +413,16 @@ export const contentRegistry = {
       description:
         "Ying Blog projects use configuration-driven cards to summarize the current baseline, example capabilities, and public project directions.",
       counterpartPath: "/zh/projects/",
+    },
+    {
+      id: "links:en",
+      type: "listing",
+      locale: "en",
+      path: "/en/links/",
+      title: "Friends",
+      description:
+        "Discover personal websites and blogs on Ying Blog, and find new friends and inspiration through thoughtful writing and sharing.",
+      counterpartPath: "/zh/links/",
     },
   ],
   taxonomyPages: [
@@ -808,6 +828,7 @@ export const contentRegistry = {
     "/en/docs/",
     "/en/docs/guide/content-workflow/",
     "/en/docs/guide/getting-started/",
+    "/en/links/",
     "/en/posts/",
     "/en/posts/building-this-site/",
     "/en/projects/",
@@ -826,6 +847,7 @@ export const contentRegistry = {
     "/zh/docs/",
     "/zh/docs/guide/content-workflow/",
     "/zh/docs/guide/getting-started/",
+    "/zh/links/",
     "/zh/posts/",
     "/zh/posts/building-this-site/",
     "/zh/projects/",

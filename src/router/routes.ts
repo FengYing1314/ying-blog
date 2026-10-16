@@ -62,6 +62,16 @@ export const routes: RouteRecordRaw[] = [
         counterpartPath: `/${locale === "zh" ? "en" : "zh"}/projects/`,
       },
     },
+    {
+      path: `/${locale}/links/`,
+      name: `links-${locale}`,
+      component: () => import("../pages/LinksPage.vue"),
+      props: { locale },
+      meta: {
+        locale,
+        counterpartPath: `/${locale === "zh" ? "en" : "zh"}/links/`,
+      },
+    },
   ]),
   ...registry.entries.map((entry) => ({
     path: entry.path,

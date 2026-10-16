@@ -18,6 +18,8 @@ src/content/
 
 当前 Markdown 内容类型只有 `posts`、`docs` 和 `about`。Projects 由 `src/config/projects.ts` 配置驱动，不在 `src/content/` 中创建 Markdown 详情页。
 
+友链由 `src/config/friends.ts` 配置驱动，在 `/zh/links/` 和 `/en/links/` 共享同一组卡片。新增时填写唯一 `id`、中英文 `name` 和 `description`、站点 `url`，可选头像 `avatar`。站点地址仅支持 HTTP/HTTPS；头像支持 HTTP/HTTPS，或放在 `public/images/` 下并使用 `/images/` 开头的路径。主分支的卡片是明确标记的示例，个人内容分支仅填入已确认的实际友链；没有友链时使用空数组。友链不创建 Markdown 文件，也不进入 RSS。
+
 ## 双语配对
 
 每个公开 Markdown 条目都必须同时存在中文和英文版本。配对内容必须保持以下字段完全一致：

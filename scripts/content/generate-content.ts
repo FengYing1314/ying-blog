@@ -4,6 +4,8 @@ import fg from "fast-glob";
 import matter from "gray-matter";
 import { format } from "oxfmt";
 import { z } from "zod";
+import { friendLinks } from "../../src/config/friends.ts";
+import type { FriendLink } from "../../src/config/friends.ts";
 import { projects } from "../../src/config/projects.ts";
 import { siteConfig, uiText } from "../../src/config/site.ts";
 import { taxonomy } from "../../src/config/taxonomy.ts";
@@ -112,6 +114,7 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
 
   assertBilingualPairs(entries);
   assertProjectConfig(projects);
+  assertFriendsConfig(friendLinks);
 
   const listingPages = locales.flatMap((locale) => [
     {
@@ -158,6 +161,18 @@ export async function generateContent(root = process.cwd()): Promise<ContentRegi
           ? "Ying Blog 的项目展示页，以配置驱动卡片汇总当前基线、示例能力和公开项目方向。"
           : "Ying Blog projects use configuration-driven cards to summarize the current baseline, example capabilities, and public project directions.",
       counterpartPath: `/${oppositeLocale(locale)}/projects/`,
+    },
+    {
+      id: `links:${locale}`,
+      type: "listing" as const,
+      locale,
+      path: `/${locale}/links/`,
+      title: uiText.nav.links[locale],
+      description:
+        locale === "zh"
+          ? "Ying Blog 的友链页面，收集值得慢慢阅读的个人网站与博客，在文字和分享中发现新的朋友与灵感。"
+          : "Discover personal websites and blogs on Ying Blog, and find new friends and inspiration through thoughtful writing and sharing.",
+      counterpartPath: `/${oppositeLocale(locale)}/links/`,
     },
   ]);
 
@@ -340,6 +355,48 @@ function assertProjectConfig(projectCards: readonly ProjectCard[]) {
     if (project.highlights.length === 0) {
       throw new Error(`project:${project.slug} must list at least one highlight`);
     }
+  }
+}
+
+export function assertFriendsConfig(friends: readonly FriendLink[]) {
+  const seen = new Set<string>();
+  for (const friend of friends) {
+    const id = friend.id.trim();
+    if (!id) {
+      throw new Error("Friend link must have a non-empty id");
+    }
+    if (seen.has(id)) {
+      throw new Error(`Duplicate friend link id: ${id}`);
+    }
+    seen.add(id);
+
+    for (const locale of locales) {
+      if (!friend.name[locale]?.trim()) {
+        throw new Error(`friend:${id} is missing ${locale} name`);
+      }
+      if (!friend.description[locale]?.trim()) {
+        throw new Error(`friend:${id} is missing ${locale} description`);
+      }
+    }
+
+    assertHttpUrl(friend.url, `friend:${id} url`);
+    if (friend.avatar !== undefined) {
+      if (friend.avatar.startsWith("/images/")) {
+        assertSafeHref(friend.avatar, `friend:${id} avatar`);
+        if (!new URL(friend.avatar, siteConfig.url).pathname.startsWith("/images/")) {
+          throw new Error(`friend:${id} avatar must stay under /images/`);
+        }
+      } else {
+        assertHttpUrl(friend.avatar, `friend:${id} avatar`);
+      }
+    }
+  }
+}
+
+function assertHttpUrl(value: string, context: string) {
+  assertSafeHref(value, context);
+  if (!URL.canParse(value) || !["http:", "https:"].includes(new URL(value).protocol)) {
+    throw new Error(`${context} must use an absolute HTTP or HTTPS URL`);
   }
 }
 

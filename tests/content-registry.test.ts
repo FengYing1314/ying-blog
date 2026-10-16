@@ -87,6 +87,18 @@ describe("content registry", () => {
     expect(projectItems.every((item) => /\/(en|zh)\/projects\/$/.test(item.path))).toBe(true);
   });
 
+  it("generates paired friend-link indexes without adding them to RSS", () => {
+    const linkPages = contentRegistry.listingPages.filter((page) => page.id.startsWith("links:"));
+    expect(linkPages.map((page) => page.path).sort()).toEqual(["/en/links/", "/zh/links/"]);
+    for (const page of linkPages) {
+      const counterpart = linkPages.find((candidate) => candidate.locale !== page.locale);
+      expect(page.type).toBe("listing");
+      expect(page.counterpartPath).toBe(counterpart?.path);
+      expect(contentRegistry.routes).toContain(page.path);
+      expect(contentRegistry.rssItems.some((item) => item.path === page.path)).toBe(false);
+    }
+  });
+
   it("renders approved Markdown affordances at build time", () => {
     const post = entries.find((entry) => entry.id === "posts:building-this-site:en");
     expect(post?.html).toContain('class="md-tabs"');
