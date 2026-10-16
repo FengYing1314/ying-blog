@@ -79,8 +79,8 @@ export const friendLinks: readonly FriendLink[] = [
       en: "WEBSITE of EVERY TRANSGENDER.",
     },
     description: {
-      zh: "一只可爱的小药娘的网站。",
-      en: "A cute trans girl's personal website.",
+      zh: "献给整个跨性别社群的一份礼物。",
+      en: "A gift for all Transgender community",
     },
     url: "https://mtf.lgbt/",
     avatar: "https://avatars.githubusercontent.com/u/177436503?v=4",
