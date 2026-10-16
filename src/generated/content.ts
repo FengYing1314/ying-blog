@@ -541,6 +541,16 @@ export const contentRegistry = {
       counterpartPath: "/en/projects/",
     },
     {
+      id: "links:zh",
+      type: "listing",
+      locale: "zh",
+      path: "/zh/links/",
+      title: "友链",
+      description:
+        "枫莹の小窝的友链页面，收集值得慢慢阅读的个人网站与博客，在文字和分享中发现新的朋友与灵感。",
+      counterpartPath: "/en/links/",
+    },
+    {
       id: "home:en",
       type: "home",
       locale: "en",
@@ -576,6 +586,16 @@ export const contentRegistry = {
       title: "Projects",
       description: "Projects, small tools, and records I still want to keep.",
       counterpartPath: "/zh/projects/",
+    },
+    {
+      id: "links:en",
+      type: "listing",
+      locale: "en",
+      path: "/en/links/",
+      title: "Friends",
+      description:
+        "Discover personal websites and blogs on Fengying's Nook, and find new friends and inspiration through thoughtful writing and sharing.",
+      counterpartPath: "/zh/links/",
     },
   ],
   taxonomyPages: [
@@ -1685,6 +1705,7 @@ export const contentRegistry = {
     "/en/categories/writing/",
     "/en/docs/",
     "/en/docs/guide/getting-started/",
+    "/en/links/",
     "/en/posts/",
     "/en/posts/backend-frontend-architecture/",
     "/en/posts/building-this-site/",
@@ -1718,6 +1739,7 @@ export const contentRegistry = {
     "/zh/categories/writing/",
     "/zh/docs/",
     "/zh/docs/guide/getting-started/",
+    "/zh/links/",
     "/zh/posts/",
     "/zh/posts/backend-frontend-architecture/",
     "/zh/posts/building-this-site/",

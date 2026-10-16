@@ -89,6 +89,7 @@ export const uiText = {
     posts: { zh: "文章", en: "Posts" },
     docs: { zh: "随笔", en: "Notes" },
     projects: { zh: "项目", en: "Projects" },
+    links: { zh: "友链", en: "Friends" },
     about: { zh: "关于", en: "About" },
   },
   listing: {

@@ -70,6 +70,7 @@ const navItems = computed(() => [
   { path: localizedPath(props.locale, "posts"), label: uiText.nav.posts[props.locale] },
   { path: localizedPath(props.locale, "docs"), label: uiText.nav.docs[props.locale] },
   { path: localizedPath(props.locale, "projects"), label: uiText.nav.projects[props.locale] },
+  { path: localizedPath(props.locale, "links"), label: uiText.nav.links[props.locale] },
   { path: localizedPath(props.locale, "about"), label: uiText.nav.about[props.locale] },
 ]);
 const socialLinks = computed<ResolvedSocialLink[]>(() => {

@@ -123,7 +123,7 @@ const locale = computed(() => localeFromPath(route.path));
 const drawerId = "mobile-navigation-drawer";
 const drawerPanelId = "mobile-navigation-panel";
 
-type NavSection = "home" | "posts" | "docs" | "projects" | "about";
+type NavSection = "home" | "posts" | "docs" | "projects" | "links" | "about";
 interface NavItem {
   section: NavSection;
   path: string;
@@ -146,6 +146,11 @@ const navItems = computed<NavItem[]>(() => [
     section: "projects",
     path: localizedPath(locale.value, "projects"),
     label: uiText.nav.projects[locale.value],
+  },
+  {
+    section: "links",
+    path: localizedPath(locale.value, "links"),
+    label: uiText.nav.links[locale.value],
   },
   {
     section: "about",

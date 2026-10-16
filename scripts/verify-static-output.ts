@@ -236,6 +236,29 @@ assertIncludes(
 assertIncludes(zhProjectsHtml, "技术栈", "/zh/projects/", "project stack label");
 assertIncludes(zhProjectsHtml, "个人站维护与内容整理", "/zh/projects/", "project role");
 
+for (const locale of ["zh", "en"] as const) {
+  const pagePath = `/${locale}/links/`;
+  const html = await readFile(routeHtmlPath(pagePath), "utf8");
+  const linkHref = `href="${escapeHtml(withBasePath(pagePath))}"`;
+  for (const className of ["desktop-nav", "footer-nav"]) {
+    const nav = new RegExp(`<nav class="${className}"[\\s\\S]*?<\\/nav>`).exec(html)?.[0];
+    assertIncludes(nav ?? "", linkHref, pagePath, `${className} friend-link entry`);
+  }
+  const counterpartPath = `/${locale === "zh" ? "en" : "zh"}/links/`;
+  assertIncludes(
+    html,
+    `rel="alternate" hreflang="${htmlLang(locale === "zh" ? "en" : "zh")}" href="${escapeHtml(absoluteUrl(counterpartPath))}"`,
+    pagePath,
+    "friend-link language alternate",
+  );
+  assertIncludes(
+    html,
+    `href="${escapeHtml(withBasePath(counterpartPath))}"`,
+    pagePath,
+    "friend-link language switch",
+  );
+}
+
 const zhPostsHtml = await readFile(routeHtmlPath("/zh/posts/"), "utf8");
 assertIncludes(zhPostsHtml, "归档入口", "/zh/posts/", "post archive panel");
 assertIncludes(zhPostsHtml, `href="#posts-2026"`, "/zh/posts/", "post year archive anchor");
@@ -305,6 +328,14 @@ assertNotIncludes(sitemapXml, "/projects/ying-blog/", "/sitemap.xml", "project d
 const rssXml = await readFile(path.join(distDir, "rss.xml"), "utf8");
 assertNoExampleDomain(rssXml, "/rss.xml");
 assertPersonalDomain(rssXml, "/rss.xml");
+for (const locale of ["zh", "en"] as const) {
+  assertNotIncludes(
+    rssXml,
+    escapeXml(absoluteUrl(`/${locale}/links/`)),
+    "/rss.xml",
+    "friend-link index item",
+  );
+}
 assertIncludes(rssXml, escapeXml(absoluteUrl("/en/")), "/rss.xml", "feed site URL");
 assertIncludes(rssXml, escapeXml(defaultImage), "/rss.xml", "feed image");
 for (const item of contentRegistry.rssItems) {
@@ -352,6 +383,8 @@ for (const [label, value] of [
   assertIncludes(value, absoluteFileUrl("/rss.xml"), label, "LLM RSS link");
   assertIncludes(value, absoluteUrl("/zh/"), label, "LLM zh home link");
   assertIncludes(value, absoluteUrl("/en/"), label, "LLM en home link");
+  assertIncludes(value, absoluteUrl("/zh/links/"), label, "LLM zh friend-link index");
+  assertIncludes(value, absoluteUrl("/en/links/"), label, "LLM en friend-link index");
   assertIncludes(value, absoluteUrl("/zh/categories/"), label, "LLM zh categories link");
   assertIncludes(value, absoluteUrl("/en/tags/"), label, "LLM en tags link");
   assertNoExampleDomain(value, label);

@@ -5,7 +5,7 @@
 ## 运行时边界
 
 - `src/main.ts` 使用 `ViteSSG` 创建应用，并通过 `includedRoutes()` 输出需要静态生成的路由。
-- `src/router/routes.ts` 从内容注册表生成内容页和 taxonomy 页路由，同时显式声明首页、列表页、项目页、根路径重定向和 404。
+- `src/router/routes.ts` 从内容注册表生成内容页和 taxonomy 页路由，同时显式声明首页、列表页、项目页、友链页、根路径重定向和 404。
 - `src/layouts/SiteShell.vue` 提供站点框架，页面组件位于 `src/pages/`，可复用组件位于 `src/components/`。
 - `src/styles/` 使用 CSS variables 和普通 CSS 管理基础样式、布局、Markdown、动效、滚动条和主题。
 
@@ -29,9 +29,12 @@
 - `src/config/site.ts`：站点名称、描述、作者、默认语言、URL、base path、搜索引擎验证值和 UI 文案。
 - `src/config/profile.ts`：首页/profile 数据与社交链接。
 - `src/config/projects.ts`：配置驱动的项目卡片。
+- `src/config/friends.ts`：双语友链名称、介绍、地址和可选头像；主分支提供示例，个人内容分支维护实际友链。
 - `src/config/taxonomy.ts`：集中维护的分类和标签词表。
 
 Projects 当前只生成本地化项目索引和项目卡片，不生成项目详情页。
+
+友链使用 `/zh/links/` 和 `/en/links/` 两个静态列表页，页面 metadata 由内容注册表统一生成，卡片直接读取友链配置。友链索引纳入 sitemap 和 LLM 索引，不加入 RSS，也不生成友链详情页。
 
 ## Markdown 渲染
 
@@ -54,6 +57,6 @@ Markdown 文件不允许任意 HTML 或任意 Vue 组件标签。允许的内容
 - 复制静态 `404.html`。
 - 运行 `scripts/verify-static-output.ts` 验证代表性 HTML metadata、base-aware 链接、RSS、sitemap、robots 和 404 输出。
 
-Sitemap 覆盖列表页、内容页和 taxonomy 页。RSS 是单一双语 feed，条目来自 Posts、Docs 和两个本地化 Projects 索引，不包含 About 或单个 Project。
+Sitemap 覆盖列表页、内容页和 taxonomy 页。RSS 是单一双语 feed，条目来自 Posts、Docs 和两个本地化 Projects 索引，不包含 About、友链或单个 Project。
 
 `SITE_URL` 和 `BASE_PATH` 会影响资源路径、canonical URL、RSS、sitemap 和 robots 输出。`GOOGLE_SITE_VERIFICATION` 和 `BING_SITE_VERIFICATION` 会输出搜索引擎站点验证 meta。GitHub Pages workflow 在 `main` 分支上使用 `SITE_URL=https://yingblog.fengying.xin` 和 `BASE_PATH=/` 发布到自定义域名。
