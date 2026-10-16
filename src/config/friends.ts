@@ -52,4 +52,23 @@ export const friendLinks: readonly FriendLink[] = [
     url: "https://shiror.ren/",
     avatar: "https://avatars.githubusercontent.com/u/169267914?v=4",
   },
+  {
+    id: "yuban11451",
+    name: { zh: "御坂11451", en: "Yuban11451" },
+    description: {
+      zh: "思考、判断、行动。",
+      en: "Think, judge, act.",
+    },
+    url: "https://yuban11451.github.io/",
+    avatar: "https://yuban11451.github.io/img/avatar_hu_7e8a1d1a7fd826b.png",
+  },
+  {
+    id: "everleaf",
+    name: { zh: "everleaf.cn", en: "everleaf.cn" },
+    description: {
+      zh: "一个正在建设中的网站。",
+      en: "A website currently under construction.",
+    },
+    url: "https://www.everleaf.cn/",
+  },
 ];
