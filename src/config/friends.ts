@@ -64,11 +64,25 @@ export const friendLinks: readonly FriendLink[] = [
   },
   {
     id: "skyhome",
-    name: { zh: "skyhome.studio", en: "skyhome.studio" },
+    name: { zh: "Tate Alen", en: "Tate Alen" },
     description: {
-      zh: "一个朋友的网站。",
-      en: "A friend's website.",
+      zh: "以 WebGL 与交互设计呈现数字创意的个人作品集。",
+      en: "An interactive portfolio exploring WebGL, creative development, and digital design.",
     },
     url: "https://www.skyhome.studio/",
+    avatar: "/images/friends/skyhome.png",
+  },
+  {
+    id: "mtf-lgbt",
+    name: {
+      zh: "WEBSITE of EVERY TRANSGENDER.",
+      en: "WEBSITE of EVERY TRANSGENDER.",
+    },
+    description: {
+      zh: "一只可爱的小药娘的网站。",
+      en: "A cute trans girl's personal website.",
+    },
+    url: "https://mtf.lgbt/",
+    avatar: "https://avatars.githubusercontent.com/u/177436503?v=4",
   },
 ];
