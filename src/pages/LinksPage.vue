@@ -87,6 +87,23 @@
             </dd>
           </div>
           <div>
+            <dt>{{ locale === "zh" ? "头像" : "Avatar" }}</dt>
+            <dd>
+              <a
+                :href="avatarUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                :aria-label="
+                  locale === 'zh'
+                    ? '查看个人头像（在新窗口中打开）'
+                    : 'View avatar (opens in a new window)'
+                "
+              >
+                {{ avatarUrl }}
+              </a>
+            </dd>
+          </div>
+          <div>
             <dt>{{ locale === "zh" ? "简介" : "About" }}</dt>
             <dd>{{ siteConfig.description[locale] }}</dd>
           </div>
