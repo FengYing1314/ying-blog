@@ -64,7 +64,7 @@ export const profile = {
       kind: "mail",
       label: { zh: "Email", en: "Email" },
       description: { zh: "联系与交流", en: "Contact and conversation" },
-      href: "mailto:admin@fengying.space",
+      href: "mailto:fengyingmmm@gmail.com",
     },
     {
       kind: "rss",
