@@ -95,4 +95,14 @@ export const friendLinks: readonly FriendLink[] = [
     url: "https://linso.pro/",
     avatar: "https://linso.pro/upload/linso.webp",
   },
+  {
+    id: "waveyo",
+    name: { zh: "WaveYo", en: "WaveYo" },
+    description: {
+      zh: "从群众出发，扎根群众。向前，无限进步",
+      en: "From the people, rooted in the people. Forward, toward endless progress.",
+    },
+    url: "https://www.waveyo.cn/",
+    avatar: "https://www.waveyo.cn/WaveYo.jpg",
+  },
 ];
