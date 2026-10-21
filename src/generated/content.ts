@@ -1,8 +1,53 @@
 import type { ContentRegistry } from "../types/content";
 
 export const contentRegistry = {
-  generatedAt: "2026-05-27T00:00:00.000Z",
+  generatedAt: "2026-10-22T00:00:00.000Z",
   entries: [
+    {
+      id: "posts:new-api-high-availability:en",
+      type: "posts",
+      locale: "en",
+      slug: "new-api-high-availability",
+      title: "Building a Practical High Availability Setup for New API",
+      description:
+        "Notes on a New API high availability setup, connecting entry points, runtime nodes, and stateful services with Caddy, HAProxy, PostgreSQL replication, Redis Sentinel, and WireGuard.",
+      date: "2026-10-22",
+      categories: ["engineering"],
+      tags: ["api", "networking", "ai"],
+      featured: false,
+      order: 4,
+      path: "/en/posts/new-api-high-availability/",
+      counterpartPath: "/zh/posts/new-api-high-availability/",
+      readingTime: 5,
+      headings: [
+        {
+          id: "what-i-wanted-to-address-first",
+          level: 2,
+          title: "What I Wanted to Address First",
+        },
+        {
+          id: "entry-points-and-runtime-traffic",
+          level: 2,
+          title: "Entry Points and Runtime Traffic",
+        },
+        {
+          id: "how-applications-access-their-dependencies",
+          level: 2,
+          title: "How Applications Access Their Dependencies",
+        },
+        {
+          id: "postgresql-and-redis-replication",
+          level: 2,
+          title: "PostgreSQL and Redis Replication",
+        },
+        {
+          id: "what-i-still-want-to-improve",
+          level: 2,
+          title: "What I Still Want to Improve",
+        },
+      ],
+      html: '<p>The IDC hosting my servers had been unstable recently, with frequent connection failures. I spent about a day putting together a practical high availability setup for New API, starting with a few single points of failure that could easily affect everyday use.</p>\n<p>The entry server is the most important part of this setup, so I chose a cloud server from a major provider in mainland China. The other nodes mostly run on cloud servers from smaller IDC providers, along with one home server. I hope this gives me a workable balance between cost, throughput, and stability for now.</p>\n<p>This is not yet a fully active-active system across the whole request path. I want to record how the parts connect, where failover is available, and which parts remain fragile, so I have something clear to look back on as I keep working on it.</p>\n<h2 id="what-i-wanted-to-address-first">What I Wanted to Address First</h2>\n<p>For now, I mainly wanted to address five things:</p>\n<ol>\n<li>Runtime API requests can be spread across multiple nodes instead of depending on one machine.</li>\n<li>PostgreSQL has primary-standby replication, with pg_auto_failover handling automatic failover.</li>\n<li>Redis has primary-replica replication and three Sentinel instances for monitoring, quorum, and failover.</li>\n<li>Servers use a private WireGuard network to access the database, cache, and health check endpoints.</li>\n<li>Applications on the entry, main, and standby nodes connect to local HAProxy endpoints, leaving backend role changes to the proxies and health checks.</li>\n</ol>\n<p>The home node is a little different. It connects to the entry server through a reverse SSH tunnel and reuses the dependency proxies on that server.</p>\n<h2 id="entry-points-and-runtime-traffic">Entry Points and Runtime Traffic</h2>\n<p>There are currently two domain entry points: <code>api.fy-meow.com</code> goes through Cloudflare, and <code>api.fengying.xin</code> goes through Alibaba Cloud ESA / CDN. Both eventually reach Caddy on the entry server, which handles TLS, reverse proxying, and routing.</p>\n<p>Ordinary runtime API requests then enter HAProxy’s weighted backend pool. The approximate configured weights are:</p>\n<div class="table-scroll"><table>\n<thead>\n<tr>\n<th>Node</th>\n<th>Current role</th>\n<th>Runtime weight</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Mainland China entry node</td>\n<td>New API Slave, handling most runtime requests</td>\n<td>About 60%</td>\n</tr>\n<tr>\n<td>Main node</td>\n<td>New API Master, also handling the admin interface, configuration writes, and channel management</td>\n<td>About 38%</td>\n</tr>\n<tr>\n<td>Home server</td>\n<td>Connected through a reverse SSH tunnel for fallback and verification</td>\n<td>About 2%</td>\n</tr>\n<tr>\n<td>Standby node</td>\n<td>New API Slave, taking over when the regular backend pool is unavailable</td>\n<td>Backup, outside the normal weight allocation</td>\n</tr>\n</tbody>\n</table>\n</div>\n<p>These are configured weights. The actual request distribution will not always be exactly 60 / 38 / 2.</p>\n<div class="md-mermaid" data-mermaid data-rendered="false" data-mermaid-hint="Drag / Ctrl+wheel" data-loading-label="Rendering" data-error-label="Render failed" data-copied-label="Source copied"><div class="md-mermaid-toolbar"><span class="md-mermaid-title">Mermaid diagram</span><span class="md-mermaid-scale" data-mermaid-scale aria-label="Current zoom 100%">100%</span><div class="md-mermaid-tools" role="toolbar" aria-label="Mermaid diagram tools"><button class="md-mermaid-tool" type="button" data-mermaid-action="copy" data-copy-mermaid data-copy-label="Copy source" data-copied-label="Source copied" aria-label="Copy source" title="Copy source"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">Copy source</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-out" aria-label="Zoom out" title="Zoom out"><span class="md-mermaid-tool-icon" aria-hidden="true">-</span><span class="md-visually-hidden">Zoom out</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-in" aria-label="Zoom in" title="Zoom in"><span class="md-mermaid-tool-icon" aria-hidden="true">+</span><span class="md-visually-hidden">Zoom in</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="fit" aria-label="Fit width" title="Fit width"><span class="md-mermaid-tool-icon" aria-hidden="true">&lt;&gt;</span><span class="md-visually-hidden">Fit width</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="reset" aria-label="Reset" title="Reset"><span class="md-mermaid-tool-icon" aria-hidden="true">1:1</span><span class="md-visually-hidden">Reset</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="open" aria-label="Open viewer" title="Open viewer"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">Open viewer</span></button></div></div><div class="md-mermaid-canvas" data-mermaid-canvas tabindex="0" role="img" aria-label="Mermaid diagram"></div><pre class="md-mermaid-source" data-mermaid-source>flowchart TB\n  USER[&quot;Visitors / API clients&quot;]\n  CF[&quot;Cloudflare CDN&lt;br/&gt;api.fy-meow.com&quot;]\n  ESA[&quot;Alibaba Cloud ESA / CDN&lt;br/&gt;api.fengying.xin&quot;]\n\n  subgraph EDGE[&quot;Mainland China entry server&quot;]\n    CADDY[&quot;Caddy&lt;br/&gt;TLS / reverse proxy / routing&quot;]\n    RUNTIME[&quot;HAProxy Runtime&lt;br/&gt;Weighted load balancing&quot;]\n    API_EDGE[&quot;New API Slave&lt;br/&gt;About 60% weight&quot;]\n    SSH[&quot;Reverse SSH tunnel&lt;br/&gt;Connects the home runtime node&quot;]\n  end\n\n  MASTER[&quot;Main node: New API Master&lt;br/&gt;Admin interface / about 38% weight / overseas routing target&quot;]\n  HOME[&quot;Home server: New API Slave&lt;br/&gt;About 2% weight&quot;]\n  BACKUP[&quot;Standby server: New API Slave&lt;br/&gt;Backup runtime node&quot;]\n\n  USER --&gt; CF\n  USER --&gt; ESA\n  CF --&gt; CADDY\n  ESA --&gt; CADDY\n  CADDY --&gt;|&quot;Ordinary runtime API&quot;| RUNTIME\n  CADDY --&gt;|&quot;Admin interface / UI&quot;| MASTER\n  CADDY --&gt;|&quot;Fixed Gemini /v1beta route&quot;| MASTER\n  RUNTIME --&gt;|&quot;60%&quot;| API_EDGE\n  RUNTIME --&gt;|&quot;38%&quot;| MASTER\n  RUNTIME --&gt;|&quot;2%&quot;| SSH\n  SSH --&gt; HOME\n  RUNTIME -.-&gt;|&quot;When the regular backend pool is unavailable&quot;| BACKUP\n</pre></div><p>Gemini takes a separate route. Its upstream connects directly to AI Studio, which has more regional restrictions, so I route <code>/v1beta</code> to a fixed overseas server. In the current routing setup, these requests go directly to the main node and do not join the ordinary weighted runtime pool.</p>\n<p>The admin interface and UI also go directly to the Master. The Backup in the diagram is a fallback for the ordinary runtime pool; it does not mean these two direct routes have the same fallback path.</p>\n<h2 id="how-applications-access-their-dependencies">How Applications Access Their Dependencies</h2>\n<p>I did not want every application node to be tied directly to the actual primary addresses of PostgreSQL and Redis, so I placed local HAProxy endpoints on the entry, main, and standby nodes.</p>\n<p>Applications connect to the local proxies, which select backends through health checks. This lets the application keep using the same connection address when primary and standby roles change. A stable address does not guarantee that requests already in progress will survive a failover.</p>\n<p>The diagram below combines the repeated parts, using an application on the entry or standby node as an example:</p>\n<div class="md-mermaid" data-mermaid data-rendered="false" data-mermaid-hint="Drag / Ctrl+wheel" data-loading-label="Rendering" data-error-label="Render failed" data-copied-label="Source copied"><div class="md-mermaid-toolbar"><span class="md-mermaid-title">Mermaid diagram</span><span class="md-mermaid-scale" data-mermaid-scale aria-label="Current zoom 100%">100%</span><div class="md-mermaid-tools" role="toolbar" aria-label="Mermaid diagram tools"><button class="md-mermaid-tool" type="button" data-mermaid-action="copy" data-copy-mermaid data-copy-label="Copy source" data-copied-label="Source copied" aria-label="Copy source" title="Copy source"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">Copy source</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-out" aria-label="Zoom out" title="Zoom out"><span class="md-mermaid-tool-icon" aria-hidden="true">-</span><span class="md-visually-hidden">Zoom out</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-in" aria-label="Zoom in" title="Zoom in"><span class="md-mermaid-tool-icon" aria-hidden="true">+</span><span class="md-visually-hidden">Zoom in</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="fit" aria-label="Fit width" title="Fit width"><span class="md-mermaid-tool-icon" aria-hidden="true">&lt;&gt;</span><span class="md-visually-hidden">Fit width</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="reset" aria-label="Reset" title="Reset"><span class="md-mermaid-tool-icon" aria-hidden="true">1:1</span><span class="md-visually-hidden">Reset</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="open" aria-label="Open viewer" title="Open viewer"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">Open viewer</span></button></div></div><div class="md-mermaid-canvas" data-mermaid-canvas tabindex="0" role="img" aria-label="Mermaid diagram"></div><pre class="md-mermaid-source" data-mermaid-source>flowchart LR\n  APP[&quot;New API application node&quot;]\n\n  subgraph LOCAL[&quot;This node&#39;s local proxies&quot;]\n    PG_PROXY[&quot;HAProxy&lt;br/&gt;PostgreSQL endpoint&quot;]\n    REDIS_PROXY[&quot;HAProxy&lt;br/&gt;Redis endpoint&quot;]\n    SUB_PROXY[&quot;HAProxy&lt;br/&gt;Sub2API endpoint&quot;]\n  end\n\n  WG[&quot;Private WireGuard network&lt;br/&gt;Dependency access / health checks&quot;]\n  PG[&quot;PostgreSQL&lt;br/&gt;Currently available primary&quot;]\n  REDIS[&quot;Redis&lt;br/&gt;Currently available primary&quot;]\n  SUB_MAIN[&quot;Sub2API HAProxy&lt;br/&gt;On the main node&quot;]\n  SUB2API[&quot;Sub2API&lt;br/&gt;Actual service on the main node&quot;]\n\n  APP --&gt; PG_PROXY\n  APP --&gt; REDIS_PROXY\n  APP --&gt; SUB_PROXY\n  PG_PROXY --&gt; WG\n  REDIS_PROXY --&gt; WG\n  SUB_PROXY --&gt; WG\n  WG --&gt; PG\n  WG --&gt; REDIS\n  WG --&gt; SUB_MAIN\n  SUB_MAIN --&gt; SUB2API\n</pre></div><p>The actual Sub2API service currently runs on the main node. Other nodes reach the main node’s Sub2API proxy through their local proxies and WireGuard, while the main node’s own proxy connects directly to the local service. This adds access endpoints, but it does not add more Sub2API service replicas.</p>\n<p>The home node takes an extra hop: the entry server sends runtime requests home through the tunnel, and the home node goes back through the tunnel to the entry server’s HAProxy endpoints when accessing PostgreSQL, Redis, and Sub2API. The two request paths run in different directions, but both depend on the tunnel and the entry server.</p>\n<h2 id="postgresql-and-redis-replication">PostgreSQL and Redis Replication</h2>\n<p>The database runs PostgreSQL 16, with streaming replication between the main and standby nodes. The pg_auto_failover Monitor on a separate monitoring server coordinates database state and automatic failover.</p>\n<p>Redis has one primary, one replica, and three Sentinel instances. There is one Sentinel on each of the main server, standby server, and separate arbitration / monitoring server, giving the cache layer its own monitoring and quorum.</p>\n<div class="md-mermaid" data-mermaid data-rendered="false" data-mermaid-hint="Drag / Ctrl+wheel" data-loading-label="Rendering" data-error-label="Render failed" data-copied-label="Source copied"><div class="md-mermaid-toolbar"><span class="md-mermaid-title">Mermaid diagram</span><span class="md-mermaid-scale" data-mermaid-scale aria-label="Current zoom 100%">100%</span><div class="md-mermaid-tools" role="toolbar" aria-label="Mermaid diagram tools"><button class="md-mermaid-tool" type="button" data-mermaid-action="copy" data-copy-mermaid data-copy-label="Copy source" data-copied-label="Source copied" aria-label="Copy source" title="Copy source"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">Copy source</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-out" aria-label="Zoom out" title="Zoom out"><span class="md-mermaid-tool-icon" aria-hidden="true">-</span><span class="md-visually-hidden">Zoom out</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-in" aria-label="Zoom in" title="Zoom in"><span class="md-mermaid-tool-icon" aria-hidden="true">+</span><span class="md-visually-hidden">Zoom in</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="fit" aria-label="Fit width" title="Fit width"><span class="md-mermaid-tool-icon" aria-hidden="true">&lt;&gt;</span><span class="md-visually-hidden">Fit width</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="reset" aria-label="Reset" title="Reset"><span class="md-mermaid-tool-icon" aria-hidden="true">1:1</span><span class="md-visually-hidden">Reset</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="open" aria-label="Open viewer" title="Open viewer"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">Open viewer</span></button></div></div><div class="md-mermaid-canvas" data-mermaid-canvas tabindex="0" role="img" aria-label="Mermaid diagram"></div><pre class="md-mermaid-source" data-mermaid-source>flowchart TB\n  subgraph MAIN[&quot;Main state server&quot;]\n    PG_MAIN[&quot;PostgreSQL 16&lt;br/&gt;Primary&quot;]\n    REDIS_MAIN[&quot;Redis&lt;br/&gt;Primary&quot;]\n    SENT_MAIN[&quot;Redis Sentinel 1&quot;]\n  end\n\n  subgraph STANDBY[&quot;Standby state server&quot;]\n    PG_STANDBY[&quot;PostgreSQL 16&lt;br/&gt;Standby&quot;]\n    REDIS_STANDBY[&quot;Redis Replica&lt;br/&gt;Replica&quot;]\n    SENT_STANDBY[&quot;Redis Sentinel 2&quot;]\n  end\n\n  subgraph ARBITER[&quot;Separate arbitration / monitoring server&quot;]\n    PG_MONITOR[&quot;pg_auto_failover Monitor&lt;br/&gt;Database monitoring / failover coordination&quot;]\n    SENT_ARBITER[&quot;Redis Sentinel 3&quot;]\n  end\n\n  PG_MAIN --&gt;|&quot;Streaming replication&quot;| PG_STANDBY\n  PG_MONITOR -.-&gt; PG_MAIN\n  PG_MONITOR -.-&gt; PG_STANDBY\n  REDIS_MAIN --&gt;|&quot;Primary-replica replication&quot;| REDIS_STANDBY\n  SENT_MAIN -.-&gt; REDIS_MAIN\n  SENT_MAIN -.-&gt; REDIS_STANDBY\n  SENT_STANDBY -.-&gt; REDIS_MAIN\n  SENT_STANDBY -.-&gt; REDIS_STANDBY\n  SENT_ARBITER -.-&gt; REDIS_MAIN\n  SENT_ARBITER -.-&gt; REDIS_STANDBY\n</pre></div><p>This diagram shows the current primary and standby roles. Dotted lines represent monitoring or failover coordination. Application requests do not pass through the Monitor or Sentinel; data access still goes through the application-side HAProxy endpoints. After a failover, the primary and standby roles change too.</p>\n<h2 id="what-i-still-want-to-improve">What I Still Want to Improve</h2>\n<p>This setup separates failure handling for the runtime, database, and cache, but there are still a few areas I need to look at:</p>\n<ul>\n<li>Both CDN domains eventually reach the same entry server, so that server remains critical.</li>\n<li>The admin interface and the fixed Gemini route depend directly on the main node. They cannot simply use the ordinary runtime pool’s fallback path.</li>\n<li>The actual Sub2API service still exists only on the main node. Local proxies do not make it active-active.</li>\n<li>The home node depends on the entry server and reverse SSH tunnel. It is better suited to low-weight fallback and cannot yet be treated as a fully independent recovery path.</li>\n<li>I still need to observe connection recovery, failed requests, and actual traffic distribution during failover before deciding what to improve next.</li>\n</ul>\n<p>For now, I would rather put this setup to use and see how it behaves in practice. Keeping its boundaries clear also makes it easier to avoid confusing “having a standby node” with “having high availability across the whole request path” as I continue changing it.</p>\n<p>If you have worked on a similar setup, or see any risks or areas that could be improved, I would be happy to hear about them.</p>\n',
+    },
     {
       id: "posts:backend-frontend-architecture:en",
       type: "posts",
@@ -252,6 +297,51 @@ export const contentRegistry = {
         },
       ],
       html: '<p>Hi, this is Fengying. Welcome to my small home.</p>\n<p>This is a place where an ordinary person leaves a few things behind, maybe just to remember that I was here.</p>\n<p>Whoever you are, I hope you have happy days.</p>\n<h2 id="who-i-am">Who I Am</h2>\n<div class="table-scroll"><table>\n<thead>\n<tr>\n<th>Item</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>GitHub</td>\n<td><a href="https://github.com/FengYing1314/">@FengYing1314</a></td>\n</tr>\n<tr>\n<td>Name</td>\n<td>枫莹 / FengYing</td>\n</tr>\n<tr>\n<td>Location</td>\n<td>China</td>\n</tr>\n<tr>\n<td>Bio</td>\n<td>いつか一人で去る</td>\n</tr>\n<tr>\n<td>Organization</td>\n<td><a href="https://github.com/OOM-WG">OOM-WG</a></td>\n</tr>\n<tr>\n<td>Personal homepage</td>\n<td><a href="https://www.fengying.xin/">www.fengying.xin</a></td>\n</tr>\n</tbody>\n</table>\n</div>\n<p>I am still a student, and I like tinkering with things that feel interesting or new to me. This page does not need to be too formal; it is more like a self-introduction that changes slowly.</p>\n<h2 id="what-i-am-tinkering-with">What I Am Tinkering With</h2>\n<p>I like tinkering with software, websites, AI tools, OpenWrt, VR, and new things that look interesting.</p>\n<p>I often touch C#, Python, TypeScript, JavaScript, .NET, Unity, and Android. I am not deep in every direction, but when something feels worth trying, I usually try it first.</p>\n<h2 id="sites-and-contact">Sites and Contact</h2>\n<p>Common entrances:</p>\n<ul>\n<li><a href="https://www.fengying.xin/">www.fengying.xin</a></li>\n<li><a href="https://yingmeow.fyi/">yingmeow.fyi</a></li>\n<li><a href="https://api.fengying.xin/">api.fengying.xin</a></li>\n<li><a href="https://blog.fengying.xin">This site (blog.fengying.xin)</a></li>\n</ul>\n<p>Common email addresses:</p>\n<ul>\n<li><a href="mailto:admin@fymiao.cn">admin@fymiao.cn</a></li>\n<li><a href="mailto:admin@fengying.space">admin@fengying.space</a></li>\n<li><a href="mailto:fyingmiao@163.com">fyingmiao@163.com</a></li>\n</ul>\n<p>You can also find me on <a href="https://github.com/FengYing1314/">GitHub: @FengYing1314</a> or through <a href="mailto:admin@fengying.space">admin@fengying.space</a>.</p>\n<p>If you need another contact method, please explain the reason by email first.</p>\n<h2 id="short-personal-note">Short Personal Note</h2>\n<p>I do not really like putting myself under fixed labels, so I only write down a little of what comes to mind now.</p>\n<p>I love anime and enjoy talking with people. When I see something new, I often want to try it first, even if it only leaves a small note in the end.</p>\n<p>Sometimes I magnify shortcomings in myself or in others. If you feel hurt by me, you can tell me directly, or simply block and remove me.</p>\n<h2 id="support">Support</h2>\n<p>If my content or projects helped you, support is welcome through <a href="https://afdian.com/a/fengyingqwq">Afdian</a>.</p>\n<p>Payment QR codes and wallet addresses should follow the personal homepage, so I will not duplicate them here.</p>\n',
+    },
+    {
+      id: "posts:new-api-high-availability:zh",
+      type: "posts",
+      locale: "zh",
+      slug: "new-api-high-availability",
+      title: "给 New API 搭一套实用的高可用架构",
+      description:
+        "记录一次 New API 高可用架构的整理，用 Caddy、HAProxy、PostgreSQL 主备、Redis Sentinel 和 WireGuard 串起入口、运行节点与状态服务。",
+      date: "2026-10-22",
+      categories: ["engineering"],
+      tags: ["api", "networking", "ai"],
+      featured: false,
+      order: 4,
+      path: "/zh/posts/new-api-high-availability/",
+      counterpartPath: "/en/posts/new-api-high-availability/",
+      readingTime: 4,
+      headings: [
+        {
+          id: "这次先解决什么",
+          level: 2,
+          title: "这次先解决什么",
+        },
+        {
+          id: "入口和运行时流量",
+          level: 2,
+          title: "入口和运行时流量",
+        },
+        {
+          id: "应用怎么访问依赖",
+          level: 2,
+          title: "应用怎么访问依赖",
+        },
+        {
+          id: "postgresql-和-redis-的主备",
+          level: 2,
+          title: "PostgreSQL 和 Redis 的主备",
+        },
+        {
+          id: "还想继续补的地方",
+          level: 2,
+          title: "还想继续补的地方",
+        },
+      ],
+      html: '<p>最近 IDC 机房有一段时间不太稳定，经常遇到连接失败。我花了一天左右，给 New API 搭了一套偏实用向的高可用架构，先把几个比较容易影响使用的单点拆开。</p>\n<p>入口机是这里最重要的一环，所以我选了国内大厂的云服务器。其他节点主要还是中小 IDC 的云服务器，再加一台家庭服务器。我希望这样能在成本、吞吐和稳定性之间找一个目前够用的平衡。</p>\n<p>这次还没有做到真正意义上的全链路多活。先把现在怎么接起来、哪些地方能切换、哪些地方还比较脆弱记下来，后面继续折腾时也方便回头看。</p>\n<h2 id="这次先解决什么">这次先解决什么</h2>\n<p>我目前主要想解决五件事：</p>\n<ol>\n<li>运行时 API 可以分散到多个节点，不再只依赖一台机器。</li>\n<li>PostgreSQL 有主备复制，并通过 pg_auto_failover 做自动切换。</li>\n<li>Redis 有主从复制和三节点 Sentinel，负责监控、仲裁与故障切换。</li>\n<li>服务器之间通过 WireGuard 专用内网访问数据库、缓存和健康检查入口。</li>\n<li>入口、主节点和备用节点上的应用统一连接本机 HAProxy，由代理和健康检查处理后端主备变化。</li>\n</ol>\n<p>家庭节点稍微特殊一点，它通过反向 SSH 隧道接入入口机，也复用入口机上的依赖代理。</p>\n<h2 id="入口和运行时流量">入口和运行时流量</h2>\n<p>现在有两个域名入口：<code>api.fy-meow.com</code> 走 Cloudflare，<code>api.fengying.xin</code> 走阿里云 ESA / CDN。两边最后都回到入口服务器上的 Caddy，由它处理 TLS、反向代理和路由分流。</p>\n<p>普通运行时 API 再进入 HAProxy 的加权负载池。目前配置的大致权重是：</p>\n<div class="table-scroll"><table>\n<thead>\n<tr>\n<th>节点</th>\n<th>当前分工</th>\n<th>运行时权重</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>国内入口节点</td>\n<td>New API Slave，承担主要运行时请求</td>\n<td>约 60%</td>\n</tr>\n<tr>\n<td>主节点</td>\n<td>New API Master，同时承接管理后台、配置写入和渠道管理</td>\n<td>约 38%</td>\n</tr>\n<tr>\n<td>家庭服务器</td>\n<td>通过反向 SSH 隧道接入，用来兜底和验证</td>\n<td>约 2%</td>\n</tr>\n<tr>\n<td>备用节点</td>\n<td>New API Slave，在主流量池不可用时接手</td>\n<td>Backup，不参与平时的权重分配</td>\n</tr>\n</tbody>\n</table>\n</div>\n<p>这里写的是配置权重，实际请求分布不一定每次都刚好是 60 / 38 / 2。</p>\n<div class="md-mermaid" data-mermaid data-rendered="false" data-mermaid-hint="可拖拽 / Ctrl 滚轮缩放" data-loading-label="渲染中" data-error-label="渲染失败" data-copied-label="源码已复制"><div class="md-mermaid-toolbar"><span class="md-mermaid-title">Mermaid 图表</span><span class="md-mermaid-scale" data-mermaid-scale aria-label="当前缩放 100%">100%</span><div class="md-mermaid-tools" role="toolbar" aria-label="Mermaid 图表工具"><button class="md-mermaid-tool" type="button" data-mermaid-action="copy" data-copy-mermaid data-copy-label="复制源码" data-copied-label="源码已复制" aria-label="复制源码" title="复制源码"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">复制源码</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-out" aria-label="缩小" title="缩小"><span class="md-mermaid-tool-icon" aria-hidden="true">-</span><span class="md-visually-hidden">缩小</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-in" aria-label="放大" title="放大"><span class="md-mermaid-tool-icon" aria-hidden="true">+</span><span class="md-visually-hidden">放大</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="fit" aria-label="适应宽度" title="适应宽度"><span class="md-mermaid-tool-icon" aria-hidden="true">&lt;&gt;</span><span class="md-visually-hidden">适应宽度</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="reset" aria-label="重置" title="重置"><span class="md-mermaid-tool-icon" aria-hidden="true">1:1</span><span class="md-visually-hidden">重置</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="open" aria-label="放大查看" title="放大查看"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">放大查看</span></button></div></div><div class="md-mermaid-canvas" data-mermaid-canvas tabindex="0" role="img" aria-label="Mermaid 图表"></div><pre class="md-mermaid-source" data-mermaid-source>flowchart TB\n  USER[&quot;访问用户 / API 客户端&quot;]\n  CF[&quot;Cloudflare CDN&lt;br/&gt;api.fy-meow.com&quot;]\n  ESA[&quot;阿里云 ESA / CDN&lt;br/&gt;api.fengying.xin&quot;]\n\n  subgraph EDGE[&quot;国内入口服务器&quot;]\n    CADDY[&quot;Caddy&lt;br/&gt;TLS / 反向代理 / 路由分流&quot;]\n    RUNTIME[&quot;HAProxy Runtime&lt;br/&gt;加权负载均衡&quot;]\n    API_EDGE[&quot;New API Slave&lt;br/&gt;约 60% 权重&quot;]\n    SSH[&quot;反向 SSH 隧道&lt;br/&gt;接入家庭运行节点&quot;]\n  end\n\n  MASTER[&quot;主节点：New API Master&lt;br/&gt;管理后台 / 约 38% 权重 / 海外定向入口&quot;]\n  HOME[&quot;家庭服务器：New API Slave&lt;br/&gt;约 2% 权重&quot;]\n  BACKUP[&quot;备用服务器：New API Slave&lt;br/&gt;Backup 运行节点&quot;]\n\n  USER --&gt; CF\n  USER --&gt; ESA\n  CF --&gt; CADDY\n  ESA --&gt; CADDY\n  CADDY --&gt;|&quot;普通运行时 API&quot;| RUNTIME\n  CADDY --&gt;|&quot;管理后台 / UI&quot;| MASTER\n  CADDY --&gt;|&quot;Gemini /v1beta 固定路由&quot;| MASTER\n  RUNTIME --&gt;|&quot;60%&quot;| API_EDGE\n  RUNTIME --&gt;|&quot;38%&quot;| MASTER\n  RUNTIME --&gt;|&quot;2%&quot;| SSH\n  SSH --&gt; HOME\n  RUNTIME -.-&gt;|&quot;主流量池不可用时&quot;| BACKUP\n</pre></div><p>Gemini 这一段单独处理。因为上游直接对接 AI Studio，对地域的限制比较多，所以我把 <code>/v1beta</code> 固定到海外服务器；在当前路由里，这条请求直接交给主节点，不参加普通运行时的加权分配。</p>\n<p>管理后台和 UI 也直接交给 Master。图里的 Backup 是普通运行时负载池的兜底，不代表这两条直连路径也有同样的备用路由。</p>\n<h2 id="应用怎么访问依赖">应用怎么访问依赖</h2>\n<p>我不想让每个应用节点都直接绑定数据库和 Redis 的实际主节点地址，所以在入口、主节点和备用节点上各放了一套本地 HAProxy 入口。</p>\n<p>应用连本机代理，代理再通过健康检查选择后端。这样主备角色变化时，应用侧可以继续使用同一个连接地址。连接地址稳定，也不代表切换过程中正在进行的请求就一定不会中断。</p>\n<p>下面把重复的部分合并画出来，以入口或备用应用节点为例：</p>\n<div class="md-mermaid" data-mermaid data-rendered="false" data-mermaid-hint="可拖拽 / Ctrl 滚轮缩放" data-loading-label="渲染中" data-error-label="渲染失败" data-copied-label="源码已复制"><div class="md-mermaid-toolbar"><span class="md-mermaid-title">Mermaid 图表</span><span class="md-mermaid-scale" data-mermaid-scale aria-label="当前缩放 100%">100%</span><div class="md-mermaid-tools" role="toolbar" aria-label="Mermaid 图表工具"><button class="md-mermaid-tool" type="button" data-mermaid-action="copy" data-copy-mermaid data-copy-label="复制源码" data-copied-label="源码已复制" aria-label="复制源码" title="复制源码"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">复制源码</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-out" aria-label="缩小" title="缩小"><span class="md-mermaid-tool-icon" aria-hidden="true">-</span><span class="md-visually-hidden">缩小</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-in" aria-label="放大" title="放大"><span class="md-mermaid-tool-icon" aria-hidden="true">+</span><span class="md-visually-hidden">放大</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="fit" aria-label="适应宽度" title="适应宽度"><span class="md-mermaid-tool-icon" aria-hidden="true">&lt;&gt;</span><span class="md-visually-hidden">适应宽度</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="reset" aria-label="重置" title="重置"><span class="md-mermaid-tool-icon" aria-hidden="true">1:1</span><span class="md-visually-hidden">重置</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="open" aria-label="放大查看" title="放大查看"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">放大查看</span></button></div></div><div class="md-mermaid-canvas" data-mermaid-canvas tabindex="0" role="img" aria-label="Mermaid 图表"></div><pre class="md-mermaid-source" data-mermaid-source>flowchart LR\n  APP[&quot;New API 应用节点&quot;]\n\n  subgraph LOCAL[&quot;该节点自己的本地代理&quot;]\n    PG_PROXY[&quot;HAProxy&lt;br/&gt;PostgreSQL 入口&quot;]\n    REDIS_PROXY[&quot;HAProxy&lt;br/&gt;Redis 入口&quot;]\n    SUB_PROXY[&quot;HAProxy&lt;br/&gt;Sub2API 入口&quot;]\n  end\n\n  WG[&quot;WireGuard 专用内网&lt;br/&gt;依赖访问 / 健康检查&quot;]\n  PG[&quot;PostgreSQL&lt;br/&gt;当前可用主库&quot;]\n  REDIS[&quot;Redis&lt;br/&gt;当前可用主节点&quot;]\n  SUB_MAIN[&quot;主节点上的&lt;br/&gt;Sub2API HAProxy&quot;]\n  SUB2API[&quot;Sub2API&lt;br/&gt;主节点上的真实服务&quot;]\n\n  APP --&gt; PG_PROXY\n  APP --&gt; REDIS_PROXY\n  APP --&gt; SUB_PROXY\n  PG_PROXY --&gt; WG\n  REDIS_PROXY --&gt; WG\n  SUB_PROXY --&gt; WG\n  WG --&gt; PG\n  WG --&gt; REDIS\n  WG --&gt; SUB_MAIN\n  SUB_MAIN --&gt; SUB2API\n</pre></div><p>Sub2API 的真实服务目前放在主节点。其他节点通过本地代理和 WireGuard 访问主节点上的 Sub2API 代理；主节点自己的代理则直接连接本机服务。这里多出来的是访问入口，还没有多份 Sub2API 服务副本。</p>\n<p>家庭节点的链路要再绕一下：入口机通过隧道把运行时请求送到家里，家庭节点访问 PostgreSQL、Redis 和 Sub2API 时，再通过隧道回到入口机对应的 HAProxy。两种请求方向不同，但都依赖这段隧道和入口机。</p>\n<h2 id="postgresql-和-redis-的主备">PostgreSQL 和 Redis 的主备</h2>\n<p>数据库用的是 PostgreSQL 16，主节点和备用节点之间做流复制。独立监控服务器上的 pg_auto_failover Monitor 负责协调数据库的状态与自动切换。</p>\n<p>Redis 则是一主一从，加三个 Sentinel。主服务器、备用服务器和独立仲裁 / 监控服务器上各放一个 Sentinel，让缓存层有自己的监控和仲裁。</p>\n<div class="md-mermaid" data-mermaid data-rendered="false" data-mermaid-hint="可拖拽 / Ctrl 滚轮缩放" data-loading-label="渲染中" data-error-label="渲染失败" data-copied-label="源码已复制"><div class="md-mermaid-toolbar"><span class="md-mermaid-title">Mermaid 图表</span><span class="md-mermaid-scale" data-mermaid-scale aria-label="当前缩放 100%">100%</span><div class="md-mermaid-tools" role="toolbar" aria-label="Mermaid 图表工具"><button class="md-mermaid-tool" type="button" data-mermaid-action="copy" data-copy-mermaid data-copy-label="复制源码" data-copied-label="源码已复制" aria-label="复制源码" title="复制源码"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">复制源码</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-out" aria-label="缩小" title="缩小"><span class="md-mermaid-tool-icon" aria-hidden="true">-</span><span class="md-visually-hidden">缩小</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-in" aria-label="放大" title="放大"><span class="md-mermaid-tool-icon" aria-hidden="true">+</span><span class="md-visually-hidden">放大</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="fit" aria-label="适应宽度" title="适应宽度"><span class="md-mermaid-tool-icon" aria-hidden="true">&lt;&gt;</span><span class="md-visually-hidden">适应宽度</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="reset" aria-label="重置" title="重置"><span class="md-mermaid-tool-icon" aria-hidden="true">1:1</span><span class="md-visually-hidden">重置</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="open" aria-label="放大查看" title="放大查看"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">放大查看</span></button></div></div><div class="md-mermaid-canvas" data-mermaid-canvas tabindex="0" role="img" aria-label="Mermaid 图表"></div><pre class="md-mermaid-source" data-mermaid-source>flowchart TB\n  subgraph MAIN[&quot;主状态服务器&quot;]\n    PG_MAIN[&quot;PostgreSQL 16&lt;br/&gt;主库&quot;]\n    REDIS_MAIN[&quot;Redis&lt;br/&gt;主节点&quot;]\n    SENT_MAIN[&quot;Redis Sentinel 1&quot;]\n  end\n\n  subgraph STANDBY[&quot;备用状态服务器&quot;]\n    PG_STANDBY[&quot;PostgreSQL 16&lt;br/&gt;备库&quot;]\n    REDIS_STANDBY[&quot;Redis Replica&lt;br/&gt;从节点&quot;]\n    SENT_STANDBY[&quot;Redis Sentinel 2&quot;]\n  end\n\n  subgraph ARBITER[&quot;独立仲裁 / 监控服务器&quot;]\n    PG_MONITOR[&quot;pg_auto_failover Monitor&lt;br/&gt;数据库监控 / 切换协调&quot;]\n    SENT_ARBITER[&quot;Redis Sentinel 3&quot;]\n  end\n\n  PG_MAIN --&gt;|&quot;流复制&quot;| PG_STANDBY\n  PG_MONITOR -.-&gt; PG_MAIN\n  PG_MONITOR -.-&gt; PG_STANDBY\n  REDIS_MAIN --&gt;|&quot;主从复制&quot;| REDIS_STANDBY\n  SENT_MAIN -.-&gt; REDIS_MAIN\n  SENT_MAIN -.-&gt; REDIS_STANDBY\n  SENT_STANDBY -.-&gt; REDIS_MAIN\n  SENT_STANDBY -.-&gt; REDIS_STANDBY\n  SENT_ARBITER -.-&gt; REDIS_MAIN\n  SENT_ARBITER -.-&gt; REDIS_STANDBY\n</pre></div><p>这张图画的是当前主备角色。虚线表示监控或切换协调，业务请求本身不经过 Monitor 或 Sentinel；真正的数据访问仍然走应用侧的 HAProxy。发生切换以后，主备角色也会跟着变化。</p>\n<h2 id="还想继续补的地方">还想继续补的地方</h2>\n<p>现在这套东西能把运行时、数据库和缓存的故障处理分开，但还有几个地方需要继续看：</p>\n<ul>\n<li>两个 CDN 域名最终还是落在同一台入口机，入口本身仍然很关键。</li>\n<li>管理后台和 Gemini 的固定路由直接依赖主节点，不能直接套用普通运行时池的兜底方式。</li>\n<li>Sub2API 的真实服务仍然只有主节点这一份，本地代理没有把它变成多活。</li>\n<li>家庭节点依赖入口机和反向 SSH 隧道，更适合低权重兜底，还不能当成完全独立的一条故障恢复链路。</li>\n<li>后面还要继续观察故障切换时的连接恢复、请求失败和实际流量分布，再决定下一步补哪里。</li>\n</ul>\n<p>目前我更想先把这套架构用起来，看看它在真实使用里表现怎么样。先把边界记清楚，后面继续改时，也不容易把“有备用节点”和“整条链路都高可用”混在一起。</p>\n<p>如果你也折腾过类似的架构，或者看到了这里还有什么风险和可以继续优化的地方，欢迎交流。</p>\n',
     },
     {
       id: "posts:backend-frontend-architecture:zh",
@@ -610,7 +700,11 @@ export const contentRegistry = {
       description:
         "记录软件、工具和网站开发里的想法与实践。 这里汇总枫莹の小窝中对应分类下的文章、随笔和项目卡片，方便按主题浏览相关内容。",
       counterpartPath: "/en/categories/engineering/",
-      entryIds: ["posts:backend-frontend-architecture:zh", "posts:cmcc-rax3000m:zh"],
+      entryIds: [
+        "posts:backend-frontend-architecture:zh",
+        "posts:cmcc-rax3000m:zh",
+        "posts:new-api-high-availability:zh",
+      ],
       projectSlugs: [
         "fengying-blog",
         "grok-api-proxy",
@@ -815,7 +909,7 @@ export const contentRegistry = {
       description:
         "人工智能相关工具和实验。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/ai/",
-      entryIds: ["about:index:zh"],
+      entryIds: ["about:index:zh", "posts:new-api-high-availability:zh"],
       projectSlugs: ["grok-api-proxy"],
     },
     {
@@ -829,7 +923,7 @@ export const contentRegistry = {
       description:
         "API 服务、代理和集成。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/api/",
-      entryIds: ["posts:backend-frontend-architecture:zh"],
+      entryIds: ["posts:backend-frontend-architecture:zh", "posts:new-api-high-availability:zh"],
       projectSlugs: ["grok-api-proxy"],
     },
     {
@@ -938,7 +1032,7 @@ export const contentRegistry = {
       description:
         "家庭网络、DNS 和网络设备配置。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/networking/",
-      entryIds: ["posts:cmcc-rax3000m:zh"],
+      entryIds: ["posts:cmcc-rax3000m:zh", "posts:new-api-high-availability:zh"],
       projectSlugs: [],
     },
     {
@@ -952,7 +1046,11 @@ export const contentRegistry = {
       description:
         "Notes from building software, tools, and websites. This page groups related Fengying's Nook posts, notes, and project cards by category for topic-based browsing.",
       counterpartPath: "/zh/categories/engineering/",
-      entryIds: ["posts:backend-frontend-architecture:en", "posts:cmcc-rax3000m:en"],
+      entryIds: [
+        "posts:backend-frontend-architecture:en",
+        "posts:cmcc-rax3000m:en",
+        "posts:new-api-high-availability:en",
+      ],
       projectSlugs: [
         "fengying-blog",
         "grok-api-proxy",
@@ -1157,7 +1255,7 @@ export const contentRegistry = {
       description:
         "AI-related tools and experiments. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/ai/",
-      entryIds: ["about:index:en"],
+      entryIds: ["about:index:en", "posts:new-api-high-availability:en"],
       projectSlugs: ["grok-api-proxy"],
     },
     {
@@ -1171,7 +1269,7 @@ export const contentRegistry = {
       description:
         "API services, proxies, and integrations. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/api/",
-      entryIds: ["posts:backend-frontend-architecture:en"],
+      entryIds: ["posts:backend-frontend-architecture:en", "posts:new-api-high-availability:en"],
       projectSlugs: ["grok-api-proxy"],
     },
     {
@@ -1280,7 +1378,7 @@ export const contentRegistry = {
       description:
         "Home networking, DNS, and network device setup. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/networking/",
-      entryIds: ["posts:cmcc-rax3000m:en"],
+      entryIds: ["posts:cmcc-rax3000m:en", "posts:new-api-high-availability:en"],
       projectSlugs: [],
     },
   ],
@@ -1710,6 +1808,7 @@ export const contentRegistry = {
     "/en/posts/backend-frontend-architecture/",
     "/en/posts/building-this-site/",
     "/en/posts/cmcc-rax3000m/",
+    "/en/posts/new-api-high-availability/",
     "/en/projects/",
     "/en/tags/",
     "/en/tags/ai/",
@@ -1744,6 +1843,7 @@ export const contentRegistry = {
     "/zh/posts/backend-frontend-architecture/",
     "/zh/posts/building-this-site/",
     "/zh/posts/cmcc-rax3000m/",
+    "/zh/posts/new-api-high-availability/",
     "/zh/projects/",
     "/zh/tags/",
     "/zh/tags/ai/",
@@ -1767,6 +1867,44 @@ export const contentRegistry = {
   ],
   rssItems: [
     {
+      id: "posts:new-api-high-availability:en",
+      title: "Building a Practical High Availability Setup for New API",
+      description:
+        "Notes on a New API high availability setup, connecting entry points, runtime nodes, and stateful services with Caddy, HAProxy, PostgreSQL replication, Redis Sentinel, and WireGuard.",
+      date: "2026-10-22",
+      path: "/en/posts/new-api-high-availability/",
+      locale: "en",
+      type: "posts",
+    },
+    {
+      id: "posts:new-api-high-availability:zh",
+      title: "给 New API 搭一套实用的高可用架构",
+      description:
+        "记录一次 New API 高可用架构的整理，用 Caddy、HAProxy、PostgreSQL 主备、Redis Sentinel 和 WireGuard 串起入口、运行节点与状态服务。",
+      date: "2026-10-22",
+      path: "/zh/posts/new-api-high-availability/",
+      locale: "zh",
+      type: "posts",
+    },
+    {
+      id: "projects:zh",
+      title: "项目展示",
+      description: "项目、小工具和还想继续保留的记录。",
+      date: "2026-10-22",
+      path: "/zh/projects/",
+      locale: "zh",
+      type: "projects",
+    },
+    {
+      id: "projects:en",
+      title: "Projects",
+      description: "Projects, small tools, and records I still want to keep.",
+      date: "2026-10-22",
+      path: "/en/projects/",
+      locale: "en",
+      type: "projects",
+    },
+    {
       id: "posts:backend-frontend-architecture:en",
       title: "Notes on a Frontend and Backend Architecture Flow",
       description:
@@ -1785,24 +1923,6 @@ export const contentRegistry = {
       path: "/zh/posts/backend-frontend-architecture/",
       locale: "zh",
       type: "posts",
-    },
-    {
-      id: "projects:zh",
-      title: "项目展示",
-      description: "项目、小工具和还想继续保留的记录。",
-      date: "2026-05-27",
-      path: "/zh/projects/",
-      locale: "zh",
-      type: "projects",
-    },
-    {
-      id: "projects:en",
-      title: "Projects",
-      description: "Projects, small tools, and records I still want to keep.",
-      date: "2026-05-27",
-      path: "/en/projects/",
-      locale: "en",
-      type: "projects",
     },
     {
       id: "docs:guide/getting-started:en",

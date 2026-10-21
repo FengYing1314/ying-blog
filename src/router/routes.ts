@@ -1,14 +1,8 @@
 import type { RouteRecordRaw } from "vue-router";
 import { locales } from "../config/site";
 import { registry } from "../lib/content";
-import ContentPage from "../pages/ContentPage.vue";
-import DocsPage from "../pages/DocsPage.vue";
 import HomePage from "../pages/HomePage.vue";
 import NotFoundPage from "../pages/NotFoundPage.vue";
-import PostsPage from "../pages/PostsPage.vue";
-import ProjectsPage from "../pages/ProjectsPage.vue";
-import TaxonomyIndexPage from "../pages/TaxonomyIndexPage.vue";
-import TaxonomyPage from "../pages/TaxonomyPage.vue";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -35,7 +29,7 @@ export const routes: RouteRecordRaw[] = [
     {
       path: `/${locale}/posts/`,
       name: `posts-${locale}`,
-      component: PostsPage,
+      component: () => import("../pages/PostsPage.vue"),
       props: { locale },
       meta: {
         locale,
@@ -45,7 +39,7 @@ export const routes: RouteRecordRaw[] = [
     {
       path: `/${locale}/docs/`,
       name: `docs-${locale}`,
-      component: DocsPage,
+      component: () => import("../pages/DocsPage.vue"),
       props: { locale },
       meta: {
         locale,
@@ -55,7 +49,7 @@ export const routes: RouteRecordRaw[] = [
     {
       path: `/${locale}/projects/`,
       name: `projects-${locale}`,
-      component: ProjectsPage,
+      component: () => import("../pages/ProjectsPage.vue"),
       props: { locale },
       meta: {
         locale,
@@ -76,7 +70,7 @@ export const routes: RouteRecordRaw[] = [
   ...registry.entries.map((entry) => ({
     path: entry.path,
     name: entry.id,
-    component: ContentPage,
+    component: () => import("../pages/ContentPage.vue"),
     props: {
       entryId: entry.id,
     },
@@ -88,7 +82,7 @@ export const routes: RouteRecordRaw[] = [
   ...registry.taxonomyIndexPages.map((page) => ({
     path: page.path,
     name: page.id,
-    component: TaxonomyIndexPage,
+    component: () => import("../pages/TaxonomyIndexPage.vue"),
     props: {
       pageId: page.id,
     },
@@ -100,7 +94,7 @@ export const routes: RouteRecordRaw[] = [
   ...registry.taxonomyPages.map((page) => ({
     path: page.path,
     name: page.id,
-    component: TaxonomyPage,
+    component: () => import("../pages/TaxonomyPage.vue"),
     props: {
       pageId: page.id,
     },
