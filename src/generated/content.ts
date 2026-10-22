@@ -1,8 +1,64 @@
 import type { ContentRegistry } from "../types/content";
 
 export const contentRegistry = {
-  generatedAt: "2026-10-22T00:00:00.000Z",
+  generatedAt: "2026-10-23T00:00:00.000Z",
   entries: [
+    {
+      id: "posts:cloud-agent-sandbox-architecture:en",
+      type: "posts",
+      locale: "en",
+      slug: "cloud-agent-sandbox-architecture",
+      title:
+        "From Self-Hosted OpenSandbox to Alibaba Cloud Sandbox: Cloud Agent Architecture Choices",
+      description:
+        "Notes on the Cloud Agent execution flow, file continuity, and the trade-offs behind moving from self-hosted OpenSandbox to Alibaba Cloud Sandbox.",
+      date: "2026-10-23",
+      categories: ["engineering"],
+      tags: ["python", "ai", "api"],
+      featured: false,
+      order: 5,
+      path: "/en/posts/cloud-agent-sandbox-architecture/",
+      counterpartPath: "/zh/posts/cloud-agent-sandbox-architecture/",
+      readingTime: 9,
+      headings: [
+        {
+          id: "separating-the-execution-flow",
+          level: 2,
+          title: "Separating the Execution Flow",
+        },
+        {
+          id: "calls-and-recovery-need-their-own-records",
+          level: 2,
+          title: "Calls and Recovery Need Their Own Records",
+        },
+        {
+          id: "what-self-hosting-opensandbox-required",
+          level: 2,
+          title: "What Self-Hosting OpenSandbox Required",
+        },
+        {
+          id: "how-the-managed-setup-divides-the-work",
+          level: 2,
+          title: "How the Managed Setup Divides the Work",
+        },
+        {
+          id: "keeping-continuity-in-files",
+          level: 2,
+          title: "Keeping Continuity in Files",
+        },
+        {
+          id: "boundaries-we-still-handle-with-a-managed-sandbox",
+          level: 2,
+          title: "Boundaries We Still Handle with a Managed Sandbox",
+        },
+        {
+          id: "what-has-been-verified-so-far",
+          level: 2,
+          title: "What Has Been Verified So Far",
+        },
+      ],
+      html: '<p>In my earlier <a href="/en/posts/backend-frontend-architecture/">notes on frontend and backend architecture</a>, I wrote about the boundaries between APIs, business orchestration, databases, and asynchronous tasks.</p>\n<p>Building the Cloud Agent raised another set of practical questions. A model can decide to call tools and generate code, but where should that code run? What happens if the connection drops during execution? Where do generated files go, and can they be modified again in the next turn?</p>\n<p>The move from self-hosted OpenSandbox to Alibaba Cloud Sandbox was another adjustment around these questions. The clearest goal at the time was to reduce the layers we had to maintain and first get one basic flow working: a user sends a message, the model calls a tool, the sandbox executes code, a file is generated, the user downloads it, and then continues modifying it in the next turn.</p>\n<p>I want to record that flow, along with what we kept and what we gave up during the switch.</p>\n<h2 id="separating-the-execution-flow">Separating the Execution Flow</h2>\n<p>The Cloud Agent still lives in the backend. The HTTP API handles authentication, cost previews, task creation, and status reads. A separate Worker handles long-running execution, while LangGraph organizes context, model calls, tool calls, pausing for input, and resuming execution.</p>\n<p>For the code execution and file delivery path, the main relationships look like this:</p>\n<div class="md-mermaid" data-mermaid data-rendered="false" data-mermaid-hint="Drag / Ctrl+wheel" data-loading-label="Rendering" data-error-label="Render failed" data-copied-label="Source copied"><div class="md-mermaid-toolbar"><span class="md-mermaid-title">Mermaid diagram</span><span class="md-mermaid-scale" data-mermaid-scale aria-label="Current zoom 100%">100%</span><div class="md-mermaid-tools" role="toolbar" aria-label="Mermaid diagram tools"><button class="md-mermaid-tool" type="button" data-mermaid-action="copy" data-copy-mermaid data-copy-label="Copy source" data-copied-label="Source copied" aria-label="Copy source" title="Copy source"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">Copy source</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-out" aria-label="Zoom out" title="Zoom out"><span class="md-mermaid-tool-icon" aria-hidden="true">-</span><span class="md-visually-hidden">Zoom out</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-in" aria-label="Zoom in" title="Zoom in"><span class="md-mermaid-tool-icon" aria-hidden="true">+</span><span class="md-visually-hidden">Zoom in</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="fit" aria-label="Fit width" title="Fit width"><span class="md-mermaid-tool-icon" aria-hidden="true">&lt;&gt;</span><span class="md-visually-hidden">Fit width</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="reset" aria-label="Reset" title="Reset"><span class="md-mermaid-tool-icon" aria-hidden="true">1:1</span><span class="md-visually-hidden">Reset</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="open" aria-label="Open viewer" title="Open viewer"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">Open viewer</span></button></div></div><div class="md-mermaid-canvas" data-mermaid-canvas tabindex="0" role="img" aria-label="Mermaid diagram"></div><pre class="md-mermaid-source" data-mermaid-source>flowchart TD\n  User[&quot;User&quot;] --&gt; API[&quot;HTTP API&lt;br/&gt;Cost preview / Create Run&quot;]\n  API --&gt; PG[(&quot;PostgreSQL&lt;br/&gt;Sessions, tasks, checkpoints, invocation records&quot;)]\n  PG --&gt;|Claim tasks| Worker[&quot;Separate Worker&lt;br/&gt;LangGraph execution flow&quot;]\n  Worker --&gt;|State / Events / Checkpoints| PG\n  Worker &lt;--&gt; Model[&quot;Model calls&quot;]\n  Worker &lt;--&gt; Tools[&quot;Tool gateway&quot;]\n  Tools --&gt; Sandbox[&quot;Temporary sandbox&lt;br/&gt;Code execution&quot;]\n  Sandbox --&gt; Files[&quot;Backend export and validation&quot;]\n  Files --&gt;|File bytes| OSS[(&quot;OSS&quot;)]\n  Files --&gt;|File versions / Workspace manifest| PG\n  PG --&gt; Events[&quot;HTTP API&lt;br/&gt;Read persistent events / SSE&quot;]\n  Events --&gt; User\n</pre></div><p>There are three different objects here: Session, Run, and Invocation.</p>\n<ul>\n<li>A Session represents an ongoing conversation and stores messages and the current workspace.</li>\n<li>A Run represents one task started by the user and stores the configuration for that turn, its execution deadline, status, and checkpoint: a persistent record of how far the graph has progressed.</li>\n<li>An Invocation goes one level deeper and records a single model call or tool call.</li>\n</ul>\n<p>Keeping them separate makes several things easier to explain. A task may still be running after the browser disconnects. The conversation and files remain after a task finishes. If the result of a tool call is temporarily unclear, the entire run does not have to be reduced to a simple success or failure.</p>\n<p>The Cloud Agent Worker currently claims tasks directly from PostgreSQL. The database stores task state, execution ownership, and the position to resume from. The HTTP request returns once the task has been created, and the Worker takes over from there.</p>\n<h2 id="calls-and-recovery-need-their-own-records">Calls and Recovery Need Their Own Records</h2>\n<p>LangGraph handles the flow and the persistence interface for graph state, including waiting for input, interruption, and resumption. Whether an external system actually executed a request, files were fully saved, or billing was settled still needs separate records and checks.</p>\n<p>For example, when another Worker takes over a task, the old process may still be running. If we only look at a status saying that the task is running, both processes may get a chance to keep writing results. Claiming a task therefore also needs a lease and an execution generation. Each takeover changes the execution identity, and writes must confirm that the Worker still owns the task. Even if the old Worker returns later, it cannot simply overwrite the current state.</p>\n<p>Remote calls introduce another kind of uncertainty. Once a request has been sent, a local timeout does not mean the remote side did nothing. It may have completed successfully, with only the response failing to make it back. The current implementation preserves an unknown-result state and avoids immediately resending the request.</p>\n<p>Whether the result can be retrieved depends on the call. Sandbox operations can be checked using the recorded instance identity and operation. When a model response is lost, the current implementation does not guarantee that the original output can be retrieved. The result may remain unknown, while usage and billing are checked separately against the original records.</p>\n<p>On model-call paths that allow retries, bounded retries are allowed only when the request is known not to have been sent, or when a failure result that meets the rules has been received. Code execution, file publication, and billing are handled through their own original invocation records and must not be started again just because of a timeout. Otherwise, one network problem can turn into duplicate execution, duplicate outputs, or duplicate charges.</p>\n<h2 id="what-self-hosting-opensandbox-required">What Self-Hosting OpenSandbox Required</h2>\n<p>When I first connected OpenSandbox, I wanted to keep code execution inside a separate environment. It provided a runtime and execution interfaces, along with considerable control over a self-hosted deployment.</p>\n<p>But meeting our own isolation, file, and recovery requirements still meant building quite a few things around it: managing instance lifecycles and resource quotas, restricting network access, setting file permissions, observing execution, confirming stops, and exporting and collecting results.</p>\n<p>Some of these are not difficult to build in isolation. The hard part is making them all hold together in the same flow.</p>\n<p>A command returning does not mean all background child processes have stopped. A visible file does not mean it has stopped changing. Receiving a stop request does not mean the instance has actually been destroyed. The backend needs these confirmations before it can publish outputs, release resources, and handle later recovery.</p>\n<p>The original approach gradually accumulated a Manager, quota and observation logic, and adapter code tied to a fixed runtime. They solved real problems, while also adding more boundaries to maintain and verify.</p>\n<p>These experiences apply only to the version we used at the time and our own requirements. OpenSandbox also supports other deployment approaches, so this choice should not be generalized into a conclusion about the whole project.</p>\n<h2 id="how-the-managed-setup-divides-the-work">How the Managed Setup Divides the Work</h2>\n<p>We later switched to the second-generation MicroVM runtime of Alibaba Cloud Agent Sandbox Flash Edition, connecting through an E2B-compatible interface. In its comparison of its own two runtime generations, the official documentation also notes that similar interfaces can still differ in images, templates, networking, storage, and lifecycles, and need to be validated against real workloads. <a href="https://help.aliyun.com/en/agent-sandbox/runtime-gen1-vs-gen2">Official runtime documentation</a></p>\n<p>This adjustment mainly changed how execution resources are provided. The trusted Worker continues to run the Agent flow, while cloud VMs handle untrusted code and isolated file validation.</p>\n<p>Model calls, permission decisions, accounting, and recovery remain the backend’s responsibility. Backend database, OSS, model, and signing credentials are not injected into the execution environment. The backend prepares and collects the files.</p>\n<p>The division of work after the switch comes down to these choices:</p>\n<div class="table-scroll"><table>\n<thead>\n<tr>\n<th>Area</th>\n<th>Current choice</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Execution resources</td>\n<td>Use the managed sandbox to create and reclaim temporary VMs</td>\n</tr>\n<tr>\n<td>Agent flow</td>\n<td>Keep execution in our own Worker and LangGraph</td>\n</tr>\n<tr>\n<td>Persistent state</td>\n<td>PostgreSQL stores execution state; OSS stores file bytes</td>\n</tr>\n<tr>\n<td>Workspace continuity</td>\n<td>Restore through file versions and a manifest</td>\n</tr>\n<tr>\n<td>Unknown results</td>\n<td>Keep the original invocation record, check what the adapter can establish, and avoid treating an unknown outcome as a retryable failure</td>\n</tr>\n</tbody>\n</table>\n</div>\n<p>Choosing a managed service also introduces provisioning constraints. For this project’s custom image delivery plan, we need a non-Economy Container Registry Enterprise Edition (ACR EE) instance in the same account and region, along with the corresponding VPC network for pulling images. These preparations and costs also count. This is the path for our custom second-generation image; using an official base image is a different case. <a href="https://help.aliyun.com/en/agent-sandbox/build-and-manage-custom-templates-with-code">Official template documentation</a></p>\n<h2 id="keeping-continuity-in-files">Keeping Continuity in Files</h2>\n<p>The current implementation prepares a separate temporary VM for each <code>sandbox.execute</code> call that needs to execute code. A Run may execute no code at all, or call the code tool several times, so it may create zero, one, or multiple execution VMs. Recovery of the same call still checks the original operation; it does not create another VM to execute the program again.</p>\n<p>Ordinary file reads and writes do not all require starting an execution VM, and isolated file validation has its own operation records.</p>\n<p>Before each code execution, the backend prepares files from the current workspace manifest. This manifest maps file paths to immutable versions; the file bytes are stored in OSS.</p>\n<p>For normal delivery, the backend first confirms that untrusted writer processes have stopped, then captures the complete files, exports them to OSS, and reads them back for verification. It must also confirm that the original VM has terminated, complete any required file validation, and check execution ownership and the original workspace version before publishing new file versions. Stopping writer processes and terminating the whole VM require two separate checks.</p>\n<p>As an illustration of file flow, suppose the first code call generates <code>report.md</code> and the backend publishes its file version after the checks. A later code call loads that file into a new VM and changes its contents. The file carries over; the Python variables from the earlier execution do not.</p>\n<p>The same conversation can therefore continue modifying files generated earlier, but it does not carry over in-memory variables, background processes, or temporarily installed environments from the previous VM.</p>\n<p>Some interactive tasks need to be reorganized around this. Environments and dependencies that need to be consistently available fit better in a predefined template. Anything that needs to survive across calls should be explicitly written to a file.</p>\n<p>Creating environments, restoring files, and exporting results each time also adds overhead that needs to be observed with actual tasks.</p>\n<h2 id="boundaries-we-still-handle-with-a-managed-sandbox">Boundaries We Still Handle with a Managed Sandbox</h2>\n<p>Beyond file handoff, programs and arguments need validation, execution environments need restrictions, and exported files need checks for paths, types, sizes, and content digests. Results can be attached to the current session only while the run still owns execution and the workspace remains at its original version. A conflict must not overwrite a newer version.</p>\n<p>Persistent records made before dispatching calls, stop and timeout handling, and recovery from unknown results also remain in our own backend.</p>\n<p>I think this is another useful lesson from the move: even after handing infrastructure to a cloud service, the application still needs clear definitions of completed execution and usable outputs, as well as a way to identify external operations that remain unresolved.</p>\n<p>The old OpenSandbox adapter also retains a compatibility path for recognizing old protocol records. Historical Runs and operations are tied to the original protocol, instance identity, and recovery rules; they cannot simply be switched to the new provider and rerun. Before retiring the old service, we need to separately check whether unresolved records remain and whether the old environment can actually support recovery. Keeping adapter code does not answer either question by itself.</p>\n<h2 id="what-has-been-verified-so-far">What Has Been Verified So Far</h2>\n<p>There are now real development-environment records of the minimal flow working end to end, including code execution, file delivery, and later modifications. But those records cover specific versions, configurations, and test scopes. They do not establish coverage for all models, arbitrary Skills, failure scenarios, or production deployments.</p>\n<p>The same applies to costs. Reducing the layers we maintain was a clear goal of this move. Actual total cost also includes cloud resources, file transfers, image maintenance, and execution frequency. We do not yet have a complete quantitative comparison, so I am not calling it cheaper for now.</p>\n<p>At this stage, I would rather first keep the execution flow and state boundaries clear: where a task runs, which file version is authoritative, what to query when a remote result is unknown, and when resources can be released.</p>\n<p>Once these things can be observed and checked consistently, we will have a firmer basis for discussing environment reuse, execution efficiency, and cost.</p>\n',
+    },
     {
       id: "posts:new-api-high-availability:en",
       type: "posts",
@@ -297,6 +353,61 @@ export const contentRegistry = {
         },
       ],
       html: '<p>Hi, this is Fengying. Welcome to my small home.</p>\n<p>This is a place where an ordinary person leaves a few things behind, maybe just to remember that I was here.</p>\n<p>Whoever you are, I hope you have happy days.</p>\n<h2 id="who-i-am">Who I Am</h2>\n<div class="table-scroll"><table>\n<thead>\n<tr>\n<th>Item</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>GitHub</td>\n<td><a href="https://github.com/FengYing1314/">@FengYing1314</a></td>\n</tr>\n<tr>\n<td>Name</td>\n<td>枫莹 / FengYing</td>\n</tr>\n<tr>\n<td>Location</td>\n<td>China</td>\n</tr>\n<tr>\n<td>Bio</td>\n<td>いつか一人で去る</td>\n</tr>\n<tr>\n<td>Organization</td>\n<td><a href="https://github.com/OOM-WG">OOM-WG</a></td>\n</tr>\n<tr>\n<td>Personal homepage</td>\n<td><a href="https://www.fengying.xin/">www.fengying.xin</a></td>\n</tr>\n</tbody>\n</table>\n</div>\n<p>I am still a student, and I like tinkering with things that feel interesting or new to me. This page does not need to be too formal; it is more like a self-introduction that changes slowly.</p>\n<h2 id="what-i-am-tinkering-with">What I Am Tinkering With</h2>\n<p>I like tinkering with software, websites, AI tools, OpenWrt, VR, and new things that look interesting.</p>\n<p>I often touch C#, Python, TypeScript, JavaScript, .NET, Unity, and Android. I am not deep in every direction, but when something feels worth trying, I usually try it first.</p>\n<h2 id="sites-and-contact">Sites and Contact</h2>\n<p>Common entrances:</p>\n<ul>\n<li><a href="https://www.fengying.xin/">www.fengying.xin</a></li>\n<li><a href="https://yingmeow.fyi/">yingmeow.fyi</a></li>\n<li><a href="https://api.fengying.xin/">api.fengying.xin</a></li>\n<li><a href="https://blog.fengying.xin">This site (blog.fengying.xin)</a></li>\n</ul>\n<p>Common email addresses:</p>\n<ul>\n<li><a href="mailto:admin@fymiao.cn">admin@fymiao.cn</a></li>\n<li><a href="mailto:admin@fengying.space">admin@fengying.space</a></li>\n<li><a href="mailto:fyingmiao@163.com">fyingmiao@163.com</a></li>\n</ul>\n<p>You can also find me on <a href="https://github.com/FengYing1314/">GitHub: @FengYing1314</a> or through <a href="mailto:admin@fengying.space">admin@fengying.space</a>.</p>\n<p>If you need another contact method, please explain the reason by email first.</p>\n<h2 id="short-personal-note">Short Personal Note</h2>\n<p>I do not really like putting myself under fixed labels, so I only write down a little of what comes to mind now.</p>\n<p>I love anime and enjoy talking with people. When I see something new, I often want to try it first, even if it only leaves a small note in the end.</p>\n<p>Sometimes I magnify shortcomings in myself or in others. If you feel hurt by me, you can tell me directly, or simply block and remove me.</p>\n<h2 id="support">Support</h2>\n<p>If my content or projects helped you, support is welcome through <a href="https://afdian.com/a/fengyingqwq">Afdian</a>.</p>\n<p>Payment QR codes and wallet addresses should follow the personal homepage, so I will not duplicate them here.</p>\n',
+    },
+    {
+      id: "posts:cloud-agent-sandbox-architecture:zh",
+      type: "posts",
+      locale: "zh",
+      slug: "cloud-agent-sandbox-architecture",
+      title: "从自建 OpenSandbox 到阿里云沙箱：Cloud Agent 的架构取舍",
+      description:
+        "记录 Cloud Agent 的执行链路、文件连续性，以及从自建 OpenSandbox 切换到阿里云沙箱时的架构取舍。",
+      date: "2026-10-23",
+      categories: ["engineering"],
+      tags: ["python", "ai", "api"],
+      featured: false,
+      order: 5,
+      path: "/zh/posts/cloud-agent-sandbox-architecture/",
+      counterpartPath: "/en/posts/cloud-agent-sandbox-architecture/",
+      readingTime: 7,
+      headings: [
+        {
+          id: "先把执行链路拆开",
+          level: 2,
+          title: "先把执行链路拆开",
+        },
+        {
+          id: "调用与恢复需要自己的记录",
+          level: 2,
+          title: "调用与恢复需要自己的记录",
+        },
+        {
+          id: "自建-opensandbox-时需要承担什么",
+          level: 2,
+          title: "自建 OpenSandbox 时需要承担什么",
+        },
+        {
+          id: "改用托管沙箱后的分工",
+          level: 2,
+          title: "改用托管沙箱后的分工",
+        },
+        {
+          id: "连续性放在文件上",
+          level: 2,
+          title: "连续性放在文件上",
+        },
+        {
+          id: "托管后仍然需要处理的边界",
+          level: 2,
+          title: "托管后仍然需要处理的边界",
+        },
+        {
+          id: "目前验证到哪里",
+          level: 2,
+          title: "目前验证到哪里",
+        },
+      ],
+      html: '<p>之前在<a href="/zh/posts/backend-frontend-architecture/">前后端架构与调用流程整理</a>里，我写过接口、业务编排、数据库和异步任务之间的边界。</p>\n<p>继续做 Cloud Agent 时，这些问题又往前走了一步：模型可以决定调用工具，也可以生成代码，但代码应该在哪里执行？执行过程中连接断了怎么办？生成的文件放在哪里，下一次还能不能接着修改？</p>\n<p>这次从自建 OpenSandbox 切换到阿里云沙箱，也是围绕这些问题做的一次调整。当时最明确的目标是减少维护层，先把一条基本流程跑通：用户发消息，模型调用工具，沙箱执行代码，生成文件，用户下载，然后在下一轮继续修改。</p>\n<p>我想先把这条链路，以及切换时保留和放弃的东西记下来。</p>\n<h2 id="先把执行链路拆开">先把执行链路拆开</h2>\n<p>Cloud Agent 这一层仍然放在后端。HTTP API 负责鉴权、费用预览、创建任务和读取状态；独立 Worker 负责长时间执行，LangGraph 负责组织上下文、模型调用、工具调用和等待恢复。</p>\n<p>沿着代码执行和文件交付这条路径看，主要关系是这样：</p>\n<div class="md-mermaid" data-mermaid data-rendered="false" data-mermaid-hint="可拖拽 / Ctrl 滚轮缩放" data-loading-label="渲染中" data-error-label="渲染失败" data-copied-label="源码已复制"><div class="md-mermaid-toolbar"><span class="md-mermaid-title">Mermaid 图表</span><span class="md-mermaid-scale" data-mermaid-scale aria-label="当前缩放 100%">100%</span><div class="md-mermaid-tools" role="toolbar" aria-label="Mermaid 图表工具"><button class="md-mermaid-tool" type="button" data-mermaid-action="copy" data-copy-mermaid data-copy-label="复制源码" data-copied-label="源码已复制" aria-label="复制源码" title="复制源码"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">复制源码</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-out" aria-label="缩小" title="缩小"><span class="md-mermaid-tool-icon" aria-hidden="true">-</span><span class="md-visually-hidden">缩小</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="zoom-in" aria-label="放大" title="放大"><span class="md-mermaid-tool-icon" aria-hidden="true">+</span><span class="md-visually-hidden">放大</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="fit" aria-label="适应宽度" title="适应宽度"><span class="md-mermaid-tool-icon" aria-hidden="true">&lt;&gt;</span><span class="md-visually-hidden">适应宽度</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="reset" aria-label="重置" title="重置"><span class="md-mermaid-tool-icon" aria-hidden="true">1:1</span><span class="md-visually-hidden">重置</span></button><button class="md-mermaid-tool" type="button" data-mermaid-action="open" aria-label="放大查看" title="放大查看"><span class="md-mermaid-tool-icon" aria-hidden="true">[]</span><span class="md-visually-hidden">放大查看</span></button></div></div><div class="md-mermaid-canvas" data-mermaid-canvas tabindex="0" role="img" aria-label="Mermaid 图表"></div><pre class="md-mermaid-source" data-mermaid-source>flowchart TD\n  User[&quot;用户&quot;] --&gt; API[&quot;HTTP API&lt;br/&gt;估价 / 创建 Run&quot;]\n  API --&gt; PG[(&quot;PostgreSQL&lt;br/&gt;会话、任务、Checkpoint、调用记录&quot;)]\n  PG --&gt;|领取任务| Worker[&quot;独立 Worker&lt;br/&gt;LangGraph 执行流程&quot;]\n  Worker --&gt;|状态 / 事件 / Checkpoint| PG\n  Worker &lt;--&gt; Model[&quot;模型调用&quot;]\n  Worker &lt;--&gt; Tools[&quot;工具网关&quot;]\n  Tools --&gt; Sandbox[&quot;临时沙箱&lt;br/&gt;执行代码&quot;]\n  Sandbox --&gt; Files[&quot;后端导出与校验&quot;]\n  Files --&gt;|文件字节| OSS[(&quot;OSS&quot;)]\n  Files --&gt;|文件版本 / 工作区清单| PG\n  PG --&gt; Events[&quot;HTTP API&lt;br/&gt;读取持久事件 / SSE&quot;]\n  Events --&gt; User\n</pre></div><p>这里有三种不同的对象：Session、Run 和 Invocation。</p>\n<ul>\n<li>Session 对应一个持续的会话，保存消息和当前工作区。</li>\n<li>Run 对应用户发起的一次任务，保存本轮配置、执行期限、状态和 Checkpoint，也就是图执行到哪一步的持久记录。</li>\n<li>Invocation 再往下拆一层，记录一次模型调用或工具调用。</li>\n</ul>\n<p>这样分开以后，很多事情会更容易说明白。浏览器断线时，任务可能还在运行；一次任务结束后，会话和文件仍然存在；某个工具的结果暂时不明确，也不需要把整轮执行简单地归成成功或失败。</p>\n<p>目前 Cloud Agent 的 Worker 直接从 PostgreSQL 领取任务。数据库同时保存任务状态、执行权和恢复位置，HTTP 请求创建好任务后就返回，后续由 Worker 接手。</p>\n<h2 id="调用与恢复需要自己的记录">调用与恢复需要自己的记录</h2>\n<p>LangGraph 在这里负责流程和图状态的持久化接口，包括等待输入、中断和恢复。但外部系统有没有真正执行、文件有没有完整保存、费用有没有结清，还需要自己的记录和检查。</p>\n<p>比如任务被另一个 Worker 接管时，旧进程可能仍在运行。如果只看“任务正在执行”，两个进程都有机会继续写结果。所以领取任务时还需要租约和执行代次：每次接管都会更新执行身份，写入前必须确认自己仍然拥有执行权。旧 Worker 即使晚一点返回，也不能直接覆盖当前状态。</p>\n<p>远端调用还有另一类不确定性：请求发出去以后，本地超时并不能说明远端什么都没做。它可能已经执行成功，只是回复没有传回来。当前实现会保留“结果未知”，避免直接重发。</p>\n<p>能否查回结果取决于具体调用。沙箱可以沿已经记录的实例身份和操作核对；模型响应丢失时，当前实现不保证取回原输出，调用结果可能继续保持未知，用量和账务则按原记录另外核对。</p>\n<p>在允许重试的模型调用路径里，只有明确没有发送，或者已经拿到符合规则的失败结果，才进入有界重试。代码执行、文件发布和计费则沿各自的原调用记录处理，不能因为超时就重新发起，否则一次网络问题就可能变成重复执行、重复生成，或者重复收费。</p>\n<h2 id="自建-opensandbox-时需要承担什么">自建 OpenSandbox 时需要承担什么</h2>\n<p>最初接入 OpenSandbox 时，我希望把代码执行收在一个独立环境里。它提供了运行时和执行接口，也给了自建部署比较多的控制空间。</p>\n<p>但要满足我们自己的隔离、文件和恢复要求，周围还需要补很多东西：实例生命周期、资源配额、网络限制、文件权限、执行观察、停止确认，以及结果导出和接收。</p>\n<p>其中一些事情单独做出来并不难，困难在于它们要在同一条链路里成立。</p>\n<p>命令返回了，不代表后台子进程已经全部停止；能看到文件，不代表文件已经不再变化；收到停止请求，也不代表实例真的被销毁。只有这些事实能够接起来，后端才能放心发布成果、释放资源，并处理后续恢复。</p>\n<p>旧路线里因此逐渐出现了 Manager、配额和观察逻辑，以及与固定运行时绑定的适配代码。它们解决的是实际问题，也意味着更多需要维护和验证的边界。</p>\n<p>这些经历只对应我们当时使用的版本和自己的要求。OpenSandbox 也可以有其他部署方式，不能把这次选择推广成对整个项目的结论。</p>\n<h2 id="改用托管沙箱后的分工">改用托管沙箱后的分工</h2>\n<p>后来切换到的是阿里云 Agent Sandbox 极速版二代 MicroVM，通过 E2B 兼容接口接入。官方在比较自家两代运行时时也提醒，接口相似的情况下，镜像、模板、网络、存储和生命周期仍可能有差异，需要用实际业务验证。<a href="https://help.aliyun.com/zh/agent-sandbox/runtime-gen1-vs-gen2">官方运行时说明</a></p>\n<p>这次调整主要改变了执行资源的提供方式。可信的 Worker 继续运行 Agent 流程，云 VM 承接不可信代码和隔离文件验证。</p>\n<p>模型调用、权限判断、账务和恢复仍然由后端负责。执行环境不会注入后端的数据库、OSS、模型或签名凭据，文件由后端准备和收回。</p>\n<p>这次切换后的分工可以归到下面几项：</p>\n<div class="table-scroll"><table>\n<thead>\n<tr>\n<th>方面</th>\n<th>当前选择</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>执行资源</td>\n<td>使用托管沙箱创建和回收临时 VM</td>\n</tr>\n<tr>\n<td>Agent 流程</td>\n<td>继续由自己的 Worker 和 LangGraph 执行</td>\n</tr>\n<tr>\n<td>持续状态</td>\n<td>PostgreSQL 保存执行状态，OSS 保存文件字节</td>\n</tr>\n<tr>\n<td>工作区延续</td>\n<td>通过文件版本和 manifest 恢复</td>\n</tr>\n<tr>\n<td>未知结果</td>\n<td>保留原调用记录，按适配器能力核对，避免把未知当成可重试失败</td>\n</tr>\n</tbody>\n</table>\n</div>\n<p>选择托管也带来供应约束。以这次自有业务镜像的交付方案为例，它要求同账号、同地域的非经济版 ACR 企业版镜像仓库，以及对应的 VPC 拉取网络。这些准备和费用也要算进去。这里说的是本项目的自定义二代镜像路径，使用官方基础镜像是另一种情况。<a href="https://help.aliyun.com/zh/agent-sandbox/build-and-manage-custom-templates-with-code">官方模板说明</a></p>\n<h2 id="连续性放在文件上">连续性放在文件上</h2>\n<p>当前实现为需要实际执行的每次 <code>sandbox.execute</code> 调用准备独立临时 VM。一个 Run 可以完全不执行代码，也可以调用多次代码工具，因此可能创建零台、一台或多台执行 VM。同一次调用恢复时仍核对原操作，不另建一台 VM 重新执行。</p>\n<p>普通文件读写并不都需要启动执行 VM，隔离文件验证还有自己的操作记录。</p>\n<p>每次代码执行前，后端根据当前工作区清单准备文件。这份清单叫 manifest，记录文件路径对应哪个不可变版本；文件字节保存在 OSS 中。</p>\n<p>正常交付时，要先确认不可信写入进程已经停止，再完整捕获文件、导出到 OSS 并回读校验。随后还要确认原 VM 已终止，完成必要的文件验证，并核对执行权和原工作区版本，才能发布新的文件版本。停止写入进程和终止整台 VM 需要分别检查。</p>\n<p>举个只说明文件流转的例子：第一次代码调用生成 <code>report.md</code>，后端完成检查后发布文件版本；后续另一次代码调用在新的 VM 中载入这份文件，再修改内容。文件延续了，前一次执行里的 Python 变量没有跟着过去。</p>\n<p>所以，同一个会话可以继续修改之前生成的文件，但不会延续上一台 VM 里的内存变量、后台进程或临时安装环境。</p>\n<p>这会让一些交互式任务需要重新组织。需要稳定使用的运行环境和依赖，更适合提前放进固定模板；需要跨调用保留的内容，应当明确写成文件。</p>\n<p>相应地，每次创建环境、恢复文件和导出结果也会产生开销，需要结合实际任务观察。</p>\n<h2 id="托管后仍然需要处理的边界">托管后仍然需要处理的边界</h2>\n<p>除了文件交接，程序和参数也需要校验，执行环境需要限制，导出文件需要检查路径、类型、大小和内容摘要。只有本轮仍拥有执行权，且工作区仍是原来的版本时，才能把结果挂到当前会话；发生冲突时，不能覆盖新版本。</p>\n<p>调用发出前的持久记录、停止和超时处理、未知结果恢复，也都还在自己的后端里。</p>\n<p>我觉得这也是这次迁移里比较值得留下的一点：基础设施交给云服务之后，业务仍然需要清楚地定义什么叫执行完成、成果可用，以及还有没有待确认的外部操作。</p>\n<p>旧 OpenSandbox 适配器也保留了识别旧协议记录的兼容路径。历史 Run 和操作绑定着原来的协议、实例身份和恢复规则，不能直接改成新 provider 重跑。撤除旧服务前，需要另外核实是否还有未决记录，以及旧环境是否具备实际恢复条件；保留适配器代码本身不能回答这两个问题。</p>\n<h2 id="目前验证到哪里">目前验证到哪里</h2>\n<p>目前最小流程已经有开发环境里的真实闭环记录，包括代码执行、文件交付和后续修改。但这些记录有具体的版本、配置和测试范围，不能顺带证明所有模型、任意 Skill、故障场景和生产部署都已经验证完成。</p>\n<p>费用也一样。减少维护层是这次明确的目标，实际总成本还包括云资源、文件传输、镜像维护和运行频率。目前没有完整的定量对比，我暂时不会给它下“更便宜”的结论。</p>\n<p>现阶段，我更想先把执行链路和状态边界保持清楚：任务在哪里运行，文件以哪个版本为准，远端结果未知时该查什么，什么时候才能释放资源。</p>\n<p>等这些东西能稳定地观察和复查以后，再继续讨论环境复用、执行效率和成本，会更有依据。</p>\n',
     },
     {
       id: "posts:new-api-high-availability:zh",
@@ -702,6 +813,7 @@ export const contentRegistry = {
       counterpartPath: "/en/categories/engineering/",
       entryIds: [
         "posts:backend-frontend-architecture:zh",
+        "posts:cloud-agent-sandbox-architecture:zh",
         "posts:cmcc-rax3000m:zh",
         "posts:new-api-high-availability:zh",
       ],
@@ -862,7 +974,10 @@ export const contentRegistry = {
       description:
         "Python 插件和工具。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/python/",
-      entryIds: ["posts:backend-frontend-architecture:zh"],
+      entryIds: [
+        "posts:backend-frontend-architecture:zh",
+        "posts:cloud-agent-sandbox-architecture:zh",
+      ],
       projectSlugs: [
         "astrbot-plugin-repetition",
         "astrbot-plugin-token-auto",
@@ -909,7 +1024,11 @@ export const contentRegistry = {
       description:
         "人工智能相关工具和实验。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/ai/",
-      entryIds: ["about:index:zh", "posts:new-api-high-availability:zh"],
+      entryIds: [
+        "about:index:zh",
+        "posts:cloud-agent-sandbox-architecture:zh",
+        "posts:new-api-high-availability:zh",
+      ],
       projectSlugs: ["grok-api-proxy"],
     },
     {
@@ -923,7 +1042,11 @@ export const contentRegistry = {
       description:
         "API 服务、代理和集成。 这里汇总枫莹の小窝中带有对应标签的文章、随笔和项目卡片，方便按关键词继续阅读。",
       counterpartPath: "/en/tags/api/",
-      entryIds: ["posts:backend-frontend-architecture:zh", "posts:new-api-high-availability:zh"],
+      entryIds: [
+        "posts:backend-frontend-architecture:zh",
+        "posts:cloud-agent-sandbox-architecture:zh",
+        "posts:new-api-high-availability:zh",
+      ],
       projectSlugs: ["grok-api-proxy"],
     },
     {
@@ -1048,6 +1171,7 @@ export const contentRegistry = {
       counterpartPath: "/zh/categories/engineering/",
       entryIds: [
         "posts:backend-frontend-architecture:en",
+        "posts:cloud-agent-sandbox-architecture:en",
         "posts:cmcc-rax3000m:en",
         "posts:new-api-high-availability:en",
       ],
@@ -1208,7 +1332,10 @@ export const contentRegistry = {
       description:
         "Python plugins and tools. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/python/",
-      entryIds: ["posts:backend-frontend-architecture:en"],
+      entryIds: [
+        "posts:backend-frontend-architecture:en",
+        "posts:cloud-agent-sandbox-architecture:en",
+      ],
       projectSlugs: [
         "astrbot-plugin-repetition",
         "astrbot-plugin-token-auto",
@@ -1255,7 +1382,11 @@ export const contentRegistry = {
       description:
         "AI-related tools and experiments. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/ai/",
-      entryIds: ["about:index:en", "posts:new-api-high-availability:en"],
+      entryIds: [
+        "about:index:en",
+        "posts:cloud-agent-sandbox-architecture:en",
+        "posts:new-api-high-availability:en",
+      ],
       projectSlugs: ["grok-api-proxy"],
     },
     {
@@ -1269,7 +1400,11 @@ export const contentRegistry = {
       description:
         "API services, proxies, and integrations. This page groups related Fengying's Nook posts, notes, and project cards by tag for keyword-based browsing.",
       counterpartPath: "/zh/tags/api/",
-      entryIds: ["posts:backend-frontend-architecture:en", "posts:new-api-high-availability:en"],
+      entryIds: [
+        "posts:backend-frontend-architecture:en",
+        "posts:cloud-agent-sandbox-architecture:en",
+        "posts:new-api-high-availability:en",
+      ],
       projectSlugs: ["grok-api-proxy"],
     },
     {
@@ -1807,6 +1942,7 @@ export const contentRegistry = {
     "/en/posts/",
     "/en/posts/backend-frontend-architecture/",
     "/en/posts/building-this-site/",
+    "/en/posts/cloud-agent-sandbox-architecture/",
     "/en/posts/cmcc-rax3000m/",
     "/en/posts/new-api-high-availability/",
     "/en/projects/",
@@ -1842,6 +1978,7 @@ export const contentRegistry = {
     "/zh/posts/",
     "/zh/posts/backend-frontend-architecture/",
     "/zh/posts/building-this-site/",
+    "/zh/posts/cloud-agent-sandbox-architecture/",
     "/zh/posts/cmcc-rax3000m/",
     "/zh/posts/new-api-high-availability/",
     "/zh/projects/",
@@ -1867,6 +2004,45 @@ export const contentRegistry = {
   ],
   rssItems: [
     {
+      id: "posts:cloud-agent-sandbox-architecture:en",
+      title:
+        "From Self-Hosted OpenSandbox to Alibaba Cloud Sandbox: Cloud Agent Architecture Choices",
+      description:
+        "Notes on the Cloud Agent execution flow, file continuity, and the trade-offs behind moving from self-hosted OpenSandbox to Alibaba Cloud Sandbox.",
+      date: "2026-10-23",
+      path: "/en/posts/cloud-agent-sandbox-architecture/",
+      locale: "en",
+      type: "posts",
+    },
+    {
+      id: "posts:cloud-agent-sandbox-architecture:zh",
+      title: "从自建 OpenSandbox 到阿里云沙箱：Cloud Agent 的架构取舍",
+      description:
+        "记录 Cloud Agent 的执行链路、文件连续性，以及从自建 OpenSandbox 切换到阿里云沙箱时的架构取舍。",
+      date: "2026-10-23",
+      path: "/zh/posts/cloud-agent-sandbox-architecture/",
+      locale: "zh",
+      type: "posts",
+    },
+    {
+      id: "projects:zh",
+      title: "项目展示",
+      description: "项目、小工具和还想继续保留的记录。",
+      date: "2026-10-23",
+      path: "/zh/projects/",
+      locale: "zh",
+      type: "projects",
+    },
+    {
+      id: "projects:en",
+      title: "Projects",
+      description: "Projects, small tools, and records I still want to keep.",
+      date: "2026-10-23",
+      path: "/en/projects/",
+      locale: "en",
+      type: "projects",
+    },
+    {
       id: "posts:new-api-high-availability:en",
       title: "Building a Practical High Availability Setup for New API",
       description:
@@ -1885,24 +2061,6 @@ export const contentRegistry = {
       path: "/zh/posts/new-api-high-availability/",
       locale: "zh",
       type: "posts",
-    },
-    {
-      id: "projects:zh",
-      title: "项目展示",
-      description: "项目、小工具和还想继续保留的记录。",
-      date: "2026-10-22",
-      path: "/zh/projects/",
-      locale: "zh",
-      type: "projects",
-    },
-    {
-      id: "projects:en",
-      title: "Projects",
-      description: "Projects, small tools, and records I still want to keep.",
-      date: "2026-10-22",
-      path: "/en/projects/",
-      locale: "en",
-      type: "projects",
     },
     {
       id: "posts:backend-frontend-architecture:en",
